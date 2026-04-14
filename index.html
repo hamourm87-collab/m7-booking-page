@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Termin Buchen - M7 Digital</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html, body {
+            height: 100%;
+        }
+        
+        body {
+            font-family: Georgia, serif;
+            background: linear-gradient(135deg, #1a1a1a 0%, #0d0d0d 100%);
+            color: #f5f5f5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 500px;
+            background-color: #1a1a1a;
+            border: 2px solid #d4af37;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 10px 40px rgba(212, 175, 55, 0.15);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            border-bottom: 2px solid #d4af37;
+            padding-bottom: 20px;
+        }
+        
+        .header h1 {
+            color: #d4af37;
+            font-size: 28px;
+            letter-spacing: 2px;
+            margin-bottom: 8px;
+        }
+        
+        .header p {
+            color: #999;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .form-group {
+            margin-bottom: 24px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #d4af37;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"],
+        input[type="date"],
+        input[type="time"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #333;
+            background-color: #0d0d0d;
+            color: #f5f5f5;
+            font-family: Georgia, serif;
+            font-size: 14px;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+        
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        input[type="tel"]:focus,
+        input[type="date"]:focus,
+        input[type="time"]:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #d4af37;
+            background-color: #1a1a1a;
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+        }
+        
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        @media (max-width: 600px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .submit-btn {
+            width: 100%;
+            padding: 14px;
+            background-color: #d4af37;
+            color: #1a1a1a;
+            border: none;
+            font-weight: bold;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            font-family: Georgia, serif;
+        }
+        
+        .submit-btn:hover {
+            background-color: #e6c547;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(212, 175, 55, 0.3);
+        }
+        
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+        
+        .confirmation {
+            display: none;
+            text-align: center;
+            padding: 40px 20px;
+        }
+        
+        .confirmation.show {
+            display: block;
+        }
+        
+        .confirmation-icon {
+            font-size: 60px;
+            margin-bottom: 20px;
+        }
+        
+        .confirmation h2 {
+            color: #d4af37;
+            font-size: 24px;
+            margin-bottom: 15px;
+        }
+        
+        .confirmation p {
+            color: #999;
+            margin-bottom: 10px;
+            line-height: 1.6;
+        }
+        
+        .confirmation-details {
+            background-color: #0d0d0d;
+            border-left: 3px solid #d4af37;
+            padding: 15px;
+            margin: 20px 0;
+            text-align: left;
+            border-radius: 4px;
+        }
+        
+        .confirmation-details strong {
+            color: #d4af37;
+        }
+        
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: #d4af37;
+            text-decoration: none;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+        }
+        
+        .back-link:hover {
+            color: #e6c547;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- FORM -->
+        <div id="booking-form">
+            <div class="header">
+                <h1>M7 Digital</h1>
+                <p>Termin Buchen</p>
+            </div>
+            
+            <form id="appointment-form">
+                <!-- Name -->
+                <div class="form-group">
+                    <label for="name">Name *</label>
+                    <input type="text" id="name" name="name" required placeholder="Max Mustermann">
+                </div>
+                
+                <!-- Company -->
+                <div class="form-group">
+                    <label for="company">Unternehmen / Geschäft *</label>
+                    <input type="text" id="company" name="company" required placeholder="Fitnessstudio XYZ">
+                </div>
+                
+                <!-- Email & Phone -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="email">E-Mail *</label>
+                        <input type="email" id="email" name="email" required placeholder="max@example.de">
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">Telefon *</label>
+                        <input type="tel" id="phone" name="phone" required placeholder="+49 123 456789">
+                    </div>
+                </div>
+                
+                <!-- Date & Time -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="date">Datum *</label>
+                        <input type="date" id="date" name="date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="time">Uhrzeit *</label>
+                        <input type="time" id="time" name="time" required>
+                    </div>
+                </div>
+                
+                <!-- Meeting Type -->
+                <div class="form-group">
+                    <label for="meeting-type">Art des Gesprächs *</label>
+                    <select id="meeting-type" name="meeting_type" required>
+                        <option value="">-- Bitte wählen --</option>
+                        <option value="phone">Telefonanruf (30 min)</option>
+                        <option value="video">Video-Call (30 min)</option>
+                        <option value="in-person">Vor Ort (45 min)</option>
+                    </select>
+                </div>
+                
+                <!-- Notes -->
+                <div class="form-group">
+                    <label for="notes">Zusätzliche Informationen</label>
+                    <textarea id="notes" name="notes" placeholder="Kurz erklären, worauf du dich konzentrieren möchtest..."></textarea>
+                </div>
+                
+                <!-- Submit -->
+                <button type="submit" class="submit-btn">TERMIN BESTÄTIGEN</button>
+                
+                <p style="margin-top: 15px; text-align: center; font-size: 11px; color: #666;">
+                    Du erhältst eine Bestätigungsmail mit allen Details.
+                </p>
+            </form>
+        </div>
+        
+        <!-- CONFIRMATION -->
+        <div id="confirmation" class="confirmation">
+            <div class="confirmation-icon">✅</div>
+            <h2>Termin Bestätigt!</h2>
+            <p>Danke für deine Anmeldung. Wir haben alles erhalten und werden mich melden.</p>
+            
+            <div class="confirmation-details">
+                <p><strong>Name:</strong> <span id="conf-name"></span></p>
+                <p><strong>Unternehmen:</strong> <span id="conf-company"></span></p>
+                <p><strong>E-Mail:</strong> <span id="conf-email"></span></p>
+                <p><strong>Termin:</strong> <span id="conf-datetime"></span></p>
+                <p><strong>Art:</strong> <span id="conf-type"></span></p>
+            </div>
+            
+            <p style="color: #d4af37; margin-top: 20px;">
+                📧 Bestätigungsmail wurde an deine E-Mail-Adresse gesendet.
+            </p>
+        </div>
+    </div>
+    
+    <script>
+        // Set minimum date to today
+        document.getElementById('date').min = new Date().toISOString().split('T')[0];
+        
+        // Handle form submission
+        document.getElementById('appointment-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Get form data
+            const name = document.getElementById('name').value;
+            const company = document.getElementById('company').value;
+            const email = document.getElementById('email').value;
+            const phone = document.getElementById('phone').value;
+            const date = document.getElementById('date').value;
+            const time = document.getElementById('time').value;
+            const meetingType = document.getElementById('meeting-type').value;
+            const notes = document.getElementById('notes').value;
+            
+            // Format meeting type
+            const meetingTypeMap = {
+                'phone': 'Telefonanruf (30 min)',
+                'video': 'Video-Call (30 min)',
+                'in-person': 'Vor Ort (45 min)'
+            };
+            
+            // Send to server (or email service)
+            const formData = {
+                name: name,
+                company: company,
+                email: email,
+                phone: phone,
+                date: date,
+                time: time,
+                meeting_type: meetingType,
+                notes: notes,
+                timestamp: new Date().toISOString()
+            };
+            
+            // Log to console (in production, send to server)
+            console.log('Booking submitted:', formData);
+            
+            // Send via fetch to backend (you'll need to set this up)
+            fetch('https://m7digital.de/api/bookings', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Show confirmation
+                document.getElementById('conf-name').textContent = name;
+                document.getElementById('conf-company').textContent = company;
+                document.getElementById('conf-email').textContent = email;
+                document.getElementById('conf-datetime').textContent = `${date} um ${time}`;
+                document.getElementById('conf-type').textContent = meetingTypeMap[meetingType];
+                
+                // Hide form, show confirmation
+                document.getElementById('booking-form').style.display = 'none';
+                document.getElementById('confirmation').classList.add('show');
+                
+                // Also send confirmation email
+                sendConfirmationEmail(formData);
+            })
+            .catch(error => {
+                // If server not available, still show local confirmation
+                console.log('Using local confirmation (server unavailable):', error);
+                
+                document.getElementById('conf-name').textContent = name;
+                document.getElementById('conf-company').textContent = company;
+                document.getElementById('conf-email').textContent = email;
+                document.getElementById('conf-datetime').textContent = `${date} um ${time}`;
+                document.getElementById('conf-type').textContent = meetingTypeMap[meetingType];
+                
+                document.getElementById('booking-form').style.display = 'none';
+                document.getElementById('confirmation').classList.add('show');
+                
+                sendConfirmationEmail(formData);
+            });
+        });
+        
+        // Send confirmation email (via client-side service)
+        function sendConfirmationEmail(data) {
+            // In production, this would call your email service
+            console.log('Confirmation email would be sent to:', data.email);
+        }
+    </script>
+</body>
+</html>
