@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Termin Buchen - M7 Digital</title>
+    <title>📞 Telefontermin - M7 Digital</title>
     <style>
         * {
             margin: 0;
@@ -119,6 +119,30 @@
             }
         }
         
+        .call-type-box {
+            background-color: #0a0a0a;
+            border: 2px solid #d4af37;
+            padding: 20px;
+            border-radius: 4px;
+            text-align: center;
+        }
+        
+        .call-type-box .icon {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+        
+        .call-type-box h3 {
+            color: #d4af37;
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+        
+        .call-type-box p {
+            color: #999;
+            font-size: 12px;
+        }
+        
         .submit-btn {
             width: 100%;
             padding: 14px;
@@ -181,6 +205,10 @@
             border-radius: 4px;
         }
         
+        .confirmation-details p {
+            margin-bottom: 8px;
+        }
+        
         .confirmation-details strong {
             color: #d4af37;
         }
@@ -207,8 +235,8 @@
         <!-- FORM -->
         <div id="booking-form">
             <div class="header">
-                <h1>M7 Digital</h1>
-                <p>Termin Buchen</p>
+                <h1>📞 M7 DIGITAL</h1>
+                <p>Telefontermin Buchen</p>
             </div>
             
             <form id="appointment-form">
@@ -248,15 +276,14 @@
                     </div>
                 </div>
                 
-                <!-- Meeting Type -->
+                <!-- Call Type (Phone Only) -->
                 <div class="form-group">
-                    <label for="meeting-type">Art des Gesprächs *</label>
-                    <select id="meeting-type" name="meeting_type" required>
-                        <option value="">-- Bitte wählen --</option>
-                        <option value="phone">Telefonanruf (30 min)</option>
-                        <option value="video">Video-Call (30 min)</option>
-                        <option value="in-person">Vor Ort (45 min)</option>
-                    </select>
+                    <label>Gesprächstyp</label>
+                    <div class="call-type-box">
+                        <div class="icon">📞</div>
+                        <h3>Telefonanruf</h3>
+                        <p>30 Minuten Strategiegespräch per Telefon</p>
+                    </div>
                 </div>
                 
                 <!-- Notes -->
@@ -266,7 +293,7 @@
                 </div>
                 
                 <!-- Submit -->
-                <button type="submit" class="submit-btn">TERMIN BESTÄTIGEN</button>
+                <button type="submit" class="submit-btn">✓ TERMIN BESTÄTIGEN</button>
                 
                 <p style="margin-top: 15px; text-align: center; font-size: 11px; color: #666;">
                     Du erhältst eine Bestätigungsmail mit allen Details.
@@ -278,14 +305,14 @@
         <div id="confirmation" class="confirmation">
             <div class="confirmation-icon">✅</div>
             <h2>Termin Bestätigt!</h2>
-            <p>Danke für deine Anmeldung. Wir haben alles erhalten und werden mich melden.</p>
+            <p>Danke für deine Anmeldung. Wir haben alles erhalten und werden dich bald kontaktieren.</p>
             
             <div class="confirmation-details">
                 <p><strong>Name:</strong> <span id="conf-name"></span></p>
                 <p><strong>Unternehmen:</strong> <span id="conf-company"></span></p>
                 <p><strong>E-Mail:</strong> <span id="conf-email"></span></p>
                 <p><strong>Termin:</strong> <span id="conf-datetime"></span></p>
-                <p><strong>Art:</strong> <span id="conf-type"></span></p>
+                <p><strong>Art:</strong> 📞 Telefonanruf (30 min)</p>
             </div>
             
             <p style="color: #d4af37; margin-top: 20px;">
@@ -298,89 +325,25 @@
         // Set minimum date to today
         document.getElementById('date').min = new Date().toISOString().split('T')[0];
         
-        // Handle form submission
         document.getElementById('appointment-form').addEventListener('submit', function(e) {
             e.preventDefault();
             
-            // Get form data
             const name = document.getElementById('name').value;
             const company = document.getElementById('company').value;
             const email = document.getElementById('email').value;
             const phone = document.getElementById('phone').value;
             const date = document.getElementById('date').value;
             const time = document.getElementById('time').value;
-            const meetingType = document.getElementById('meeting-type').value;
-            const notes = document.getElementById('notes').value;
             
-            // Format meeting type
-            const meetingTypeMap = {
-                'phone': 'Telefonanruf (30 min)',
-                'video': 'Video-Call (30 min)',
-                'in-person': 'Vor Ort (45 min)'
-            };
+            // Show confirmation
+            document.getElementById('conf-name').textContent = name;
+            document.getElementById('conf-company').textContent = company;
+            document.getElementById('conf-email').textContent = email;
+            document.getElementById('conf-datetime').textContent = `${date} um ${time} Uhr`;
             
-            // Send to server (or email service)
-            const formData = {
-                name: name,
-                company: company,
-                email: email,
-                phone: phone,
-                date: date,
-                time: time,
-                meeting_type: meetingType,
-                notes: notes,
-                timestamp: new Date().toISOString()
-            };
-            
-            // Log to console (in production, send to server)
-            console.log('Booking submitted:', formData);
-            
-            // Send via fetch to backend (you'll need to set this up)
-            fetch('https://m7digital.de/api/bookings', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(formData)
-            })
-            .then(response => response.json())
-            .then(data => {
-                // Show confirmation
-                document.getElementById('conf-name').textContent = name;
-                document.getElementById('conf-company').textContent = company;
-                document.getElementById('conf-email').textContent = email;
-                document.getElementById('conf-datetime').textContent = `${date} um ${time}`;
-                document.getElementById('conf-type').textContent = meetingTypeMap[meetingType];
-                
-                // Hide form, show confirmation
-                document.getElementById('booking-form').style.display = 'none';
-                document.getElementById('confirmation').classList.add('show');
-                
-                // Also send confirmation email
-                sendConfirmationEmail(formData);
-            })
-            .catch(error => {
-                // If server not available, still show local confirmation
-                console.log('Using local confirmation (server unavailable):', error);
-                
-                document.getElementById('conf-name').textContent = name;
-                document.getElementById('conf-company').textContent = company;
-                document.getElementById('conf-email').textContent = email;
-                document.getElementById('conf-datetime').textContent = `${date} um ${time}`;
-                document.getElementById('conf-type').textContent = meetingTypeMap[meetingType];
-                
-                document.getElementById('booking-form').style.display = 'none';
-                document.getElementById('confirmation').classList.add('show');
-                
-                sendConfirmationEmail(formData);
-            });
+            document.getElementById('booking-form').style.display = 'none';
+            document.getElementById('confirmation').classList.add('show');
         });
-        
-        // Send confirmation email (via client-side service)
-        function sendConfirmationEmail(data) {
-            // In production, this would call your email service
-            console.log('Confirmation email would be sent to:', data.email);
-        }
     </script>
 </body>
 </html>
