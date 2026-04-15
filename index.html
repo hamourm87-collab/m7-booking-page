@@ -246,7 +246,7 @@
             
             <div id="error-message" class="error"></div>
             
-            <form id="appointment-form" action="https://formspree.io/f/mzdydpyp" method="POST">
+            <form id="appointment-form">
                 <!-- Name -->
                 <div class="form-group">
                     <label for="name">Name *</label>
@@ -361,8 +361,8 @@
             submitBtn.textContent = '⏳ Wird gesendet...';
             
             try {
-                // Send to Formspree
-                const response = await fetch('https://formspree.io/f/mzdydpyp', {
+                // Send directly to M7 webhook server
+                const response = await fetch('http://187.124.182.61:5000/webhook', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -376,7 +376,7 @@
                         date: date,
                         time: time,
                         notes: notes,
-                        call_type: 'phone',
+                        country: 'DE',
                         timestamp: new Date().toISOString()
                     })
                 });
