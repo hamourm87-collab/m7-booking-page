@@ -1,0 +1,9 @@
+[build]
+  functions = "netlify/functions"
+  publish = "."
+
+[[redirects]]
+  from = "/api/booking"
+  to = "/.netlify/functions/booking"
+  status = 200
+  force = false

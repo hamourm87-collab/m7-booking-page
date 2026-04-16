@@ -1,0 +1,16 @@
+{
+  "name": "m7-booking-page",
+  "version": "1.0.0",
+  "description": "M7 Digital Booking Page with Netlify Functions",
+  "main": "index.html",
+  "scripts": {
+    "start": "netlify dev",
+    "deploy": "netlify deploy --prod"
+  },
+  "dependencies": {
+    "telegraf": "^4.12.0"
+  },
+  "devDependencies": {
+    "netlify-cli": "latest"
+  }
+}
