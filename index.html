@@ -361,8 +361,8 @@
             submitBtn.textContent = '⏳ Wird gesendet...';
             
             try {
-                // Send directly to M7 webhook server
-                const response = await fetch('http://187.124.182.61:5000/webhook', {
+                // Send directly to M7 HTTPS server
+                const response = await fetch('https://187.124.182.61/webhook', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
