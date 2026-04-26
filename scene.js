@@ -44,7 +44,7 @@ const comp = new EffectComposer(R);
 comp.addPass(new RenderPass(scene, cam));
 const bloom = new UnrealBloomPass(
     new THREE.Vector2(window.innerWidth, window.innerHeight),
-    mobile ? 0.7 : 1.1, 0.4, 0.25
+    mobile ? 0.25 : 0.35, 0.3, 0.85
 );
 comp.addPass(bloom);
 
@@ -68,16 +68,16 @@ const P = {
 
 // ─── LIGHTS ───
 scene.add(new THREE.AmbientLight(0x0a0e14, 2.5));
-const keyLight = new THREE.PointLight(P.blue, 4, 25);
+const keyLight = new THREE.PointLight(P.blue, 1.5, 20);
 keyLight.position.set(3, 4, 6);
 scene.add(keyLight);
-const fillLight = new THREE.PointLight(P.cyan, 2.5, 20);
+const fillLight = new THREE.PointLight(P.cyan, 0.8, 15);
 fillLight.position.set(-3, -2, 5);
 scene.add(fillLight);
-const rimLight = new THREE.PointLight(P.gold, 2, 15);
+const rimLight = new THREE.PointLight(P.gold, 0.6, 12);
 rimLight.position.set(0, 3, -3);
 scene.add(rimLight);
-const orbLight = new THREE.PointLight(P.lime, 1.5, 12);
+const orbLight = new THREE.PointLight(P.lime, 0.4, 10);
 scene.add(orbLight);
 
 // ─── M7 INFINITY LOGO (Procedural) ───
@@ -157,9 +157,9 @@ function createJellyfish(x, y, z, scale) {
         transmission: 0.6,
         thickness: 0.5,
         emissive: P.cyan,
-        emissiveIntensity: 0.3,
+        emissiveIntensity: 0.08,
         transparent: true,
-        opacity: 0.6,
+        opacity: 0.25,
         side: THREE.DoubleSide,
     });
     const dome = new THREE.Mesh(domeGeo, domeMat);
@@ -185,7 +185,7 @@ function createJellyfish(x, y, z, scale) {
         const tentMat = new THREE.MeshBasicMaterial({
             color: P.cyan,
             transparent: true,
-            opacity: 0.25 + Math.random() * 0.15,
+            opacity: 0.08 + Math.random() * 0.06,
         });
         jg.add(new THREE.Mesh(tentGeo, tentMat));
     }
@@ -205,12 +205,8 @@ function createJellyfish(x, y, z, scale) {
 
 // Scatter jellyfish (report: "scattered everywhere, few")
 const jellyPositions = [
-    [-2.5, 1.5, -1, 0.8],
-    [3, 0.5, -2, 0.6],
-    [-1, -1.5, -3, 0.5],
-    [2, 2, -1.5, 0.7],
-    [-3, -0.5, -2.5, 0.4],
-    [1.5, -2, -1, 0.55],
+    [-3, 1.2, -2, 0.5],
+    [3.5, -0.8, -3, 0.35],
 ];
 const jellies = jellyPositions.map(p => {
     const j = createJellyfish(p[0], p[1], p[2], p[3]);
@@ -243,10 +239,10 @@ for (let i = 0; i < PC; i++) {
     pPos[i * 3] = r * Math.sin(ph) * Math.cos(th);
     pPos[i * 3 + 1] = r * Math.sin(ph) * Math.sin(th);
     pPos[i * 3 + 2] = r * Math.cos(ph);
-    pSiz[i] = Math.random() * 2.5 + 0.5;
+    pSiz[i] = Math.random() * 0.8 + 0.2;
     // Upward drift (report: 20-30px/s upward)
     pVel[i * 3] = (Math.random() - 0.5) * 0.002;
-    pVel[i * 3 + 1] = Math.random() * 0.004 + 0.001; // bias upward
+    pVel[i * 3 + 1] = Math.random() * 0.002 + 0.0005; // gentle upward
     pVel[i * 3 + 2] = (Math.random() - 0.5) * 0.002;
     const c = particleColors[Math.floor(Math.random() * particleColors.length)];
     pCol[i * 3] = c.r; pCol[i * 3 + 1] = c.g; pCol[i * 3 + 2] = c.b;
@@ -280,7 +276,7 @@ const pMat = new THREE.ShaderMaterial({
             p.xy += normalize(p.xy - uMouse*4.0 + 0.001) * rep * 0.12;
             gl_Position = projectionMatrix * modelViewMatrix * vec4(p,1.0);
             gl_PointSize = aSize * uPR * (140.0 / -mv.z);
-            vAlpha = (0.25 + sin(uTime*0.8 + length(p)*0.4)*0.12) * (1.0 - smoothstep(2.0,7.5,length(p)));
+            vAlpha = (0.06 + sin(uTime*0.8 + length(p)*0.4)*0.03) * (1.0 - smoothstep(3.0,7.5,length(p)));
             vColor = aColor;
         }
     `,
@@ -470,7 +466,7 @@ function animate() {
     else if (iridT < 3) emColor = new THREE.Color(P.lime).lerp(new THREE.Color(P.gold), iridT - 2);
     else emColor = new THREE.Color(P.gold).lerp(new THREE.Color(P.blue), iridT - 3);
     tubeMat.emissive = emColor;
-    tubeMat.emissiveIntensity = 0.25 + Math.sin(t * 1.5) * 0.1;
+    tubeMat.emissiveIntensity = 0.12 + Math.sin(t * 1.5) * 0.05;
 
     // Ring gold pulse
     ringMat.emissiveIntensity = 0.35 + Math.sin(t * 2) * 0.15;
@@ -540,7 +536,7 @@ function animate() {
     scene.fog.color.set(bgR, bgG, bgB);
 
     // Dynamic bloom (brighter during hero)
-    bloom.strength = (mobile ? 0.7 : 1.1) * (1 - scrollP * 0.4);
+    bloom.strength = (mobile ? 0.25 : 0.35) * (1 - scrollP * 0.3);
 
     comp.render();
 }
