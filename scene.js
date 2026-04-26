@@ -1,240 +1,260 @@
-/* ═══════════════════════════════════════════════
-   M7 DIGITAL — Immersive 3D Scene
-   Three.js WebGL: Diamond + Particles + Mouse
-   Interactive 360° rotation + scroll transitions
-   ═══════════════════════════════════════════════ */
-
+/* ═══════════════════════════════════════════
+   M7 DIGITAL — NEURAL SPINE 3D SCENE
+   Three.js: Spine + Neural Network + Particles
+   Interactive mouse + scroll-linked animations
+   ═══════════════════════════════════════════ */
 (function () {
     'use strict';
 
-    // ─── DETECT CAPABILITIES ───
     const isMobile = window.innerWidth < 768;
-    const isReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-    // ─── RENDERER ───
     const canvas = document.getElementById('webgl');
+
+    // ─── WEBGL CHECK ───
     let renderer;
     try {
-        renderer = new THREE.WebGLRenderer({
-            canvas,
-            antialias: !isMobile,
-            alpha: true,
-            powerPreference: 'high-performance'
-        });
+        renderer = new THREE.WebGLRenderer({ canvas, antialias: !isMobile, alpha: true, powerPreference: 'high-performance' });
     } catch (e) {
-        console.warn('WebGL not available, running without 3D');
-        // Still show the page without 3D
-        const loader = document.getElementById('loader');
-        setTimeout(() => {
-            loader.classList.add('hidden');
-            document.querySelector('.nav').classList.add('visible');
-            document.querySelector('.hero-content').style.opacity = '1';
-            document.querySelector('.scroll-hint').style.opacity = '0.6';
-            gsap.registerPlugin(ScrollTrigger);
-        }, 1500);
+        // No WebGL — still show page
+        startNoWebGL();
         return;
     }
+
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.2;
+    renderer.toneMappingExposure = 1.0;
 
-    // ─── SCENE ───
     const scene = new THREE.Scene();
-    scene.fog = new THREE.FogExp2(0x000000, 0.035);
+    scene.fog = new THREE.FogExp2(0x000000, 0.04);
 
-    // ─── CAMERA ───
-    const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 100);
-    camera.position.set(0, 0, 6);
+    const camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.1, 100);
+    camera.position.set(0, 0, 8);
 
     // ─── MOUSE ───
     const mouse = { x: 0, y: 0, tx: 0, ty: 0 };
-    const mouseWorld = new THREE.Vector2();
-
     document.addEventListener('mousemove', (e) => {
         mouse.tx = (e.clientX / window.innerWidth) * 2 - 1;
         mouse.ty = -(e.clientY / window.innerHeight) * 2 + 1;
-        // Update custom cursor
-        const cursor = document.getElementById('cursor');
-        if (cursor) {
-            cursor.style.transform = `translate(${e.clientX}px, ${e.clientY}px)`;
-        }
+        const cur = document.getElementById('cursor');
+        if (cur) cur.style.transform = `translate(${e.clientX}px,${e.clientY}px)`;
     });
-
     document.addEventListener('touchmove', (e) => {
         mouse.tx = (e.touches[0].clientX / window.innerWidth) * 2 - 1;
         mouse.ty = -(e.touches[0].clientY / window.innerHeight) * 2 + 1;
     });
-
-    // Cursor hover effects
     document.addEventListener('mouseover', (e) => {
-        const cursor = document.getElementById('cursor');
-        if (!cursor) return;
-        const t = e.target;
-        if (t.matches('a, button, select, input, .cta-primary, .cd.avail, .ts, .cal-btn')) {
-            cursor.classList.add('hover');
-        } else {
-            cursor.classList.remove('hover');
-        }
+        const cur = document.getElementById('cursor');
+        if (!cur) return;
+        cur.classList.toggle('hover', e.target.matches('a,button,select,input,.cd.a,.ts'));
     });
 
     // ─── LIGHTS ───
-    const ambientLight = new THREE.AmbientLight(0x222222, 1);
-    scene.add(ambientLight);
+    scene.add(new THREE.AmbientLight(0x111122, 1.5));
 
-    // Gold point light
-    const goldLight = new THREE.PointLight(0xC9A96E, 3, 20);
-    goldLight.position.set(2, 3, 4);
-    scene.add(goldLight);
+    const cyanLight = new THREE.PointLight(0x00f0ff, 3, 20);
+    cyanLight.position.set(3, 4, 5);
+    scene.add(cyanLight);
 
-    // White rim light
-    const rimLight = new THREE.PointLight(0xffffff, 1.5, 15);
-    rimLight.position.set(-3, -2, 3);
-    scene.add(rimLight);
+    const purpleLight = new THREE.PointLight(0xa855f7, 2.5, 18);
+    purpleLight.position.set(-3, -2, 4);
+    scene.add(purpleLight);
 
-    // Moving accent light
-    const accentLight = new THREE.PointLight(0xE8C87E, 2, 12);
-    scene.add(accentLight);
+    const pinkLight = new THREE.PointLight(0xec4899, 2, 15);
+    pinkLight.position.set(0, 0, 6);
+    scene.add(pinkLight);
 
-    // ─── DIAMOND (Central 3D Object) ───
-    // Octahedron = diamond shape
-    const diamondGeo = new THREE.OctahedronGeometry(1, 0);
-    const diamondMat = new THREE.MeshPhysicalMaterial({
-        color: 0xC9A96E,
-        metalness: 0.95,
-        roughness: 0.05,
-        clearcoat: 1.0,
-        clearcoatRoughness: 0.1,
-        emissive: 0xC9A96E,
-        emissiveIntensity: 0.2,
-        transparent: true,
-        opacity: 0.85,
-    });
-    const diamond = new THREE.Mesh(diamondGeo, diamondMat);
-    scene.add(diamond);
+    const movingLight = new THREE.PointLight(0x3b82f6, 2, 12);
+    scene.add(movingLight);
 
-    // Diamond wireframe overlay
-    const wireGeo = new THREE.OctahedronGeometry(1.02, 0);
-    const wireMat = new THREE.MeshBasicMaterial({
-        color: 0xC9A96E,
-        wireframe: true,
-        transparent: true,
-        opacity: 0.3,
-    });
-    const wireframe = new THREE.Mesh(wireGeo, wireMat);
-    scene.add(wireframe);
+    // ─── SPINE (Central Column) ───
+    const spineGroup = new THREE.Group();
+    scene.add(spineGroup);
 
-    // ─── INNER GLOW SPHERE ───
-    const glowGeo = new THREE.SphereGeometry(0.4, 16, 16);
-    const glowMat = new THREE.MeshBasicMaterial({
-        color: 0xE8C87E,
-        transparent: true,
-        opacity: 0.4,
-    });
-    const glowSphere = new THREE.Mesh(glowGeo, glowMat);
-    scene.add(glowSphere);
+    const VERTEBRAE = 16;
+    const SPINE_HEIGHT = 6;
+    const vertebrae = [];
 
-    // ─── ORBIT RINGS ───
-    const rings = [];
-    for (let i = 0; i < 3; i++) {
-        const ringGeo = new THREE.TorusGeometry(1.6 + i * 0.5, 0.005, 8, 100);
-        const ringMat = new THREE.MeshBasicMaterial({
-            color: 0xC9A96E,
+    for (let i = 0; i < VERTEBRAE; i++) {
+        const t = i / (VERTEBRAE - 1); // 0 to 1
+        const y = (t - 0.5) * SPINE_HEIGHT;
+        const scale = 0.15 + Math.sin(t * Math.PI) * 0.15; // larger in middle
+
+        // Vertebra body
+        const geo = new THREE.BoxGeometry(scale * 2, 0.12, scale * 1.5, 1, 1, 1);
+        const mat = new THREE.MeshStandardMaterial({
+            color: 0xffffff,
+            metalness: 0.8,
+            roughness: 0.2,
+            emissive: new THREE.Color().lerpColors(
+                new THREE.Color(0x00f0ff),
+                new THREE.Color(0xa855f7),
+                t
+            ),
+            emissiveIntensity: 0.3,
             transparent: true,
-            opacity: 0.12 - i * 0.03,
+            opacity: 0.85,
         });
-        const ring = new THREE.Mesh(ringGeo, ringMat);
-        ring.rotation.x = Math.PI / 2 + i * 0.3;
-        ring.rotation.y = i * 0.5;
-        scene.add(ring);
-        rings.push(ring);
+        const mesh = new THREE.Mesh(geo, mat);
+        mesh.position.y = y;
+        mesh.rotation.y = t * 0.3; // slight twist
+        spineGroup.add(mesh);
+
+        // Disc between vertebrae
+        if (i < VERTEBRAE - 1) {
+            const discGeo = new THREE.CylinderGeometry(scale * 0.6, scale * 0.6, 0.06, 8);
+            const discMat = new THREE.MeshBasicMaterial({
+                color: 0x00f0ff,
+                transparent: true,
+                opacity: 0.2,
+            });
+            const disc = new THREE.Mesh(discGeo, discMat);
+            disc.position.y = y + SPINE_HEIGHT / (VERTEBRAE - 1) * 0.5;
+            spineGroup.add(disc);
+        }
+
+        vertebrae.push({ mesh, t, baseY: y });
     }
 
-    // ─── PARTICLE SYSTEM ───
-    const PARTICLE_COUNT = isMobile ? 800 : 3000;
-    const particleGeo = new THREE.BufferGeometry();
-    const positions = new Float32Array(PARTICLE_COUNT * 3);
-    const velocities = new Float32Array(PARTICLE_COUNT * 3);
-    const sizes = new Float32Array(PARTICLE_COUNT);
-    const alphas = new Float32Array(PARTICLE_COUNT);
+    // Spine cord (central line)
+    const cordGeo = new THREE.CylinderGeometry(0.02, 0.02, SPINE_HEIGHT * 1.1, 8);
+    const cordMat = new THREE.MeshBasicMaterial({ color: 0x00f0ff, transparent: true, opacity: 0.25 });
+    const cord = new THREE.Mesh(cordGeo, cordMat);
+    spineGroup.add(cord);
 
-    for (let i = 0; i < PARTICLE_COUNT; i++) {
-        // Sphere distribution
-        const r = 2 + Math.random() * 6;
+    // ─── NEURAL NETWORK ───
+    const neuralGroup = new THREE.Group();
+    scene.add(neuralGroup);
+
+    const NODES = isMobile ? 30 : 60;
+    const nodes = [];
+    const nodePositions = [];
+
+    for (let i = 0; i < NODES; i++) {
+        const angle = Math.random() * Math.PI * 2;
+        const radius = 1.2 + Math.random() * 2.5;
+        const y = (Math.random() - 0.5) * SPINE_HEIGHT;
+
+        const x = Math.cos(angle) * radius;
+        const z = Math.sin(angle) * radius;
+
+        // Node sphere
+        const size = 0.03 + Math.random() * 0.05;
+        const colors = [0x00f0ff, 0xa855f7, 0xec4899, 0x3b82f6];
+        const color = colors[Math.floor(Math.random() * colors.length)];
+
+        const geo = new THREE.SphereGeometry(size, 8, 8);
+        const mat = new THREE.MeshBasicMaterial({
+            color,
+            transparent: true,
+            opacity: 0.6 + Math.random() * 0.4,
+        });
+        const node = new THREE.Mesh(geo, mat);
+        node.position.set(x, y, z);
+        neuralGroup.add(node);
+
+        nodes.push({ mesh: node, basePos: new THREE.Vector3(x, y, z), speed: 0.3 + Math.random() * 0.7, phase: Math.random() * Math.PI * 2 });
+        nodePositions.push(new THREE.Vector3(x, y, z));
+    }
+
+    // Neural connections (lines between close nodes)
+    const lineGeo = new THREE.BufferGeometry();
+    const linePositions = [];
+    const lineColors = [];
+    const connections = [];
+
+    for (let i = 0; i < NODES; i++) {
+        for (let j = i + 1; j < NODES; j++) {
+            const dist = nodePositions[i].distanceTo(nodePositions[j]);
+            if (dist < 1.5) {
+                connections.push([i, j]);
+                // positions will be updated each frame
+                linePositions.push(0, 0, 0, 0, 0, 0);
+                // color gradient
+                const c1 = new THREE.Color(0x00f0ff);
+                const c2 = new THREE.Color(0xa855f7);
+                lineColors.push(c1.r, c1.g, c1.b, c2.r, c2.g, c2.b);
+            }
+        }
+    }
+
+    lineGeo.setAttribute('position', new THREE.Float32BufferAttribute(linePositions, 3));
+    lineGeo.setAttribute('color', new THREE.Float32BufferAttribute(lineColors, 3));
+
+    const lineMat = new THREE.LineBasicMaterial({
+        vertexColors: true,
+        transparent: true,
+        opacity: 0.15,
+        blending: THREE.AdditiveBlending,
+    });
+    const linesMesh = new THREE.LineSegments(lineGeo, lineMat);
+    neuralGroup.add(linesMesh);
+
+    // ─── PARTICLES ───
+    const PCOUNT = isMobile ? 600 : 2500;
+    const pGeo = new THREE.BufferGeometry();
+    const pPos = new Float32Array(PCOUNT * 3);
+    const pSizes = new Float32Array(PCOUNT);
+    const pVel = new Float32Array(PCOUNT * 3);
+
+    for (let i = 0; i < PCOUNT; i++) {
+        const r = 1 + Math.random() * 7;
         const theta = Math.random() * Math.PI * 2;
         const phi = Math.acos(2 * Math.random() - 1);
-
-        positions[i * 3] = r * Math.sin(phi) * Math.cos(theta);
-        positions[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
-        positions[i * 3 + 2] = r * Math.cos(phi);
-
-        velocities[i * 3] = (Math.random() - 0.5) * 0.002;
-        velocities[i * 3 + 1] = (Math.random() - 0.5) * 0.002;
-        velocities[i * 3 + 2] = (Math.random() - 0.5) * 0.002;
-
-        sizes[i] = Math.random() * 3 + 0.5;
-        alphas[i] = Math.random() * 0.6 + 0.1;
+        pPos[i * 3] = r * Math.sin(phi) * Math.cos(theta);
+        pPos[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
+        pPos[i * 3 + 2] = r * Math.cos(phi);
+        pSizes[i] = Math.random() * 2 + 0.5;
+        pVel[i * 3] = (Math.random() - 0.5) * 0.003;
+        pVel[i * 3 + 1] = (Math.random() - 0.5) * 0.003;
+        pVel[i * 3 + 2] = (Math.random() - 0.5) * 0.003;
     }
 
-    particleGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-    particleGeo.setAttribute('aSize', new THREE.BufferAttribute(sizes, 1));
-    particleGeo.setAttribute('aAlpha', new THREE.BufferAttribute(alphas, 1));
+    pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
+    pGeo.setAttribute('aSize', new THREE.BufferAttribute(pSizes, 1));
 
-    // Custom shader for particles
-    const particleMat = new THREE.ShaderMaterial({
+    const pMat = new THREE.ShaderMaterial({
         uniforms: {
             uTime: { value: 0 },
-            uMouse: { value: new THREE.Vector2(0, 0) },
-            uColor1: { value: new THREE.Color(0xC9A96E) },
-            uColor2: { value: new THREE.Color(0xffffff) },
+            uMouse: { value: new THREE.Vector2() },
             uPixelRatio: { value: renderer.getPixelRatio() },
         },
         vertexShader: `
             attribute float aSize;
-            attribute float aAlpha;
             uniform float uTime;
             uniform vec2 uMouse;
             uniform float uPixelRatio;
             varying float vAlpha;
-
+            varying float vDist;
             void main() {
                 vec3 pos = position;
-
-                // Gentle float
-                pos.x += sin(uTime * 0.3 + position.y * 2.0) * 0.05;
-                pos.y += cos(uTime * 0.2 + position.x * 2.0) * 0.05;
-                pos.z += sin(uTime * 0.25 + position.z * 1.5) * 0.03;
-
-                // Mouse repulsion
-                vec4 mvPos = modelViewMatrix * vec4(pos, 1.0);
-                float distToMouse = length(vec2(mvPos.x - uMouse.x * 3.0, mvPos.y - uMouse.y * 3.0));
-                float repel = smoothstep(2.0, 0.0, distToMouse) * 0.5;
-                pos.x += (pos.x - uMouse.x * 3.0) * repel * 0.1;
-                pos.y += (pos.y - uMouse.y * 3.0) * repel * 0.1;
-
-                vec4 finalPos = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
-                gl_Position = finalPos;
-                gl_PointSize = aSize * uPixelRatio * (200.0 / -mvPos.z);
-
-                vAlpha = aAlpha * (1.0 - smoothstep(3.0, 8.0, length(pos)));
+                pos.x += sin(uTime*0.3 + position.y*2.0)*0.08;
+                pos.y += cos(uTime*0.25 + position.x*1.5)*0.06;
+                vec4 mv = modelViewMatrix * vec4(pos,1.0);
+                float d = length(vec2(mv.x-uMouse.x*4.0, mv.y-uMouse.y*4.0));
+                float repel = smoothstep(2.5,0.0,d)*0.4;
+                pos.x += (pos.x-uMouse.x*4.0)*repel*0.08;
+                pos.y += (pos.y-uMouse.y*4.0)*repel*0.08;
+                gl_Position = projectionMatrix * modelViewMatrix * vec4(pos,1.0);
+                gl_PointSize = aSize * uPixelRatio * (180.0 / -mv.z);
+                vAlpha = 0.4 * (1.0 - smoothstep(2.0,8.0,length(pos)));
+                vDist = length(pos);
             }
         `,
         fragmentShader: `
-            uniform vec3 uColor1;
-            uniform vec3 uColor2;
             uniform float uTime;
             varying float vAlpha;
-
+            varying float vDist;
             void main() {
                 float d = length(gl_PointCoord - vec2(0.5));
-                if (d > 0.5) discard;
-
-                float glow = 1.0 - smoothstep(0.0, 0.5, d);
-                glow = pow(glow, 2.0);
-
-                vec3 color = mix(uColor1, uColor2, sin(uTime + gl_PointCoord.x * 3.0) * 0.5 + 0.5);
-
-                gl_FragColor = vec4(color, vAlpha * glow);
+                if(d>0.5) discard;
+                float glow = pow(1.0-smoothstep(0.0,0.5,d), 2.0);
+                // Color shift based on distance
+                vec3 cyan = vec3(0.0, 0.94, 1.0);
+                vec3 purple = vec3(0.66, 0.33, 0.97);
+                vec3 pink = vec3(0.93, 0.28, 0.6);
+                float t = sin(uTime*0.5 + vDist*0.5)*0.5+0.5;
+                vec3 col = mix(cyan, mix(purple,pink,t), t);
+                gl_FragColor = vec4(col, vAlpha*glow);
             }
         `,
         transparent: true,
@@ -242,200 +262,110 @@
         blending: THREE.AdditiveBlending,
     });
 
-    const particles = new THREE.Points(particleGeo, particleMat);
-    scene.add(particles);
+    const particlesMesh = new THREE.Points(pGeo, pMat);
+    scene.add(particlesMesh);
 
-    // ─── FLOATING MINI DIAMONDS ───
-    const miniDiamonds = [];
-    for (let i = 0; i < 8; i++) {
-        const size = 0.05 + Math.random() * 0.08;
-        const geo = new THREE.OctahedronGeometry(size, 0);
-        const mat = new THREE.MeshBasicMaterial({
-            color: 0xC9A96E,
-            wireframe: true,
-            transparent: true,
-            opacity: 0.3 + Math.random() * 0.3,
-        });
-        const mini = new THREE.Mesh(geo, mat);
-        const angle = (i / 8) * Math.PI * 2;
-        const radius = 2 + Math.random() * 1.5;
-        mini.position.set(
-            Math.cos(angle) * radius,
-            (Math.random() - 0.5) * 2,
-            Math.sin(angle) * radius
-        );
-        mini.userData = { angle, radius, speed: 0.1 + Math.random() * 0.2, yOffset: Math.random() * Math.PI * 2 };
-        scene.add(mini);
-        miniDiamonds.push(mini);
-    }
+    // ─── DRAG ROTATE ───
+    let isDrag = false, dragS = { x: 0, y: 0 }, dragR = { x: 0, y: 0 }, extraR = { x: 0, y: 0 };
+    canvas.style.pointerEvents = 'auto';
+    canvas.addEventListener('mousedown', e => { isDrag = true; dragS.x = e.clientX; dragS.y = e.clientY; });
+    canvas.addEventListener('touchstart', e => { isDrag = true; dragS.x = e.touches[0].clientX; dragS.y = e.touches[0].clientY; });
+    const onDrag = (x, y) => { if (!isDrag) return; dragR.y += (x - dragS.x) * 0.004; dragR.x += (y - dragS.y) * 0.004; dragS.x = x; dragS.y = y; };
+    canvas.addEventListener('mousemove', e => onDrag(e.clientX, e.clientY));
+    canvas.addEventListener('touchmove', e => onDrag(e.touches[0].clientX, e.touches[0].clientY));
+    window.addEventListener('mouseup', () => isDrag = false);
+    window.addEventListener('touchend', () => isDrag = false);
 
-    // ─── SCROLL STATE ───
-    let scrollProgress = 0;
-
+    // ─── SCROLL ───
+    let scrollP = 0;
     window.addEventListener('scroll', () => {
         const h = document.documentElement.scrollHeight - window.innerHeight;
-        scrollProgress = h > 0 ? window.scrollY / h : 0;
-
-        // Progress bar
-        document.getElementById('progress-bar').style.width = (scrollProgress * 100) + '%';
+        scrollP = h > 0 ? window.scrollY / h : 0;
+        document.getElementById('scroll-progress').style.width = (scrollP * 100) + '%';
     });
-
-    // ─── DRAG TO ROTATE ───
-    let isDragging = false;
-    let dragStart = { x: 0, y: 0 };
-    let extraRotation = { x: 0, y: 0 };
-    let dragRotation = { x: 0, y: 0 };
-
-    canvas.style.pointerEvents = 'auto';
-
-    canvas.addEventListener('mousedown', (e) => {
-        isDragging = true;
-        dragStart.x = e.clientX;
-        dragStart.y = e.clientY;
-    });
-    canvas.addEventListener('touchstart', (e) => {
-        isDragging = true;
-        dragStart.x = e.touches[0].clientX;
-        dragStart.y = e.touches[0].clientY;
-    });
-
-    const onDragMove = (x, y) => {
-        if (!isDragging) return;
-        dragRotation.y += (x - dragStart.x) * 0.005;
-        dragRotation.x += (y - dragStart.y) * 0.005;
-        dragStart.x = x;
-        dragStart.y = y;
-    };
-
-    canvas.addEventListener('mousemove', (e) => onDragMove(e.clientX, e.clientY));
-    canvas.addEventListener('touchmove', (e) => onDragMove(e.touches[0].clientX, e.touches[0].clientY));
-
-    window.addEventListener('mouseup', () => isDragging = false);
-    window.addEventListener('touchend', () => isDragging = false);
 
     // ─── LOADING ───
     const loader = document.getElementById('loader');
-    const loaderProgress = document.getElementById('loader-progress');
-    const loaderText = document.getElementById('loader-text');
-    let loadProgress = 0;
+    const loaderFill = document.getElementById('loader-fill');
+    let loadP = 0;
 
-    function simulateLoading() {
-        const steps = ['INITIALIZING', 'LOADING ASSETS', 'BUILDING SCENE', 'READY'];
-        const interval = setInterval(() => {
-            loadProgress += Math.random() * 25 + 10;
-            if (loadProgress >= 100) {
-                loadProgress = 100;
-                clearInterval(interval);
-                loaderText.textContent = steps[3];
-                loaderProgress.style.width = '100%';
+    function runLoader() {
+        const iv = setInterval(() => {
+            loadP += Math.random() * 20 + 15;
+            if (loadP >= 100) {
+                loadP = 100;
+                clearInterval(iv);
+                loaderFill.style.width = '100%';
                 setTimeout(() => {
-                    loader.classList.add('hidden');
-                    document.querySelector('.nav').classList.add('visible');
-                    animateHeroEntrance();
-                }, 600);
+                    loader.classList.add('gone');
+                    enterHero();
+                }, 500);
                 return;
             }
-            const stepIdx = Math.min(Math.floor(loadProgress / 33), 2);
-            loaderText.textContent = steps[stepIdx];
-            loaderProgress.style.width = loadProgress + '%';
+            loaderFill.style.width = loadP + '%';
         }, 200);
     }
 
-    // ─── HERO ENTRANCE ANIMATION ───
-    function animateHeroEntrance() {
-        const heroContent = document.querySelector('.hero-content');
-        const scrollHint = document.querySelector('.scroll-hint');
-
-        gsap.to(heroContent, { opacity: 1, duration: 0.8 });
-
-        gsap.from('.hero-badge', { y: 30, opacity: 0, duration: 0.8, delay: 0.3 });
-
-        document.querySelectorAll('.title-line').forEach((line, i) => {
-            gsap.from(line, {
-                y: 60,
-                opacity: 0,
-                duration: 0.7,
-                delay: 0.5 + i * 0.12,
-                ease: 'power3.out'
-            });
-        });
-
-        gsap.from('.hero-sub', { y: 20, opacity: 0, duration: 0.6, delay: 1.1 });
-        gsap.from('.cta-primary', { y: 20, opacity: 0, duration: 0.6, delay: 1.3 });
-        gsap.from('.scarcity-banner', { y: 20, opacity: 0, duration: 0.5, delay: 1.5 });
-        gsap.to(scrollHint, { opacity: 0.6, duration: 1, delay: 2 });
-    }
-
-    // ─── SCROLL ANIMATIONS (GSAP) ───
-    function setupScrollAnimations() {
+    function enterHero() {
         gsap.registerPlugin(ScrollTrigger);
 
-        // Proof section
-        gsap.from('.proof-headline', {
-            scrollTrigger: { trigger: '.proof', start: 'top 75%' },
-            y: 40, opacity: 0, duration: 0.8
-        });
+        // Logo entrance
+        gsap.to('.logo-wrap', { opacity: 1, scale: 1, duration: 1.2, ease: 'power3.out' });
+        gsap.to('.scroll-cue', { opacity: 0.5, duration: 1, delay: 1.5 });
 
-        document.querySelectorAll('.proof-card').forEach((card, i) => {
-            gsap.from(card, {
-                scrollTrigger: { trigger: card, start: 'top 85%' },
-                y: 50, opacity: 0, duration: 0.7, delay: i * 0.1,
-                onComplete: () => {
-                    const numEl = card.querySelector('.proof-number');
-                    if (numEl) animateNum(numEl, parseInt(numEl.dataset.target));
-                }
-            });
-        });
-
-        gsap.from('.filter-title', {
-            scrollTrigger: { trigger: '.filter-block', start: 'top 80%' },
-            y: 30, opacity: 0, duration: 0.7
-        });
-
-        document.querySelectorAll('.filter-item').forEach((item, i) => {
-            gsap.from(item, {
-                scrollTrigger: { trigger: item, start: 'top 88%' },
-                x: -30, opacity: 0, duration: 0.5, delay: i * 0.1
-            });
-        });
-
-        gsap.from('.filter-end', {
-            scrollTrigger: { trigger: '.filter-end', start: 'top 90%' },
-            y: 20, opacity: 0, duration: 0.5
-        });
-
-        // Hide scroll hint
+        // Show nav on scroll
         ScrollTrigger.create({
-            trigger: '.proof',
-            start: 'top 90%',
-            onEnter: () => gsap.to('.scroll-hint', { opacity: 0, duration: 0.3 })
+            start: 200,
+            onUpdate: (self) => {
+                document.getElementById('nav').classList.toggle('show', self.scroll() > 200);
+            }
         });
 
-        // Nav active states
-        document.querySelectorAll('.section').forEach(sec => {
+        // Hide scroll cue
+        ScrollTrigger.create({ trigger: '.s-tagline', start: 'top 90%', onEnter: () => gsap.to('.scroll-cue', { opacity: 0, duration: 0.3 }) });
+
+        // Tagline
+        gsap.utils.toArray('.tag-line').forEach((line, i) => {
+            gsap.to(line, { scrollTrigger: { trigger: line, start: 'top 82%' }, opacity: 1, y: 0, duration: 0.8, delay: i * 0.12, ease: 'power3.out' });
+        });
+
+        // About
+        gsap.to('.about-text', { scrollTrigger: { trigger: '.about-text', start: 'top 80%' }, opacity: 1, y: 0, duration: 0.8 });
+        gsap.utils.toArray('.stat').forEach((s, i) => {
+            gsap.to(s, { scrollTrigger: { trigger: s, start: 'top 85%' }, opacity: 1, y: 0, duration: 0.7, delay: i * 0.1, onComplete: () => {
+                const n = s.querySelector('.stat-num');
+                if (n) animNum(n, +n.dataset.target);
+            }});
+        });
+
+        // Filter
+        gsap.to('.filter-title', { scrollTrigger: { trigger: '.filter-title', start: 'top 80%' }, opacity: 1, y: 0, duration: 0.7 });
+        gsap.utils.toArray('.fi').forEach((f, i) => {
+            gsap.to(f, { scrollTrigger: { trigger: f, start: 'top 88%' }, opacity: 1, x: 0, duration: 0.5, delay: i * 0.1 });
+        });
+        gsap.to('.filter-end', { scrollTrigger: { trigger: '.filter-end', start: 'top 90%' }, opacity: 1, y: 0, duration: 0.5 });
+
+        // Nav active
+        document.querySelectorAll('.s[data-s]').forEach(sec => {
             ScrollTrigger.create({
                 trigger: sec,
                 start: 'top center',
                 end: 'bottom center',
-                onEnter: () => updateNav(sec.dataset.section),
-                onEnterBack: () => updateNav(sec.dataset.section),
+                onEnter: () => setNav(sec.dataset.s),
+                onEnterBack: () => setNav(sec.dataset.s),
             });
         });
     }
 
-    function updateNav(idx) {
-        document.querySelectorAll('.nav-link').forEach(l => {
-            l.classList.toggle('active', l.dataset.section === idx);
-        });
+    function setNav(idx) {
+        document.querySelectorAll('.nav-link').forEach(l => l.classList.toggle('active', l.dataset.s === idx));
     }
 
-    function animateNum(el, target) {
-        const dur = 1200;
-        const start = performance.now();
+    function animNum(el, target) {
+        const dur = 1200, start = performance.now();
         (function tick(now) {
             const t = Math.min((now - start) / dur, 1);
-            const eased = 1 - Math.pow(1 - t, 3);
-            el.textContent = Math.round(eased * target);
+            el.textContent = Math.round((1 - Math.pow(1 - t, 3)) * target);
             if (t < 1) requestAnimationFrame(tick);
         })(start);
     }
@@ -445,88 +375,86 @@
 
     function animate() {
         requestAnimationFrame(animate);
-
         const t = clock.getElapsedTime();
-        const dt = clock.getDelta();
 
         // Smooth mouse
         mouse.x += (mouse.tx - mouse.x) * 0.05;
         mouse.y += (mouse.ty - mouse.y) * 0.05;
 
-        // Update shader uniforms
-        particleMat.uniforms.uTime.value = t;
-        particleMat.uniforms.uMouse.value.set(mouse.x, mouse.y);
+        // Particle uniforms
+        pMat.uniforms.uTime.value = t;
+        pMat.uniforms.uMouse.value.set(mouse.x, mouse.y);
 
-        // Diamond rotation (auto + mouse + drag)
-        const autoRotY = t * 0.3;
-        const autoRotX = Math.sin(t * 0.2) * 0.15;
+        // Drag rotation
+        extraR.x += (dragR.x - extraR.x) * 0.08;
+        extraR.y += (dragR.y - extraR.y) * 0.08;
 
-        extraRotation.x += (dragRotation.x - extraRotation.x) * 0.1;
-        extraRotation.y += (dragRotation.y - extraRotation.y) * 0.1;
+        // Spine rotation
+        spineGroup.rotation.y = t * 0.15 + mouse.x * 0.4 + extraR.y;
+        spineGroup.rotation.x = Math.sin(t * 0.1) * 0.1 + mouse.y * 0.2 + extraR.x;
 
-        diamond.rotation.y = autoRotY + mouse.x * 0.5 + extraRotation.y;
-        diamond.rotation.x = autoRotX + mouse.y * 0.3 + extraRotation.x;
-
-        wireframe.rotation.copy(diamond.rotation);
-
-        // Diamond scale with scroll
-        const diamondScale = 1 - scrollProgress * 0.3;
-        diamond.scale.setScalar(diamondScale);
-        wireframe.scale.setScalar(diamondScale);
-
-        // Glow sphere
-        glowSphere.scale.setScalar(0.9 + Math.sin(t * 2) * 0.1);
-        glowSphere.material.opacity = 0.3 + Math.sin(t * 1.5) * 0.1;
-
-        // Rings rotation
-        rings.forEach((ring, i) => {
-            ring.rotation.z = t * (0.1 + i * 0.05);
-            ring.rotation.x = Math.PI / 2 + i * 0.3 + Math.sin(t * 0.3 + i) * 0.1;
+        // Vertebrae individual animation
+        vertebrae.forEach(v => {
+            v.mesh.rotation.y = Math.sin(t * 0.5 + v.t * Math.PI * 2) * 0.2;
+            v.mesh.position.y = v.baseY + Math.sin(t * 0.8 + v.t * 4) * 0.03;
+            // Pulse emissive
+            v.mesh.material.emissiveIntensity = 0.2 + Math.sin(t * 1.5 + v.t * 5) * 0.1;
         });
 
-        // Mini diamonds orbit
-        miniDiamonds.forEach(m => {
-            const d = m.userData;
-            d.angle += d.speed * 0.01;
-            m.position.x = Math.cos(d.angle) * d.radius;
-            m.position.z = Math.sin(d.angle) * d.radius;
-            m.position.y = Math.sin(t * d.speed + d.yOffset) * 0.8;
-            m.rotation.x = t * d.speed;
-            m.rotation.y = t * d.speed * 0.7;
+        // Neural network follows spine
+        neuralGroup.rotation.y = spineGroup.rotation.y * 0.6;
+        neuralGroup.rotation.x = spineGroup.rotation.x * 0.4;
+
+        // Animate nodes
+        nodes.forEach(n => {
+            n.mesh.position.x = n.basePos.x + Math.sin(t * n.speed + n.phase) * 0.15;
+            n.mesh.position.y = n.basePos.y + Math.cos(t * n.speed * 0.7 + n.phase) * 0.1;
+            n.mesh.position.z = n.basePos.z + Math.sin(t * n.speed * 0.5 + n.phase * 2) * 0.1;
         });
 
-        // Accent light orbits
-        accentLight.position.x = Math.sin(t * 0.5) * 4;
-        accentLight.position.y = Math.cos(t * 0.3) * 2;
-        accentLight.position.z = Math.cos(t * 0.5) * 4;
+        // Update connection lines
+        const lp = linesMesh.geometry.attributes.position.array;
+        for (let i = 0; i < connections.length; i++) {
+            const [a, b] = connections[i];
+            lp[i * 6] = nodes[a].mesh.position.x;
+            lp[i * 6 + 1] = nodes[a].mesh.position.y;
+            lp[i * 6 + 2] = nodes[a].mesh.position.z;
+            lp[i * 6 + 3] = nodes[b].mesh.position.x;
+            lp[i * 6 + 4] = nodes[b].mesh.position.y;
+            lp[i * 6 + 5] = nodes[b].mesh.position.z;
+        }
+        linesMesh.geometry.attributes.position.needsUpdate = true;
 
         // Particle drift
-        const pos = particleGeo.attributes.position.array;
-        for (let i = 0; i < PARTICLE_COUNT; i++) {
-            pos[i * 3] += velocities[i * 3];
-            pos[i * 3 + 1] += velocities[i * 3 + 1];
-            pos[i * 3 + 2] += velocities[i * 3 + 2];
-
-            // Wrap particles
-            const dist = Math.sqrt(pos[i*3]**2 + pos[i*3+1]**2 + pos[i*3+2]**2);
-            if (dist > 8) {
-                const r = 2 + Math.random() * 2;
+        for (let i = 0; i < PCOUNT; i++) {
+            pPos[i * 3] += pVel[i * 3];
+            pPos[i * 3 + 1] += pVel[i * 3 + 1];
+            pPos[i * 3 + 2] += pVel[i * 3 + 2];
+            const d = Math.sqrt(pPos[i*3]**2 + pPos[i*3+1]**2 + pPos[i*3+2]**2);
+            if (d > 8) {
+                const r = 1.5 + Math.random() * 2;
                 const th = Math.random() * Math.PI * 2;
                 const ph = Math.acos(2 * Math.random() - 1);
-                pos[i * 3] = r * Math.sin(ph) * Math.cos(th);
-                pos[i * 3 + 1] = r * Math.sin(ph) * Math.sin(th);
-                pos[i * 3 + 2] = r * Math.cos(ph);
+                pPos[i * 3] = r * Math.sin(ph) * Math.cos(th);
+                pPos[i * 3 + 1] = r * Math.sin(ph) * Math.sin(th);
+                pPos[i * 3 + 2] = r * Math.cos(ph);
             }
         }
-        particleGeo.attributes.position.needsUpdate = true;
+        pGeo.attributes.position.needsUpdate = true;
 
-        // Camera subtle movement
-        camera.position.x = mouse.x * 0.3;
-        camera.position.y = mouse.y * 0.2;
+        // Moving light
+        movingLight.position.set(Math.sin(t * 0.4) * 4, Math.cos(t * 0.3) * 3, Math.cos(t * 0.5) * 4);
+
+        // Camera
+        camera.position.x = mouse.x * 0.4;
+        camera.position.y = mouse.y * 0.3;
+        camera.position.z = 8 + scrollP * 3;
         camera.lookAt(0, 0, 0);
 
-        // Scroll-based camera Z
-        camera.position.z = 6 + scrollProgress * 2;
+        // Fade spine based on scroll
+        const spineOpacity = 1 - scrollP * 2;
+        spineGroup.visible = spineOpacity > 0;
+        neuralGroup.visible = spineOpacity > 0;
 
         renderer.render(scene, camera);
     }
@@ -536,12 +464,28 @@
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
         renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     });
 
-    // ─── START ───
-    simulateLoading();
-    setupScrollAnimations();
+    // ─── NO WEBGL FALLBACK ───
+    function startNoWebGL() {
+        const loader = document.getElementById('loader');
+        setTimeout(() => {
+            loader.classList.add('gone');
+            gsap.registerPlugin(ScrollTrigger);
+            gsap.to('.logo-wrap', { opacity: 1, scale: 1, duration: 1 });
+            gsap.to('.scroll-cue', { opacity: 0.5, delay: 1 });
+            // Show nav on scroll
+            ScrollTrigger.create({ start: 200, onUpdate: s => document.getElementById('nav').classList.toggle('show', s.scroll() > 200) });
+            // Taglines
+            gsap.utils.toArray('.tag-line').forEach((l, i) => {
+                gsap.to(l, { scrollTrigger: { trigger: l, start: 'top 82%' }, opacity: 1, y: 0, duration: 0.8, delay: i * 0.12 });
+            });
+            gsap.to('.about-text', { scrollTrigger: { trigger: '.about-text', start: 'top 80%' }, opacity: 1, y: 0, duration: 0.8 });
+        }, 1500);
+    }
+
+    // ─── GO ───
+    runLoader();
     animate();
 
 })();

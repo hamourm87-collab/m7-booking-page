@@ -3,21 +3,60 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>M7 Digital — Growth Systems</title>
-    <meta name="description" content="We build autonomous growth systems for serious businesses.">
+    <title>M7 Digital</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- Loading Screen -->
+
+    <!-- Loader -->
     <div id="loader">
-        <div class="loader-content">
-            <div class="loader-logo">M<span>7</span></div>
-            <div class="loader-bar"><div class="loader-progress" id="loader-progress"></div></div>
-            <div class="loader-text" id="loader-text">INITIALIZING</div>
+        <div class="loader-inner">
+            <svg class="loader-logo" viewBox="0 0 200 200" width="80" height="80">
+                <use href="#m7-icon"/>
+            </svg>
+            <div class="loader-bar"><div class="loader-fill" id="loader-fill"></div></div>
         </div>
     </div>
+
+    <!-- SVG Logo Definition -->
+    <svg style="position:absolute;width:0;height:0">
+        <defs>
+            <!-- M7 Logo: Geometric neural/spine icon -->
+            <symbol id="m7-icon" viewBox="0 0 200 200">
+                <!-- Outer hexagon ring -->
+                <polygon points="100,10 178,55 178,145 100,190 22,145 22,55" 
+                    fill="none" stroke="url(#logo-grad)" stroke-width="2" opacity="0.6"/>
+                <!-- Inner connections (neural) -->
+                <line x1="100" y1="10" x2="100" y2="190" stroke="url(#logo-grad)" stroke-width="1" opacity="0.3"/>
+                <line x1="22" y1="55" x2="178" y2="145" stroke="url(#logo-grad)" stroke-width="1" opacity="0.3"/>
+                <line x1="178" y1="55" x2="22" y2="145" stroke="url(#logo-grad)" stroke-width="1" opacity="0.3"/>
+                <!-- Center spine nodes -->
+                <circle cx="100" cy="55" r="4" fill="url(#logo-grad)"/>
+                <circle cx="100" cy="100" r="6" fill="url(#logo-grad)"/>
+                <circle cx="100" cy="145" r="4" fill="url(#logo-grad)"/>
+                <!-- Neural branches -->
+                <circle cx="65" cy="75" r="3" fill="#00f0ff" opacity="0.8"/>
+                <circle cx="135" cy="75" r="3" fill="#a855f7" opacity="0.8"/>
+                <circle cx="65" cy="125" r="3" fill="#ec4899" opacity="0.8"/>
+                <circle cx="135" cy="125" r="3" fill="#3b82f6" opacity="0.8"/>
+                <!-- Connections to center -->
+                <line x1="65" y1="75" x2="100" y2="100" stroke="#00f0ff" stroke-width="1" opacity="0.4"/>
+                <line x1="135" y1="75" x2="100" y2="100" stroke="#a855f7" stroke-width="1" opacity="0.4"/>
+                <line x1="65" y1="125" x2="100" y2="100" stroke="#ec4899" stroke-width="1" opacity="0.4"/>
+                <line x1="135" y1="125" x2="100" y2="100" stroke="#3b82f6" stroke-width="1" opacity="0.4"/>
+                <!-- M7 text -->
+                <text x="100" y="108" text-anchor="middle" font-family="Space Grotesk, sans-serif" 
+                    font-weight="700" font-size="28" fill="white" letter-spacing="2">M7</text>
+            </symbol>
+            <linearGradient id="logo-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#00f0ff"/>
+                <stop offset="50%" stop-color="#a855f7"/>
+                <stop offset="100%" stop-color="#ec4899"/>
+            </linearGradient>
+        </defs>
+    </svg>
 
     <!-- WebGL Canvas -->
     <canvas id="webgl"></canvas>
@@ -25,259 +64,189 @@
     <!-- Grain -->
     <div class="grain"></div>
 
-    <!-- Custom Cursor (desktop) -->
-    <div class="cursor" id="cursor">
-        <div class="cursor-dot"></div>
-        <div class="cursor-ring"></div>
-    </div>
+    <!-- Cursor -->
+    <div class="cursor" id="cursor"><div class="cursor-dot"></div><div class="cursor-ring"></div></div>
 
-    <!-- Navigation -->
+    <!-- Nav (hidden initially) -->
     <nav class="nav" id="nav">
-        <div class="nav-logo">M<span class="gold">7</span></div>
-        <div class="nav-center">
-            <a href="#hero" class="nav-link active" data-section="0">HOME</a>
-            <a href="#proof" class="nav-link" data-section="1">RESULTS</a>
-            <a href="#booking" class="nav-link" data-section="2">BOOK</a>
+        <div class="nav-logo">
+            <svg viewBox="0 0 200 200" width="32" height="32"><use href="#m7-icon"/></svg>
         </div>
-        <div class="nav-status">
-            <span class="pulse"></span>
-            <span class="nav-status-text">ACCEPTING CLIENTS</span>
+        <div class="nav-links">
+            <a href="#intro" class="nav-link" data-s="0">HOME</a>
+            <a href="#about" class="nav-link" data-s="1">ABOUT</a>
+            <a href="#booking" class="nav-link" data-s="2">BOOK</a>
         </div>
+        <div class="nav-status"><span class="pulse"></span>ACCEPTING CLIENTS</div>
     </nav>
 
-    <!-- Progress Bar -->
-    <div class="progress-bar" id="progress-bar"></div>
+    <!-- Scroll Progress -->
+    <div class="scroll-progress" id="scroll-progress"></div>
 
-    <!-- Scroll Sections -->
-    <div class="scroll-container" id="scroll-container">
+    <!-- ═══ SECTIONS ═══ -->
 
-        <!-- SECTION 0: Hero -->
-        <section class="section hero" id="hero" data-section="0">
-            <div class="hero-content">
-                <div class="hero-badge">
-                    <span class="badge-line"></span>
-                    AUTONOMOUS GROWTH SYSTEMS
-                    <span class="badge-line"></span>
-                </div>
-                <h1 class="hero-title">
-                    <span class="title-line" data-delay="0">We don't do</span>
-                    <span class="title-line strike" data-delay="1"><em>marketing.</em></span>
-                    <span class="title-line" data-delay="2">We build <span class="gold glow">machines</span></span>
-                    <span class="title-line" data-delay="3">that <span class="gold glow">print</span> revenue.</span>
-                </h1>
-                <p class="hero-sub">For businesses ready to dominate — not experiment.</p>
-                <div class="hero-actions">
-                    <a href="#booking" class="cta-primary">
-                        <span class="cta-text">BOOK A STRATEGY CALL</span>
-                        <span class="cta-arrow">→</span>
-                        <span class="cta-shine"></span>
-                    </a>
-                </div>
-                <div class="scarcity-banner">
-                    <span class="scarcity-pulse"></span>
-                    <span>Only <strong class="gold">3 spots</strong> remaining this month</span>
-                </div>
-            </div>
-            <div class="scroll-hint">
-                <span class="scroll-text">SCROLL TO EXPLORE</span>
-                <div class="scroll-line-container">
-                    <div class="scroll-line-anim"></div>
-                </div>
-            </div>
-        </section>
+    <!-- S0: Logo Only (Full Screen) -->
+    <section class="s s-logo" id="intro" data-s="0">
+        <div class="logo-wrap" id="logo-wrap">
+            <svg class="hero-logo" viewBox="0 0 200 200" width="160" height="160">
+                <use href="#m7-icon"/>
+            </svg>
+        </div>
+        <div class="scroll-cue">
+            <span>SCROLL</span>
+            <div class="scroll-line"><div class="scroll-anim"></div></div>
+        </div>
+    </section>
 
-        <!-- SECTION 1: Proof -->
-        <section class="section proof" id="proof" data-section="1">
-            <div class="proof-content">
-                <div class="section-tag">TRACK RECORD</div>
-                <h2 class="proof-headline">Results speak.<br><span class="gold">We don't.</span></h2>
-                <div class="proof-grid">
-                    <div class="proof-card">
-                        <div class="proof-number-wrap">
-                            <span class="proof-number" data-target="340">0</span>
-                            <span class="proof-suffix">%</span>
-                        </div>
-                        <div class="proof-divider"></div>
-                        <div class="proof-label">Average Client Growth</div>
-                    </div>
-                    <div class="proof-card">
-                        <div class="proof-number-wrap">
-                            <span class="proof-number" data-target="12">0</span>
-                            <span class="proof-suffix">+</span>
-                        </div>
-                        <div class="proof-divider"></div>
-                        <div class="proof-label">Brands Scaled</div>
-                    </div>
-                    <div class="proof-card">
-                        <div class="proof-number-wrap">
-                            <span class="proof-number" data-target="3">0</span>
-                            <span class="proof-suffix">mo</span>
-                        </div>
-                        <div class="proof-divider"></div>
-                        <div class="proof-label">Average Time to ROI</div>
-                    </div>
-                    <div class="proof-card">
-                        <div class="proof-number-wrap">
-                            <span class="proof-number" data-target="97">0</span>
-                            <span class="proof-suffix">%</span>
-                        </div>
-                        <div class="proof-divider"></div>
-                        <div class="proof-label">Client Retention</div>
-                    </div>
-                </div>
+    <!-- S1: Tagline (appears on scroll) -->
+    <section class="s s-tagline" id="tagline">
+        <div class="tagline-content">
+            <div class="tag-line tl-1">We build</div>
+            <div class="tag-line tl-2"><span class="gradient-text">autonomous</span></div>
+            <div class="tag-line tl-3">growth systems.</div>
+        </div>
+    </section>
 
-                <!-- Filter -->
-                <div class="filter-block">
-                    <h3 class="filter-title">This isn't for everyone.</h3>
-                    <div class="filter-items">
-                        <div class="filter-item">
-                            <span class="filter-diamond">◆</span>
-                            <span>Businesses with real revenue</span>
-                        </div>
-                        <div class="filter-item">
-                            <span class="filter-diamond">◆</span>
-                            <span>Ready to invest in growth</span>
-                        </div>
-                        <div class="filter-item">
-                            <span class="filter-diamond">◆</span>
-                            <span>Want systems, not quick fixes</span>
-                        </div>
-                    </div>
-                    <p class="filter-end">If that's you — <span class="gold">let's talk.</span></p>
+    <!-- S2: About / Proof -->
+    <section class="s s-about" id="about" data-s="1">
+        <div class="about-content">
+            <div class="section-label">WHAT WE DO</div>
+            <p class="about-text">
+                We don't do marketing. We engineer <span class="gradient-text">intelligent systems</span> 
+                that find clients, close deals, and scale revenue — while you focus on what matters.
+            </p>
+            <div class="stats-row">
+                <div class="stat">
+                    <span class="stat-num" data-target="340">0</span><span class="stat-suffix">%</span>
+                    <span class="stat-label">Average Growth</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-num" data-target="12">0</span><span class="stat-suffix">+</span>
+                    <span class="stat-label">Brands Scaled</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-num" data-target="97">0</span><span class="stat-suffix">%</span>
+                    <span class="stat-label">Retention Rate</span>
                 </div>
             </div>
-        </section>
+        </div>
+    </section>
 
-        <!-- SECTION 2: Booking -->
-        <section class="section booking" id="booking" data-section="2">
-            <div class="booking-container">
-                <div class="section-tag">SCHEDULE</div>
-                <h2 class="booking-headline">Book Your <span class="gold">Strategy Call</span></h2>
-                <p class="booking-sub">Select your country, pick a date, and we'll handle the rest.</p>
+    <!-- S3: Filter -->
+    <section class="s s-filter" id="filter">
+        <div class="filter-content">
+            <h2 class="filter-title">This isn't for everyone.</h2>
+            <div class="filter-items">
+                <div class="fi"><span class="fi-dot"></span>Businesses with real revenue</div>
+                <div class="fi"><span class="fi-dot"></span>Ready to invest in growth</div>
+                <div class="fi"><span class="fi-dot"></span>Want systems, not quick fixes</div>
+            </div>
+            <p class="filter-end">If that's you — <span class="gradient-text">let's talk.</span></p>
+        </div>
+    </section>
 
-                <!-- Booking Steps -->
-                <div class="steps-container">
-                    <!-- Step 1 -->
-                    <div class="bstep active" id="bstep-1">
-                        <div class="bstep-header">
-                            <span class="bstep-num">01</span>
-                            <span class="bstep-title">Country</span>
-                        </div>
-                        <div class="select-wrap">
-                            <select id="country-select">
-                                <option value="" disabled selected>Select your country</option>
-                                <optgroup label="Middle East">
-                                    <option value="AE" data-region="arab">United Arab Emirates</option>
-                                    <option value="SA" data-region="arab">Saudi Arabia</option>
-                                    <option value="QA" data-region="arab">Qatar</option>
-                                    <option value="KW" data-region="arab">Kuwait</option>
-                                    <option value="BH" data-region="arab">Bahrain</option>
-                                    <option value="OM" data-region="arab">Oman</option>
-                                    <option value="JO" data-region="arab">Jordan</option>
-                                    <option value="LB" data-region="arab">Lebanon</option>
-                                    <option value="SY" data-region="arab">Syria</option>
-                                    <option value="IQ" data-region="arab">Iraq</option>
-                                    <option value="EG" data-region="arab">Egypt</option>
-                                </optgroup>
-                                <optgroup label="Europe">
-                                    <option value="DE" data-region="other">Germany</option>
-                                    <option value="FR" data-region="other">France</option>
-                                    <option value="GB" data-region="other">United Kingdom</option>
-                                    <option value="NL" data-region="other">Netherlands</option>
-                                    <option value="AT" data-region="other">Austria</option>
-                                    <option value="CH" data-region="other">Switzerland</option>
-                                </optgroup>
-                                <optgroup label="Other">
-                                    <option value="US" data-region="other">United States</option>
-                                    <option value="CA" data-region="other">Canada</option>
-                                    <option value="OTHER" data-region="other">Other</option>
-                                </optgroup>
-                            </select>
-                        </div>
-                        <div class="call-badge" id="call-badge" style="display:none">
-                            <span id="call-icon">📹</span>
-                            <span id="call-text">Video Call Available</span>
-                        </div>
+    <!-- S4: Booking -->
+    <section class="s s-booking" id="booking" data-s="2">
+        <div class="booking-wrap">
+            <div class="section-label">SCHEDULE</div>
+            <h2 class="book-title">Book Your <span class="gradient-text">Strategy Call</span></h2>
+            <p class="book-sub">Select your country, pick a date, and we'll handle the rest.</p>
+
+            <div class="steps">
+                <div class="step active" id="st-1">
+                    <div class="step-head"><span class="step-n">01</span><span class="step-t">Country</span></div>
+                    <div class="sel-wrap">
+                        <select id="country-select">
+                            <option value="" disabled selected>Select your country</option>
+                            <optgroup label="Middle East">
+                                <option value="AE" data-r="arab">United Arab Emirates</option>
+                                <option value="SA" data-r="arab">Saudi Arabia</option>
+                                <option value="QA" data-r="arab">Qatar</option>
+                                <option value="KW" data-r="arab">Kuwait</option>
+                                <option value="BH" data-r="arab">Bahrain</option>
+                                <option value="OM" data-r="arab">Oman</option>
+                                <option value="JO" data-r="arab">Jordan</option>
+                                <option value="LB" data-r="arab">Lebanon</option>
+                                <option value="SY" data-r="arab">Syria</option>
+                                <option value="IQ" data-r="arab">Iraq</option>
+                                <option value="EG" data-r="arab">Egypt</option>
+                            </optgroup>
+                            <optgroup label="Europe">
+                                <option value="DE" data-r="x">Germany</option>
+                                <option value="FR" data-r="x">France</option>
+                                <option value="GB" data-r="x">United Kingdom</option>
+                                <option value="NL" data-r="x">Netherlands</option>
+                                <option value="AT" data-r="x">Austria</option>
+                                <option value="CH" data-r="x">Switzerland</option>
+                            </optgroup>
+                            <optgroup label="Other">
+                                <option value="US" data-r="x">United States</option>
+                                <option value="CA" data-r="x">Canada</option>
+                                <option value="OTHER" data-r="x">Other</option>
+                            </optgroup>
+                        </select>
                     </div>
-
-                    <!-- Step 2 -->
-                    <div class="bstep" id="bstep-2">
-                        <div class="bstep-header">
-                            <span class="bstep-num">02</span>
-                            <span class="bstep-title">Date</span>
-                        </div>
-                        <div class="calendar">
-                            <div class="cal-nav">
-                                <button class="cal-btn" id="cal-prev">‹</button>
-                                <span class="cal-month" id="cal-month"></span>
-                                <button class="cal-btn" id="cal-next">›</button>
-                            </div>
-                            <div class="cal-weekdays">
-                                <span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span><span>Su</span>
-                            </div>
-                            <div class="cal-days" id="cal-days"></div>
-                        </div>
-                        <div class="booked-notice" id="booked-notice" style="display:none">
-                            <span class="notice-dot"></span>
-                            Fully booked until <span class="gold" id="first-date"></span>
-                        </div>
-                    </div>
-
-                    <!-- Step 3 -->
-                    <div class="bstep" id="bstep-3">
-                        <div class="bstep-header">
-                            <span class="bstep-num">03</span>
-                            <span class="bstep-title">Time <span class="tz">(CET)</span></span>
-                        </div>
-                        <div class="time-grid" id="time-grid"></div>
-                    </div>
-
-                    <!-- Step 4 -->
-                    <div class="bstep" id="bstep-4">
-                        <div class="bstep-header">
-                            <span class="bstep-num">04</span>
-                            <span class="bstep-title">Details</span>
-                        </div>
-                        <div class="form-grid">
-                            <input type="text" id="f-name" placeholder="Full Name" class="form-input" required>
-                            <input type="email" id="f-email" placeholder="Email" class="form-input" required>
-                            <input type="tel" id="f-phone" placeholder="Phone" class="form-input">
-                            <input type="text" id="f-company" placeholder="Company" class="form-input">
-                        </div>
-                        <button class="submit-btn" id="submit-btn" disabled>
-                            <span class="submit-text">CONFIRM BOOKING</span>
-                            <span class="submit-load" style="display:none"><span class="spin"></span>Processing...</span>
-                        </button>
-                    </div>
-
-                    <!-- Success -->
-                    <div class="booking-done" id="booking-done" style="display:none">
-                        <div class="done-icon">◆</div>
-                        <h3>You're in.</h3>
-                        <p>Check your email for meeting details.</p>
-                        <div class="done-details" id="done-details"></div>
+                    <div class="call-type" id="call-type" style="display:none">
+                        <span id="ct-icon">📹</span><span id="ct-text"></span>
                     </div>
                 </div>
-            </div>
-        </section>
 
-        <!-- Footer -->
-        <footer class="footer">
-            <div class="footer-line"></div>
-            <div class="footer-inner">
-                <span class="footer-logo">M<span class="gold">7</span></span>
-                <span class="footer-copy">© 2026 M7 Digital. All rights reserved.</span>
-            </div>
-        </footer>
-    </div>
+                <div class="step" id="st-2">
+                    <div class="step-head"><span class="step-n">02</span><span class="step-t">Date</span></div>
+                    <div class="cal">
+                        <div class="cal-top">
+                            <button class="cal-arr" id="cal-prev">‹</button>
+                            <span class="cal-mo" id="cal-mo"></span>
+                            <button class="cal-arr" id="cal-next">›</button>
+                        </div>
+                        <div class="cal-wk"><span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span><span>Su</span></div>
+                        <div class="cal-grid" id="cal-grid"></div>
+                    </div>
+                </div>
 
-    <!-- Three.js (must load first) -->
+                <div class="step" id="st-3">
+                    <div class="step-head"><span class="step-n">03</span><span class="step-t">Time <small>(CET)</small></span></div>
+                    <div class="time-grid" id="time-grid"></div>
+                </div>
+
+                <div class="step" id="st-4">
+                    <div class="step-head"><span class="step-n">04</span><span class="step-t">Details</span></div>
+                    <div class="form-row">
+                        <input type="text" id="f-name" placeholder="Full Name" class="fi-input">
+                        <input type="email" id="f-email" placeholder="Email" class="fi-input">
+                        <input type="tel" id="f-phone" placeholder="Phone" class="fi-input">
+                        <input type="text" id="f-company" placeholder="Company" class="fi-input">
+                    </div>
+                    <button class="go-btn" id="go-btn" disabled>
+                        <span class="go-text">CONFIRM BOOKING</span>
+                        <span class="go-load" style="display:none"><span class="spin"></span>Processing...</span>
+                    </button>
+                </div>
+
+                <div class="done" id="done" style="display:none">
+                    <div class="done-icon">✦</div>
+                    <h3>You're in.</h3>
+                    <p>Check your email for meeting details.</p>
+                    <div class="done-info" id="done-info"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="foot">
+        <div class="foot-line"></div>
+        <div class="foot-inner">
+            <svg viewBox="0 0 200 200" width="24" height="24"><use href="#m7-icon"/></svg>
+            <span>© 2026 M7 Digital</span>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
     <script src="https://unpkg.com/three@0.152.0/build/three.min.js"></script>
-    <!-- GSAP -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-    <!-- App (deferred to ensure libs loaded) -->
-    <script src="scene.js" defer></script>
-    <script src="booking.js" defer></script>
+    <script src="scene.js"></script>
+    <script src="booking.js"></script>
 </body>
 </html>
