@@ -13,12 +13,27 @@
 
     // ─── RENDERER ───
     const canvas = document.getElementById('webgl');
-    const renderer = new THREE.WebGLRenderer({
-        canvas,
-        antialias: !isMobile,
-        alpha: true,
-        powerPreference: 'high-performance'
-    });
+    let renderer;
+    try {
+        renderer = new THREE.WebGLRenderer({
+            canvas,
+            antialias: !isMobile,
+            alpha: true,
+            powerPreference: 'high-performance'
+        });
+    } catch (e) {
+        console.warn('WebGL not available, running without 3D');
+        // Still show the page without 3D
+        const loader = document.getElementById('loader');
+        setTimeout(() => {
+            loader.classList.add('hidden');
+            document.querySelector('.nav').classList.add('visible');
+            document.querySelector('.hero-content').style.opacity = '1';
+            document.querySelector('.scroll-hint').style.opacity = '0.6';
+            gsap.registerPlugin(ScrollTrigger);
+        }, 1500);
+        return;
+    }
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
