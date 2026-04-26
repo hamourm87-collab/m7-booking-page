@@ -382,14 +382,20 @@ function enterScene() {
     // About desc
     gsap.to('.ab-desc', { scrollTrigger: { trigger: '.ab-desc', start: 'top 80%' }, opacity: 1, y: 0, duration: 0.8 });
 
-    // Stat cards (easeInOutBack from report)
+    // Stat cards (report: fly in from right, rotateY 90→0, scale 0.5→1.05→1, stagger 0.2s)
     gsap.utils.toArray('.stat-card').forEach((c, i) => {
-        gsap.to(c, {
+        const tl = gsap.timeline({
             scrollTrigger: { trigger: c, start: 'top 85%' },
-            opacity: 1, y: 0, rotateY: 0, scale: 1,
-            duration: 1.2, delay: i * 0.15,
-            ease: 'back.out(1.7)',
+            delay: i * 0.2,
             onStart: () => c.classList.add('vis'),
+        });
+        tl.to(c, {
+            opacity: 1, y: 0, rotateX: 0, rotateY: 0, scale: 1.05, translateZ: 0,
+            duration: 1.2,
+            ease: 'expo.out',
+        })
+        .to(c, {
+            scale: 1, duration: 0.3, ease: 'power2.out',
             onComplete: () => { const n = c.querySelector('.ctr'); if (n) animN(n, +n.dataset.t); }
         });
     });
