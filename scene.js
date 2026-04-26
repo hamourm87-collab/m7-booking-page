@@ -31,11 +31,11 @@ R.setSize(window.innerWidth, window.innerHeight);
 R.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 R.toneMapping = THREE.ACESFilmicToneMapping;
 R.toneMappingExposure = 0.6;
-R.setClearColor(0x0a0e14, 1); // exact bg from report
+R.setClearColor(0x000000, 1); // pure black
 
 // ─── SCENE + CAMERA ───
 const scene = new THREE.Scene();
-scene.fog = new THREE.FogExp2(0x0a0e14, 0.03);
+scene.fog = new THREE.FogExp2(0x000000, 0.03);
 const cam = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 100);
 cam.position.set(0, 0, 8);
 
@@ -534,10 +534,10 @@ function animate() {
         });
     }
 
-    // Background color shift (report: #0a0e14 → #1a0a2e purple on scroll)
-    const bgR = 10 / 255 + scrollP * (26 - 10) / 255;
-    const bgG = 14 / 255 + scrollP * (10 - 14) / 255;
-    const bgB = 20 / 255 + scrollP * (46 - 20) / 255;
+    // Background: pure black → slight purple on scroll
+    const bgR = scrollP * 0.05;
+    const bgG = 0;
+    const bgB = scrollP * 0.08;
     R.setClearColor(new THREE.Color(bgR, bgG, bgB), 1);
     scene.fog.color.set(bgR, bgG, bgB);
 
