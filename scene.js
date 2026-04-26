@@ -84,10 +84,12 @@
     // ─── DIAMOND (Central 3D Object) ───
     // Octahedron = diamond shape
     const diamondGeo = new THREE.OctahedronGeometry(1, 0);
-    const diamondMat = new THREE.MeshStandardMaterial({
+    const diamondMat = new THREE.MeshPhysicalMaterial({
         color: 0xC9A96E,
         metalness: 0.95,
         roughness: 0.05,
+        clearcoat: 1.0,
+        clearcoatRoughness: 0.1,
         emissive: 0xC9A96E,
         emissiveIntensity: 0.2,
         transparent: true,
