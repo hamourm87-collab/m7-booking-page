@@ -4,234 +4,117 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>M7 Digital</title>
+    <meta name="description" content="We build autonomous growth systems for serious businesses.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <!-- Loader -->
+    <!-- ═══ LOADER ═══ -->
     <div id="loader">
         <div class="loader-inner">
-            <div class="loader-icon">M<span>7</span></div>
+            <div class="loader-mark">M<span>7</span></div>
             <div class="loader-bar"><div class="loader-fill" id="loader-fill"></div></div>
-            <div class="loader-status" id="loader-status">INITIALIZING SYSTEM</div>
+            <div class="loader-txt" id="loader-txt">INITIALIZING</div>
         </div>
     </div>
 
-    <!-- WebGL -->
-    <canvas id="webgl"></canvas>
+    <!-- ═══ WEBGL CANVAS ═══ -->
+    <canvas id="c"></canvas>
 
-    <!-- Grain -->
+    <!-- ═══ FILM GRAIN ═══ -->
     <div class="grain"></div>
 
-    <!-- Cursor -->
-    <div class="cursor" id="cursor"><div class="cursor-dot"></div><div class="cursor-ring"></div></div>
+    <!-- ═══ CURSOR ═══ -->
+    <div id="cur"><div class="cur-d"></div><div class="cur-r"></div></div>
 
-    <!-- Nav (hidden initially, shows on scroll) -->
+    <!-- ═══ NAV (hidden until scroll) ═══ -->
     <nav id="nav">
-        <div class="nav-logo">M<span>7</span></div>
-        <div class="nav-links">
-            <a href="#hero" data-s="0">HOME</a>
-            <a href="#about" data-s="1">ABOUT</a>
-            <a href="#booking" data-s="2">BOOK</a>
+        <div class="n-logo">M<span>7</span></div>
+        <div class="n-links">
+            <a href="#hero" class="n-a active" data-i="0">HOME</a>
+            <a href="#about" class="n-a" data-i="1">ABOUT</a>
+            <a href="#book" class="n-a" data-i="2">BOOK</a>
         </div>
-        <div class="nav-pill"><span class="nav-pulse"></span>ACCEPTING CLIENTS</div>
+        <div class="n-pill"><span class="n-dot"></span>ACCEPTING CLIENTS</div>
     </nav>
 
-    <!-- Scroll Progress -->
-    <div id="progress"></div>
+    <!-- ═══ SCROLL PROGRESS ═══ -->
+    <div id="prog"></div>
 
-    <!-- ═══ CONTENT ═══ -->
-    <div id="content">
+    <!-- ═══════════════════════════════════
+         PHASE 1: HERO — Logo + Jellyfish + Particles
+         ═══════════════════════════════════ -->
+    <section class="s s-hero" id="hero">
+        <!-- "SCROLL DOWN" indicator -->
+        <div class="scroll-cue" id="scroll-cue">
+            <span>SCROLL DOWN</span>
+            <div class="sc-arrow"><div class="sc-line"></div></div>
+        </div>
+    </section>
 
-        <!-- S0: Logo Only -->
-        <section class="sec sec-hero" id="hero" data-s="0">
-            <div class="hero-center" id="hero-center">
-                <div class="hero-logo-text">M<span>7</span></div>
+    <!-- ═══ PLACEHOLDER SECTIONS (Phase 2+) ═══ -->
+    <section class="s s-tag" id="tagline">
+        <div class="tag-inner">
+            <div class="tl tl-1">We build</div>
+            <div class="tl tl-2"><span class="gr">autonomous</span></div>
+            <div class="tl tl-3">growth <span class="gr">systems.</span></div>
+        </div>
+    </section>
+
+    <section class="s s-about" id="about">
+        <div class="ab-inner">
+            <div class="lab-tag">// WHAT WE DO</div>
+            <p class="ab-desc">We don't do marketing. We engineer <span class="gr">intelligent systems</span> that find clients, close deals, and scale revenue — while you focus on what matters.</p>
+            <div class="stat-row">
+                <div class="stat-card"><div class="stat-n"><span class="ctr" data-t="340">0</span><span class="stat-s">%</span></div><div class="stat-d"></div><div class="stat-l">AVERAGE GROWTH</div></div>
+                <div class="stat-card"><div class="stat-n"><span class="ctr" data-t="12">0</span><span class="stat-s">+</span></div><div class="stat-d"></div><div class="stat-l">BRANDS SCALED</div></div>
+                <div class="stat-card"><div class="stat-n"><span class="ctr" data-t="97">0</span><span class="stat-s">%</span></div><div class="stat-d"></div><div class="stat-l">RETENTION RATE</div></div>
+                <div class="stat-card"><div class="stat-n"><span class="ctr" data-t="3">0</span><span class="stat-s">mo</span></div><div class="stat-d"></div><div class="stat-l">TIME TO ROI</div></div>
             </div>
-            <div class="scroll-down" id="scroll-down">
-                <span>SCROLL DOWN</span>
-                <div class="scroll-arrow">
-                    <div class="scroll-arrow-line"></div>
+            <div class="qual">
+                <h3 class="qual-t">This isn't for everyone.</h3>
+                <div class="qual-list">
+                    <div class="qi"><span class="qi-d"></span>Businesses with real revenue</div>
+                    <div class="qi"><span class="qi-d"></span>Ready to invest in growth</div>
+                    <div class="qi"><span class="qi-d"></span>Want systems, not quick fixes</div>
                 </div>
+                <p class="qual-end">If that's you — <span class="gr">let's talk.</span></p>
             </div>
-        </section>
+        </div>
+    </section>
 
-        <!-- S1: Tagline Reveal -->
-        <section class="sec sec-tagline" id="tagline">
-            <div class="tagline-wrap">
-                <div class="tl tl-1">We build</div>
-                <div class="tl tl-2"><span class="grad">autonomous</span></div>
-                <div class="tl tl-3">growth <span class="grad">systems.</span></div>
-            </div>
-        </section>
-
-        <!-- S2: About + Stats -->
-        <section class="sec sec-about" id="about" data-s="1">
-            <div class="about-inner">
-                <div class="label-tag">// WHAT WE DO</div>
-                <p class="about-desc">
-                    We don't do marketing. We engineer <span class="grad">intelligent systems</span>
-                    that find clients, close deals, and scale revenue — while you focus on what matters.
-                </p>
-
-                <!-- Stats Cards -->
-                <div class="cards-3d" id="cards-3d">
-                    <div class="card-3d" data-delay="0">
-                        <div class="card-inner">
-                            <div class="card-num"><span class="counter" data-target="340">0</span><span class="card-suf">%</span></div>
-                            <div class="card-line"></div>
-                            <div class="card-label">AVERAGE GROWTH</div>
-                        </div>
-                    </div>
-                    <div class="card-3d" data-delay="200">
-                        <div class="card-inner">
-                            <div class="card-num"><span class="counter" data-target="12">0</span><span class="card-suf">+</span></div>
-                            <div class="card-line"></div>
-                            <div class="card-label">BRANDS SCALED</div>
-                        </div>
-                    </div>
-                    <div class="card-3d" data-delay="400">
-                        <div class="card-inner">
-                            <div class="card-num"><span class="counter" data-target="97">0</span><span class="card-suf">%</span></div>
-                            <div class="card-line"></div>
-                            <div class="card-label">RETENTION RATE</div>
-                        </div>
-                    </div>
-                    <div class="card-3d" data-delay="600">
-                        <div class="card-inner">
-                            <div class="card-num"><span class="counter" data-target="3">0</span><span class="card-suf">mo</span></div>
-                            <div class="card-line"></div>
-                            <div class="card-label">TIME TO ROI</div>
-                        </div>
-                    </div>
+    <section class="s s-book" id="book">
+        <div class="bk-inner">
+            <div class="lab-tag">// SCHEDULE</div>
+            <h2 class="bk-title">Book Your <span class="gr">Strategy Call</span></h2>
+            <p class="bk-sub">Select your country, pick a date, and we'll handle the rest.</p>
+            <div class="steps" id="steps">
+                <div class="step active" id="st1">
+                    <div class="st-h"><span class="st-n">01</span><span class="st-t">COUNTRY</span></div>
+                    <div class="sel-w"><select id="cs"><option value="" disabled selected>Select your country</option>
+                        <optgroup label="Middle East"><option value="AE" data-r="a">United Arab Emirates</option><option value="SA" data-r="a">Saudi Arabia</option><option value="QA" data-r="a">Qatar</option><option value="KW" data-r="a">Kuwait</option><option value="BH" data-r="a">Bahrain</option><option value="OM" data-r="a">Oman</option><option value="JO" data-r="a">Jordan</option><option value="LB" data-r="a">Lebanon</option><option value="SY" data-r="a">Syria</option><option value="IQ" data-r="a">Iraq</option><option value="EG" data-r="a">Egypt</option></optgroup>
+                        <optgroup label="Europe"><option value="DE" data-r="x">Germany</option><option value="FR" data-r="x">France</option><option value="GB" data-r="x">United Kingdom</option><option value="NL" data-r="x">Netherlands</option><option value="AT" data-r="x">Austria</option><option value="CH" data-r="x">Switzerland</option></optgroup>
+                        <optgroup label="Other"><option value="US" data-r="x">United States</option><option value="CA" data-r="x">Canada</option><option value="OTHER" data-r="x">Other</option></optgroup>
+                    </select></div>
+                    <div class="ct" id="ct" style="display:none"><span id="cti">📹</span><span id="ctt"></span></div>
                 </div>
-
-                <!-- Filter -->
-                <div class="qualify">
-                    <h3 class="qualify-title">This isn't for everyone.</h3>
-                    <div class="qualify-list">
-                        <div class="qi"><span class="qi-dot"></span>Businesses with real revenue</div>
-                        <div class="qi"><span class="qi-dot"></span>Ready to invest in growth</div>
-                        <div class="qi"><span class="qi-dot"></span>Want systems, not quick fixes</div>
-                    </div>
-                    <p class="qualify-end">If that's you — <span class="grad">let's talk.</span></p>
-                </div>
+                <div class="step" id="st2"><div class="st-h"><span class="st-n">02</span><span class="st-t">DATE</span></div><div class="cal"><div class="cal-top"><button class="cal-a" id="cp">‹</button><span id="cm"></span><button class="cal-a" id="cn">›</button></div><div class="cal-wk"><span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span><span>Su</span></div><div id="cg" class="cal-g"></div></div></div>
+                <div class="step" id="st3"><div class="st-h"><span class="st-n">03</span><span class="st-t">TIME <small>(CET)</small></span></div><div id="tg" class="tg"></div></div>
+                <div class="step" id="st4"><div class="st-h"><span class="st-n">04</span><span class="st-t">DETAILS</span></div><div class="fg"><input type="text" id="fn" placeholder="Full Name" class="fi"><input type="email" id="fe" placeholder="Email" class="fi"><input type="tel" id="fp" placeholder="Phone" class="fi"><input type="text" id="fc" placeholder="Company" class="fi"></div><button id="gb" class="gb" disabled><span class="gbt">CONFIRM BOOKING</span><span class="gbl" style="display:none"><span class="sp"></span>Processing...</span></button></div>
+                <div id="done" class="done" style="display:none"><div class="done-i">✦</div><h3>You're in.</h3><p>Check your email for meeting details.</p><div id="di" class="di"></div></div>
             </div>
-        </section>
+        </div>
+    </section>
 
-        <!-- S3: Booking -->
-        <section class="sec sec-book" id="booking" data-s="2">
-            <div class="book-inner">
-                <div class="label-tag">// SCHEDULE</div>
-                <h2 class="book-title">Book Your <span class="grad">Strategy Call</span></h2>
-                <p class="book-sub">Select your country, pick a date, and we'll handle the rest.</p>
+    <footer class="foot"><div class="foot-ln"></div><div class="foot-r"><span class="foot-m">M<span>7</span></span><span class="foot-c">© 2026 M7 Digital</span></div></footer>
 
-                <div class="steps" id="steps">
-                    <!-- Step 1: Country -->
-                    <div class="step active" id="s1">
-                        <div class="step-h"><span class="step-n">01</span><span class="step-t">COUNTRY</span></div>
-                        <div class="sel-w">
-                            <select id="cs">
-                                <option value="" disabled selected>Select your country</option>
-                                <optgroup label="Middle East">
-                                    <option value="AE" data-r="a">United Arab Emirates</option>
-                                    <option value="SA" data-r="a">Saudi Arabia</option>
-                                    <option value="QA" data-r="a">Qatar</option>
-                                    <option value="KW" data-r="a">Kuwait</option>
-                                    <option value="BH" data-r="a">Bahrain</option>
-                                    <option value="OM" data-r="a">Oman</option>
-                                    <option value="JO" data-r="a">Jordan</option>
-                                    <option value="LB" data-r="a">Lebanon</option>
-                                    <option value="SY" data-r="a">Syria</option>
-                                    <option value="IQ" data-r="a">Iraq</option>
-                                    <option value="EG" data-r="a">Egypt</option>
-                                </optgroup>
-                                <optgroup label="Europe">
-                                    <option value="DE" data-r="x">Germany</option>
-                                    <option value="FR" data-r="x">France</option>
-                                    <option value="GB" data-r="x">United Kingdom</option>
-                                    <option value="NL" data-r="x">Netherlands</option>
-                                    <option value="AT" data-r="x">Austria</option>
-                                    <option value="CH" data-r="x">Switzerland</option>
-                                </optgroup>
-                                <optgroup label="Other">
-                                    <option value="US" data-r="x">United States</option>
-                                    <option value="CA" data-r="x">Canada</option>
-                                    <option value="OTHER" data-r="x">Other</option>
-                                </optgroup>
-                            </select>
-                        </div>
-                        <div class="ct" id="ct" style="display:none"><span id="cti">📹</span><span id="ctt"></span></div>
-                    </div>
-
-                    <!-- Step 2: Date -->
-                    <div class="step" id="s2">
-                        <div class="step-h"><span class="step-n">02</span><span class="step-t">DATE</span></div>
-                        <div class="cal">
-                            <div class="cal-top"><button class="ca" id="cp">‹</button><span id="cm"></span><button class="ca" id="cn">›</button></div>
-                            <div class="cal-wk"><span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span><span>Su</span></div>
-                            <div id="cg" class="cal-g"></div>
-                        </div>
-                    </div>
-
-                    <!-- Step 3: Time -->
-                    <div class="step" id="s3">
-                        <div class="step-h"><span class="step-n">03</span><span class="step-t">TIME <small>(CET)</small></span></div>
-                        <div id="tg" class="tg"></div>
-                    </div>
-
-                    <!-- Step 4: Details -->
-                    <div class="step" id="s4">
-                        <div class="step-h"><span class="step-n">04</span><span class="step-t">DETAILS</span></div>
-                        <div class="fg">
-                            <input type="text" id="fn" placeholder="Full Name" class="fi">
-                            <input type="email" id="fe" placeholder="Email" class="fi">
-                            <input type="tel" id="fp" placeholder="Phone" class="fi">
-                            <input type="text" id="fc" placeholder="Company" class="fi">
-                        </div>
-                        <button id="gb" class="gb" disabled>
-                            <span class="gbt">CONFIRM BOOKING</span>
-                            <span class="gbl" style="display:none"><span class="sp"></span>Processing...</span>
-                        </button>
-                    </div>
-
-                    <!-- Done -->
-                    <div id="done" class="done" style="display:none">
-                        <div class="done-i">✦</div>
-                        <h3>You're in.</h3>
-                        <p>Check your email for meeting details.</p>
-                        <div id="di" class="di"></div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Footer -->
-        <footer class="foot">
-            <div class="foot-line"></div>
-            <div class="foot-row"><span class="foot-logo">M<span>7</span></span><span class="foot-cp">© 2026 M7 Digital</span></div>
-        </footer>
-    </div>
-
-    <!-- Three.js + Post Processing via ES Modules -->
-    <script type="importmap">
-    {
-        "imports": {
-            "three": "https://unpkg.com/three@0.152.0/build/three.module.js",
-            "three/addons/": "https://unpkg.com/three@0.152.0/examples/jsm/"
-        }
-    }
-    </script>
-
-    <!-- GSAP (non-module) -->
+    <!-- ═══ SCRIPTS ═══ -->
+    <script type="importmap">{"imports":{"three":"https://unpkg.com/three@0.152.0/build/three.module.js","three/addons/":"https://unpkg.com/three@0.152.0/examples/jsm/"}}</script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-
-    <!-- Scene (ES module) -->
     <script type="module" src="scene.js"></script>
-    <!-- Booking (regular) -->
     <script src="booking.js"></script>
 </body>
 </html>
