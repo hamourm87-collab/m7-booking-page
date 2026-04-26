@@ -30,7 +30,7 @@ try {
 R.setSize(window.innerWidth, window.innerHeight);
 R.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 R.toneMapping = THREE.ACESFilmicToneMapping;
-R.toneMappingExposure = 0.85;
+R.toneMappingExposure = 0.6;
 R.setClearColor(0x0a0e14, 1); // exact bg from report
 
 // ─── SCENE + CAMERA ───
@@ -44,7 +44,7 @@ const comp = new EffectComposer(R);
 comp.addPass(new RenderPass(scene, cam));
 const bloom = new UnrealBloomPass(
     new THREE.Vector2(window.innerWidth, window.innerHeight),
-    mobile ? 0.25 : 0.35, 0.3, 0.85
+    mobile ? 0.15 : 0.2, 0.2, 1.5
 );
 comp.addPass(bloom);
 
@@ -67,7 +67,7 @@ const P = {
 };
 
 // ─── LIGHTS ───
-scene.add(new THREE.AmbientLight(0x0a0e14, 2.5));
+scene.add(new THREE.AmbientLight(0x050810, 0.8));
 const keyLight = new THREE.PointLight(P.blue, 1.5, 20);
 keyLight.position.set(3, 4, 6);
 scene.add(keyLight);
@@ -103,7 +103,7 @@ const tubeMat = new THREE.MeshPhysicalMaterial({
     clearcoat: 0.8,
     clearcoatRoughness: 0.05,
     emissive: P.blue,
-    emissiveIntensity: 0.25,
+    emissiveIntensity: 0.08,
     transparent: true,
     opacity: 0.9,
     iridescence: 0.7,
@@ -119,7 +119,7 @@ const ringMat = new THREE.MeshPhysicalMaterial({
     metalness: 0.95,
     roughness: 0.05,
     emissive: P.gold,
-    emissiveIntensity: 0.4,
+    emissiveIntensity: 0.15,
     clearcoat: 1,
 });
 const ring = new THREE.Mesh(ringGeo, ringMat);
@@ -239,7 +239,7 @@ for (let i = 0; i < PC; i++) {
     pPos[i * 3] = r * Math.sin(ph) * Math.cos(th);
     pPos[i * 3 + 1] = r * Math.sin(ph) * Math.sin(th);
     pPos[i * 3 + 2] = r * Math.cos(ph);
-    pSiz[i] = Math.random() * 0.8 + 0.2;
+    pSiz[i] = Math.random() * 0.5 + 0.15;
     // Upward drift (report: 20-30px/s upward)
     pVel[i * 3] = (Math.random() - 0.5) * 0.002;
     pVel[i * 3 + 1] = Math.random() * 0.002 + 0.0005; // gentle upward
@@ -276,7 +276,7 @@ const pMat = new THREE.ShaderMaterial({
             p.xy += normalize(p.xy - uMouse*4.0 + 0.001) * rep * 0.12;
             gl_Position = projectionMatrix * modelViewMatrix * vec4(p,1.0);
             gl_PointSize = aSize * uPR * (140.0 / -mv.z);
-            vAlpha = (0.06 + sin(uTime*0.8 + length(p)*0.4)*0.03) * (1.0 - smoothstep(3.0,7.5,length(p)));
+            vAlpha = (0.035 + sin(uTime*0.8 + length(p)*0.4)*0.015) * (1.0 - smoothstep(3.5,7.0,length(p)));
             vColor = aColor;
         }
     `,
@@ -536,7 +536,7 @@ function animate() {
     scene.fog.color.set(bgR, bgG, bgB);
 
     // Dynamic bloom (brighter during hero)
-    bloom.strength = (mobile ? 0.25 : 0.35) * (1 - scrollP * 0.3);
+    bloom.strength = (mobile ? 0.15 : 0.2) * (1 - scrollP * 0.2);
 
     comp.render();
 }
