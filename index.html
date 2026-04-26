@@ -2,223 +2,282 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>M7 — Book a Call</title>
-    <meta name="description" content="We build growth systems for serious businesses. Book your strategy call.">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>M7 Digital — Growth Systems</title>
+    <meta name="description" content="We build autonomous growth systems for serious businesses.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- Particle Canvas -->
-    <canvas id="particles"></canvas>
+    <!-- Loading Screen -->
+    <div id="loader">
+        <div class="loader-content">
+            <div class="loader-logo">M<span>7</span></div>
+            <div class="loader-bar"><div class="loader-progress" id="loader-progress"></div></div>
+            <div class="loader-text" id="loader-text">INITIALIZING</div>
+        </div>
+    </div>
 
-    <!-- Subtle grain overlay -->
+    <!-- WebGL Canvas -->
+    <canvas id="webgl"></canvas>
+
+    <!-- Grain -->
     <div class="grain"></div>
 
+    <!-- Custom Cursor (desktop) -->
+    <div class="cursor" id="cursor">
+        <div class="cursor-dot"></div>
+        <div class="cursor-ring"></div>
+    </div>
+
     <!-- Navigation -->
-    <nav class="nav">
+    <nav class="nav" id="nav">
         <div class="nav-logo">M<span class="gold">7</span></div>
+        <div class="nav-center">
+            <a href="#hero" class="nav-link active" data-section="0">HOME</a>
+            <a href="#proof" class="nav-link" data-section="1">RESULTS</a>
+            <a href="#booking" class="nav-link" data-section="2">BOOK</a>
+        </div>
         <div class="nav-status">
             <span class="pulse"></span>
-            <span class="nav-status-text">Accepting clients</span>
+            <span class="nav-status-text">ACCEPTING CLIENTS</span>
         </div>
     </nav>
 
-    <!-- SECTION 1: Hero -->
-    <section class="hero" id="hero">
-        <div class="hero-content">
-            <div class="hero-badge">GROWTH SYSTEMS</div>
-            <h1 class="hero-title">
-                <span class="line line-1">We don't do</span>
-                <span class="line line-2"><em>marketing.</em></span>
-                <span class="line line-3">We build <span class="gold">machines</span></span>
-                <span class="line line-4">that print revenue.</span>
-            </h1>
-            <p class="hero-sub">For businesses ready to scale — not experiment.</p>
-            <a href="#booking" class="cta-btn">
-                <span>BOOK A STRATEGY CALL</span>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M7 17L17 7M17 7H7M17 7V17"/>
-                </svg>
-            </a>
-            <div class="scarcity">
-                <span class="scarcity-dot"></span>
-                <span id="spots-text">3 spots remaining this month</span>
-            </div>
-        </div>
-        <div class="scroll-indicator">
-            <div class="scroll-line"></div>
-        </div>
-    </section>
+    <!-- Progress Bar -->
+    <div class="progress-bar" id="progress-bar"></div>
 
-    <!-- SECTION 2: Proof -->
-    <section class="proof" id="proof">
-        <div class="proof-header">
-            <p class="proof-quote">"Results speak. We don't."</p>
-        </div>
-        <div class="proof-grid">
-            <div class="proof-card" data-delay="0">
-                <div class="proof-number" data-target="340">0</div>
-                <div class="proof-suffix">%</div>
-                <div class="proof-label">Average Growth</div>
-            </div>
-            <div class="proof-card" data-delay="200">
-                <div class="proof-number" data-target="12">0</div>
-                <div class="proof-suffix">+</div>
-                <div class="proof-label">Brands Scaled</div>
-            </div>
-            <div class="proof-card" data-delay="400">
-                <div class="proof-number" data-target="3">0</div>
-                <div class="proof-suffix">mo</div>
-                <div class="proof-label">Average ROI</div>
-            </div>
-        </div>
-    </section>
+    <!-- Scroll Sections -->
+    <div class="scroll-container" id="scroll-container">
 
-    <!-- SECTION 3: Filter -->
-    <section class="filter" id="filter">
-        <div class="filter-content">
-            <h2 class="filter-title">This isn't for everyone.</h2>
-            <div class="filter-list">
-                <div class="filter-item">
-                    <span class="filter-icon">✦</span>
-                    <span>Businesses with real revenue</span>
+        <!-- SECTION 0: Hero -->
+        <section class="section hero" id="hero" data-section="0">
+            <div class="hero-content">
+                <div class="hero-badge">
+                    <span class="badge-line"></span>
+                    AUTONOMOUS GROWTH SYSTEMS
+                    <span class="badge-line"></span>
                 </div>
-                <div class="filter-item">
-                    <span class="filter-icon">✦</span>
-                    <span>Ready to invest in growth</span>
+                <h1 class="hero-title">
+                    <span class="title-line" data-delay="0">We don't do</span>
+                    <span class="title-line strike" data-delay="1"><em>marketing.</em></span>
+                    <span class="title-line" data-delay="2">We build <span class="gold glow">machines</span></span>
+                    <span class="title-line" data-delay="3">that <span class="gold glow">print</span> revenue.</span>
+                </h1>
+                <p class="hero-sub">For businesses ready to dominate — not experiment.</p>
+                <div class="hero-actions">
+                    <a href="#booking" class="cta-primary">
+                        <span class="cta-text">BOOK A STRATEGY CALL</span>
+                        <span class="cta-arrow">→</span>
+                        <span class="cta-shine"></span>
+                    </a>
                 </div>
-                <div class="filter-item">
-                    <span class="filter-icon">✦</span>
-                    <span>Want systems, not quick fixes</span>
+                <div class="scarcity-banner">
+                    <span class="scarcity-pulse"></span>
+                    <span>Only <strong class="gold">3 spots</strong> remaining this month</span>
                 </div>
             </div>
-            <p class="filter-cta">If that's you — <span class="gold">let's talk.</span></p>
-        </div>
-    </section>
+            <div class="scroll-hint">
+                <span class="scroll-text">SCROLL TO EXPLORE</span>
+                <div class="scroll-line-container">
+                    <div class="scroll-line-anim"></div>
+                </div>
+            </div>
+        </section>
 
-    <!-- SECTION 4: Booking -->
-    <section class="booking" id="booking">
-        <div class="booking-container">
-            <div class="booking-header">
-                <h2 class="booking-title">Book Your Call</h2>
+        <!-- SECTION 1: Proof -->
+        <section class="section proof" id="proof" data-section="1">
+            <div class="proof-content">
+                <div class="section-tag">TRACK RECORD</div>
+                <h2 class="proof-headline">Results speak.<br><span class="gold">We don't.</span></h2>
+                <div class="proof-grid">
+                    <div class="proof-card">
+                        <div class="proof-number-wrap">
+                            <span class="proof-number" data-target="340">0</span>
+                            <span class="proof-suffix">%</span>
+                        </div>
+                        <div class="proof-divider"></div>
+                        <div class="proof-label">Average Client Growth</div>
+                    </div>
+                    <div class="proof-card">
+                        <div class="proof-number-wrap">
+                            <span class="proof-number" data-target="12">0</span>
+                            <span class="proof-suffix">+</span>
+                        </div>
+                        <div class="proof-divider"></div>
+                        <div class="proof-label">Brands Scaled</div>
+                    </div>
+                    <div class="proof-card">
+                        <div class="proof-number-wrap">
+                            <span class="proof-number" data-target="3">0</span>
+                            <span class="proof-suffix">mo</span>
+                        </div>
+                        <div class="proof-divider"></div>
+                        <div class="proof-label">Average Time to ROI</div>
+                    </div>
+                    <div class="proof-card">
+                        <div class="proof-number-wrap">
+                            <span class="proof-number" data-target="97">0</span>
+                            <span class="proof-suffix">%</span>
+                        </div>
+                        <div class="proof-divider"></div>
+                        <div class="proof-label">Client Retention</div>
+                    </div>
+                </div>
+
+                <!-- Filter -->
+                <div class="filter-block">
+                    <h3 class="filter-title">This isn't for everyone.</h3>
+                    <div class="filter-items">
+                        <div class="filter-item">
+                            <span class="filter-diamond">◆</span>
+                            <span>Businesses with real revenue</span>
+                        </div>
+                        <div class="filter-item">
+                            <span class="filter-diamond">◆</span>
+                            <span>Ready to invest in growth</span>
+                        </div>
+                        <div class="filter-item">
+                            <span class="filter-diamond">◆</span>
+                            <span>Want systems, not quick fixes</span>
+                        </div>
+                    </div>
+                    <p class="filter-end">If that's you — <span class="gold">let's talk.</span></p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: Booking -->
+        <section class="section booking" id="booking" data-section="2">
+            <div class="booking-container">
+                <div class="section-tag">SCHEDULE</div>
+                <h2 class="booking-headline">Book Your <span class="gold">Strategy Call</span></h2>
                 <p class="booking-sub">Select your country, pick a date, and we'll handle the rest.</p>
-            </div>
 
-            <!-- Step 1: Country -->
-            <div class="booking-step active" id="step-country">
-                <label class="step-label">01 — Country</label>
-                <div class="select-wrapper">
-                    <select id="country-select">
-                        <option value="" disabled selected>Select your country</option>
-                        <optgroup label="Middle East">
-                            <option value="AE" data-region="arab">United Arab Emirates</option>
-                            <option value="SA" data-region="arab">Saudi Arabia</option>
-                            <option value="QA" data-region="arab">Qatar</option>
-                            <option value="KW" data-region="arab">Kuwait</option>
-                            <option value="BH" data-region="arab">Bahrain</option>
-                            <option value="OM" data-region="arab">Oman</option>
-                            <option value="JO" data-region="arab">Jordan</option>
-                            <option value="LB" data-region="arab">Lebanon</option>
-                            <option value="SY" data-region="arab">Syria</option>
-                            <option value="IQ" data-region="arab">Iraq</option>
-                            <option value="EG" data-region="arab">Egypt</option>
-                        </optgroup>
-                        <optgroup label="Europe">
-                            <option value="DE" data-region="other">Germany</option>
-                            <option value="FR" data-region="other">France</option>
-                            <option value="GB" data-region="other">United Kingdom</option>
-                            <option value="NL" data-region="other">Netherlands</option>
-                            <option value="AT" data-region="other">Austria</option>
-                            <option value="CH" data-region="other">Switzerland</option>
-                        </optgroup>
-                        <optgroup label="Other">
-                            <option value="US" data-region="other">United States</option>
-                            <option value="CA" data-region="other">Canada</option>
-                            <option value="OTHER" data-region="other">Other</option>
-                        </optgroup>
-                    </select>
+                <!-- Booking Steps -->
+                <div class="steps-container">
+                    <!-- Step 1 -->
+                    <div class="bstep active" id="bstep-1">
+                        <div class="bstep-header">
+                            <span class="bstep-num">01</span>
+                            <span class="bstep-title">Country</span>
+                        </div>
+                        <div class="select-wrap">
+                            <select id="country-select">
+                                <option value="" disabled selected>Select your country</option>
+                                <optgroup label="Middle East">
+                                    <option value="AE" data-region="arab">United Arab Emirates</option>
+                                    <option value="SA" data-region="arab">Saudi Arabia</option>
+                                    <option value="QA" data-region="arab">Qatar</option>
+                                    <option value="KW" data-region="arab">Kuwait</option>
+                                    <option value="BH" data-region="arab">Bahrain</option>
+                                    <option value="OM" data-region="arab">Oman</option>
+                                    <option value="JO" data-region="arab">Jordan</option>
+                                    <option value="LB" data-region="arab">Lebanon</option>
+                                    <option value="SY" data-region="arab">Syria</option>
+                                    <option value="IQ" data-region="arab">Iraq</option>
+                                    <option value="EG" data-region="arab">Egypt</option>
+                                </optgroup>
+                                <optgroup label="Europe">
+                                    <option value="DE" data-region="other">Germany</option>
+                                    <option value="FR" data-region="other">France</option>
+                                    <option value="GB" data-region="other">United Kingdom</option>
+                                    <option value="NL" data-region="other">Netherlands</option>
+                                    <option value="AT" data-region="other">Austria</option>
+                                    <option value="CH" data-region="other">Switzerland</option>
+                                </optgroup>
+                                <optgroup label="Other">
+                                    <option value="US" data-region="other">United States</option>
+                                    <option value="CA" data-region="other">Canada</option>
+                                    <option value="OTHER" data-region="other">Other</option>
+                                </optgroup>
+                            </select>
+                        </div>
+                        <div class="call-badge" id="call-badge" style="display:none">
+                            <span id="call-icon">📹</span>
+                            <span id="call-text">Video Call Available</span>
+                        </div>
+                    </div>
+
+                    <!-- Step 2 -->
+                    <div class="bstep" id="bstep-2">
+                        <div class="bstep-header">
+                            <span class="bstep-num">02</span>
+                            <span class="bstep-title">Date</span>
+                        </div>
+                        <div class="calendar">
+                            <div class="cal-nav">
+                                <button class="cal-btn" id="cal-prev">‹</button>
+                                <span class="cal-month" id="cal-month"></span>
+                                <button class="cal-btn" id="cal-next">›</button>
+                            </div>
+                            <div class="cal-weekdays">
+                                <span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span><span>Su</span>
+                            </div>
+                            <div class="cal-days" id="cal-days"></div>
+                        </div>
+                        <div class="booked-notice" id="booked-notice" style="display:none">
+                            <span class="notice-dot"></span>
+                            Fully booked until <span class="gold" id="first-date"></span>
+                        </div>
+                    </div>
+
+                    <!-- Step 3 -->
+                    <div class="bstep" id="bstep-3">
+                        <div class="bstep-header">
+                            <span class="bstep-num">03</span>
+                            <span class="bstep-title">Time <span class="tz">(CET)</span></span>
+                        </div>
+                        <div class="time-grid" id="time-grid"></div>
+                    </div>
+
+                    <!-- Step 4 -->
+                    <div class="bstep" id="bstep-4">
+                        <div class="bstep-header">
+                            <span class="bstep-num">04</span>
+                            <span class="bstep-title">Details</span>
+                        </div>
+                        <div class="form-grid">
+                            <input type="text" id="f-name" placeholder="Full Name" class="form-input" required>
+                            <input type="email" id="f-email" placeholder="Email" class="form-input" required>
+                            <input type="tel" id="f-phone" placeholder="Phone" class="form-input">
+                            <input type="text" id="f-company" placeholder="Company" class="form-input">
+                        </div>
+                        <button class="submit-btn" id="submit-btn" disabled>
+                            <span class="submit-text">CONFIRM BOOKING</span>
+                            <span class="submit-load" style="display:none"><span class="spin"></span>Processing...</span>
+                        </button>
+                    </div>
+
+                    <!-- Success -->
+                    <div class="booking-done" id="booking-done" style="display:none">
+                        <div class="done-icon">◆</div>
+                        <h3>You're in.</h3>
+                        <p>Check your email for meeting details.</p>
+                        <div class="done-details" id="done-details"></div>
+                    </div>
                 </div>
-                <div class="call-type-display" id="call-type-display" style="display:none;">
-                    <span id="call-type-icon">📹</span>
-                    <span id="call-type-text">Video Call Available</span>
-                </div>
             </div>
+        </section>
 
-            <!-- Step 2: Date -->
-            <div class="booking-step" id="step-date">
-                <label class="step-label">02 — Date</label>
-                <div class="calendar" id="calendar">
-                    <div class="calendar-nav">
-                        <button class="cal-arrow" id="cal-prev">←</button>
-                        <span class="cal-month" id="cal-month">MAY 2026</span>
-                        <button class="cal-arrow" id="cal-next">→</button>
-                    </div>
-                    <div class="calendar-weekdays">
-                        <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
-                    </div>
-                    <div class="calendar-days" id="cal-days"></div>
-                </div>
-                <div class="fully-booked-notice" id="fully-booked-notice" style="display:none;">
-                    <span class="notice-icon">⬤</span> Fully booked until <span class="gold" id="first-available-date">May 3, 2026</span>
-                </div>
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="footer-line"></div>
+            <div class="footer-inner">
+                <span class="footer-logo">M<span class="gold">7</span></span>
+                <span class="footer-copy">© 2026 M7 Digital. All rights reserved.</span>
             </div>
+        </footer>
+    </div>
 
-            <!-- Step 3: Time -->
-            <div class="booking-step" id="step-time">
-                <label class="step-label">03 — Time <span class="tz-hint">(CET)</span></label>
-                <div class="time-slots" id="time-slots"></div>
-            </div>
-
-            <!-- Step 4: Details -->
-            <div class="booking-step" id="step-details">
-                <label class="step-label">04 — Your Details</label>
-                <div class="form-grid">
-                    <div class="form-field">
-                        <input type="text" id="f-name" placeholder="Full Name" required>
-                    </div>
-                    <div class="form-field">
-                        <input type="email" id="f-email" placeholder="Email" required>
-                    </div>
-                    <div class="form-field">
-                        <input type="tel" id="f-phone" placeholder="Phone (with country code)">
-                    </div>
-                    <div class="form-field">
-                        <input type="text" id="f-company" placeholder="Company Name">
-                    </div>
-                </div>
-                <button class="confirm-btn" id="confirm-btn" disabled>
-                    <span class="confirm-text">CONFIRM BOOKING</span>
-                    <span class="confirm-loading" style="display:none;">
-                        <span class="spinner"></span> Processing...
-                    </span>
-                </button>
-            </div>
-
-            <!-- Success State -->
-            <div class="booking-success" id="booking-success" style="display:none;">
-                <div class="success-icon">✦</div>
-                <h3>You're in.</h3>
-                <p>Check your email for the meeting details.</p>
-                <div class="success-details" id="success-details"></div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="footer-line"></div>
-        <div class="footer-content">
-            <span class="footer-logo">M<span class="gold">7</span></span>
-            <span class="footer-copy">© 2026 M7 Digital. All rights reserved.</span>
-        </div>
-    </footer>
-
+    <!-- Three.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r152/three.min.js"></script>
+    <!-- GSAP -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-    <script src="particles.js"></script>
+    <!-- App -->
+    <script src="scene.js"></script>
     <script src="booking.js"></script>
-    <script src="animations.js"></script>
 </body>
 </html>
