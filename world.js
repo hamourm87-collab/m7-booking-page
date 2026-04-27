@@ -249,18 +249,18 @@ const pMat = new THREE.ShaderMaterial({
             vec3 finalColor = vColor + vColor * glow * 0.5; // إضافة توهج
             gl_FragColor = vec4(finalColor, vAlpha * soft);
         }`,
-    transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, vertexColors: true
+    transparent: true, depthWrite: false, blending: THREE.AdditiveBlending
 });
 const particles = new THREE.Points(pGeo, pMat);
 scene.add(particles);
 
 // ─── SERVICE CARDS ───
 const cardData = [
-    { name: 'GOOGLE\nRACER', col: 0x6d5443, border: 0xfdb460, x: -2.5, y: -8, ry: -0.25 },
-    { name: 'HARRY POTTER\nHOGWARTS', col: 0x2a1a4a, border: 0x8a6aae, x: 2.5, y: -10, ry: 0.2 },
-    { name: 'ADIDAS\nCHILE 22', col: 0x1a3a2e, border: 0x10b981, x: -2.2, y: -13, ry: 0.15 },
-    { name: 'XBOX\n20 YEARS', col: 0x0e3a0e, border: 0x46f441, x: 2.3, y: -15.5, ry: -0.2 },
-    { name: 'SECRET\nSKY', col: 0x1a2a3a, border: 0x1aeade, x: -2.4, y: -18, ry: 0.18 },
+    { name: 'GOOGLE\nRACER', col: 0x6d5443, border: 0xfdb460, x: -2.5, y: -15, ry: -0.25 },
+    { name: 'HARRY POTTER\nHOGWARTS', col: 0x2a1a4a, border: 0x8a6aae, x: 2.5, y: -19, ry: 0.2 },
+    { name: 'ADIDAS\nCHILE 22', col: 0x1a3a2e, border: 0x10b981, x: -2.2, y: -23, ry: 0.15 },
+    { name: 'XBOX\n20 YEARS', col: 0x0e3a0e, border: 0x46f441, x: 2.3, y: -27, ry: -0.2 },
+    { name: 'SECRET\nSKY', col: 0x1a2a3a, border: 0x1aeade, x: -2.4, y: -31, ry: 0.18 },
 ];
 
 const cards3D = cardData.map(cd => {
@@ -302,7 +302,7 @@ const cards3D = cardData.map(cd => {
 
 // ─── THE LAB ───
 const labGroup = new THREE.Group();
-labGroup.position.y = -28;
+labGroup.position.y = -42;
 labGroup.visible = false;
 scene.add(labGroup);
 // Wreath (iridescent torus)
@@ -351,11 +351,11 @@ function updateOverlays(sp) {
     document.getElementById('ov-lab').classList.toggle('show', sp > 0.7 && sp < 0.88);
     // Cards visible
     cards3D.forEach((c, i) => {
-        const threshold = 0.25 + i * 0.08;
-        c.visible = sp > threshold && sp < 0.75;
+        const threshold = 0.30 + i * 0.08;
+        c.visible = sp > threshold && sp < 0.72;
     });
     // Lab group
-    labGroup.visible = sp > 0.65 && sp < 0.92;
+    labGroup.visible = sp > 0.68 && sp < 0.92;
 }
 
 // ─── MAIN LOOP ───
@@ -425,15 +425,15 @@ function animate() {
         cy = 0; cz = 8 - sp * 5;
     } else if (sp < 0.4) {
         const p = (sp-0.2)/0.2;
-        cy = -p * 8; cz = 7 + p * 2;
+        cy = -p * 12; cz = 7 + p * 2;
     } else if (sp < 0.7) {
         const p = (sp-0.4)/0.3;
-        cy = -8 - p * 18; cz = 9;
+        cy = -12 - p * 26; cz = 9;
     } else if (sp < 0.85) {
         const p = (sp-0.7)/0.15;
-        cy = -26 - p * 4; cz = 9;
+        cy = -38 - p * 6; cz = 9;
     } else {
-        cy = -30; cz = 9;
+        cy = -44; cz = 9;
     }
     camera.position.x = mouse.x * 0.25;
     camera.position.y = cy + mouse.y * 0.15;
