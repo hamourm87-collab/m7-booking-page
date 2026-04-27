@@ -12,10 +12,7 @@
    80-100% : Contact — Fade to dark, minimal
    ═══════════════════════════════════════════════════════ */
 
-import * as THREE from 'https://unpkg.com/three@0.152.0/build/three.module.js';
-import { EffectComposer } from 'https://unpkg.com/three@0.152.0/examples/jsm/postprocessing/EffectComposer.js';
-import { RenderPass } from 'https://unpkg.com/three@0.152.0/examples/jsm/postprocessing/RenderPass.js';
-import { UnrealBloomPass } from 'https://unpkg.com/three@0.152.0/examples/jsm/postprocessing/UnrealBloomPass.js';
+// Using global THREE from CDN (r128) — no ES modules for max compatibility
 
 const mob = window.innerWidth < 768;
 const W = window.innerWidth, H = window.innerHeight;
@@ -39,10 +36,7 @@ scene.fog = new THREE.FogExp2(0x020408, 0.015);
 const cam = new THREE.PerspectiveCamera(50, W / H, 0.1, 200);
 cam.position.set(0, 0, 5);
 
-// ═══ POST-PROCESSING ═══
-const comp = new EffectComposer(R);
-comp.addPass(new RenderPass(scene, cam));
-comp.addPass(new UnrealBloomPass(new THREE.Vector2(W, H), mob ? 0.15 : 0.25, 0.5, 1.2));
+// No post-processing (using r128 global, no module imports)
 
 // ═══ LIGHTS (underwater, moody) ═══
 scene.add(new THREE.AmbientLight(0x050810, 1.5));
@@ -67,15 +61,14 @@ infCurve.getPoint = function(t) {
     );
 };
 
-const glassMat = new THREE.MeshPhysicalMaterial({
+const glassMat = new THREE.MeshStandardMaterial({
     color: 0x888899,
     metalness: 0.1,
     roughness: 0.05,
     emissive: 0x4a7bff,
-    emissiveIntensity: 0.3,
+    emissiveIntensity: 0.4,
     transparent: true,
     opacity: 0.85,
-    envMapIntensity: 1.5,
 });
 
 // Thin tube (radius 0.015 = very thin wire)
@@ -85,7 +78,6 @@ logoG.add(new THREE.Mesh(tubeGeo, glassMat));
 // Circle at bottom with "M7" — small ring
 const ringGeo = new THREE.TorusGeometry(0.22, 0.012, 16, 60);
 const ringMat = glassMat.clone();
-ringMat.iridescence = 1.0;
 const ring = new THREE.Mesh(ringGeo, ringMat);
 ring.position.y = -1.4;
 logoG.add(ring);
@@ -98,9 +90,9 @@ logoG.add(icon);
 
 // Small iridescent accent on ring
 const accentGeo = new THREE.SphereGeometry(0.025, 8, 8);
-const accentMat = new THREE.MeshPhysicalMaterial({
+const accentMat = new THREE.MeshStandardMaterial({
     color: 0xffffff, metalness: 0.5, roughness: 0,
-    iridescence: 1.0, iridescenceIOR: 2.0,
+
     emissive: 0xd4af37, emissiveIntensity: 0.5,
 });
 const accent = new THREE.Mesh(accentGeo, accentMat);
@@ -182,11 +174,10 @@ spineG.position.set(0, -12, 0);
 scene.add(spineG);
 
 const VERTS = 20;
-const spineMat = new THREE.MeshPhysicalMaterial({
+const spineMat = new THREE.MeshStandardMaterial({
     color: 0x667788, metalness: 0.1, roughness: 0.05,
-    transmission: 0.7, thickness: 1, ior: 1.8,
-    iridescence: 0.6, iridescenceIOR: 1.4,
-    clearcoat: 1, transparent: true, opacity: 0.5,
+    emissive: 0x4a7bff, emissiveIntensity: 0.2,
+    transparent: true, opacity: 0.5,
 });
 
 for (let i = 0; i < VERTS; i++) {
@@ -228,10 +219,8 @@ const cards = cardData.map(cd => {
     
     // Card plane (frosted glass)
     const cardGeo = new THREE.PlaneGeometry(2, 2.8, 1, 1);
-    const cardMat = new THREE.MeshPhysicalMaterial({
+    const cardMat = new THREE.MeshStandardMaterial({
         color: 0x0a0e14, metalness: 0, roughness: 0.3,
-        transmission: 0.15, transparent: true, opacity: 0.85,
-        side: THREE.DoubleSide, clearcoat: 0.5,
     });
     const plane = new THREE.Mesh(cardGeo, cardMat);
     g.add(plane);
@@ -414,7 +403,7 @@ function animate() {
     updateOverlays(sp);
     
     // ═══ RENDER ═══
-    comp.render();
+    R.render(scene, cam);
 }
 
 // ═══ RESIZE ═══
@@ -423,7 +412,6 @@ window.addEventListener('resize', () => {
     cam.aspect = w / h;
     cam.updateProjectionMatrix();
     R.setSize(w, h);
-    comp.setSize(w, h);
 });
 
 // ═══ START ═══
