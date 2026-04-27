@@ -217,7 +217,7 @@ pDist.forEach((cnt, ci) => {
 });
 
 pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
-pGeo.setAttribute('color', new THREE.BufferAttribute(pCol, 3));
+pGeo.setAttribute('aColor', new THREE.BufferAttribute(pCol, 3));
 pGeo.setAttribute('aSize', new THREE.BufferAttribute(pSiz, 1));
 
 const pMat = new THREE.ShaderMaterial({
@@ -227,9 +227,9 @@ const pMat = new THREE.ShaderMaterial({
         uniform float uTime, uPR;
         varying vec3 vColor;
         varying float vAlpha;
-        attribute vec3 color;
+        attribute vec3 aColor;
         void main() {
-            vColor = color;
+            vColor = aColor;
             vec4 mv = modelViewMatrix * vec4(position, 1.0);
             gl_Position = projectionMatrix * mv;
             gl_PointSize = aSize * uPR * (200.0 / -mv.z);
