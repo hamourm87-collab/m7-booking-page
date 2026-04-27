@@ -12,10 +12,10 @@
    80-100% : Contact — Fade to dark, minimal
    ═══════════════════════════════════════════════════════ */
 
-import * as THREE from 'three';
-import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
-import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
-import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+import * as THREE from 'https://unpkg.com/three@0.152.0/build/three.module.js';
+import { EffectComposer } from 'https://unpkg.com/three@0.152.0/examples/jsm/postprocessing/EffectComposer.js';
+import { RenderPass } from 'https://unpkg.com/three@0.152.0/examples/jsm/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'https://unpkg.com/three@0.152.0/examples/jsm/postprocessing/UnrealBloomPass.js';
 
 const mob = window.innerWidth < 768;
 const W = window.innerWidth, H = window.innerHeight;
@@ -28,7 +28,7 @@ catch(e) { document.getElementById('ov-hero').classList.add('vis'); return; }
 R.setSize(W, H);
 R.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 R.toneMapping = THREE.ACESFilmicToneMapping;
-R.toneMappingExposure = 1.2;
+R.toneMappingExposure = 0.7;
 R.setClearColor(0x000000);
 
 // ═══ SCENE ═══
@@ -45,10 +45,10 @@ comp.addPass(new RenderPass(scene, cam));
 comp.addPass(new UnrealBloomPass(new THREE.Vector2(W, H), mob ? 0.15 : 0.25, 0.5, 1.2));
 
 // ═══ LIGHTS (underwater, moody) ═══
-scene.add(new THREE.AmbientLight(0x111122, 2));
-const L1 = new THREE.PointLight(0xd4af37, 3, 30); L1.position.set(2, 2, 5); scene.add(L1);
-const L2 = new THREE.PointLight(0x4a7bff, 2, 20); L2.position.set(-3, -1, 3); scene.add(L2);
-const L3 = new THREE.PointLight(0x8a6aae, 1.5, 15); L3.position.set(0, -5, 2); scene.add(L3);
+scene.add(new THREE.AmbientLight(0x050810, 1.5));
+const L1 = new THREE.PointLight(0xd4af37, 2, 25); L1.position.set(2, 2, 5); scene.add(L1);
+const L2 = new THREE.PointLight(0x4a7bff, 1, 15); L2.position.set(-3, -1, 3); scene.add(L2);
+const L3 = new THREE.PointLight(0x8a6aae, 0.6, 12); L3.position.set(0, -5, 2); scene.add(L3);
 
 // ═══ M7 INFINITY LOGO ═══
 // Thin glass wire — infinity shape (∞ vertical) with circle at bottom
