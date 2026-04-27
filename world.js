@@ -28,12 +28,12 @@ catch(e) { document.getElementById('ov-hero').classList.add('vis'); return; }
 R.setSize(W, H);
 R.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 R.toneMapping = THREE.ACESFilmicToneMapping;
-R.toneMappingExposure = 0.55;
+R.toneMappingExposure = 1.2;
 R.setClearColor(0x000000);
 
 // ═══ SCENE ═══
 const scene = new THREE.Scene();
-scene.fog = new THREE.FogExp2(0x020408, 0.04);
+scene.fog = new THREE.FogExp2(0x020408, 0.015);
 
 // ═══ CAMERA ═══
 const cam = new THREE.PerspectiveCamera(50, W / H, 0.1, 200);
@@ -45,10 +45,10 @@ comp.addPass(new RenderPass(scene, cam));
 comp.addPass(new UnrealBloomPass(new THREE.Vector2(W, H), mob ? 0.15 : 0.25, 0.5, 1.2));
 
 // ═══ LIGHTS (underwater, moody) ═══
-scene.add(new THREE.AmbientLight(0x020408, 1));
-const L1 = new THREE.PointLight(0xd4af37, 1, 20); L1.position.set(2, 2, 5); scene.add(L1);
-const L2 = new THREE.PointLight(0x4a7bff, 0.5, 15); L2.position.set(-3, -1, 3); scene.add(L2);
-const L3 = new THREE.PointLight(0x8a6aae, 0.3, 10); L3.position.set(0, -5, 2); scene.add(L3);
+scene.add(new THREE.AmbientLight(0x111122, 2));
+const L1 = new THREE.PointLight(0xd4af37, 3, 30); L1.position.set(2, 2, 5); scene.add(L1);
+const L2 = new THREE.PointLight(0x4a7bff, 2, 20); L2.position.set(-3, -1, 3); scene.add(L2);
+const L3 = new THREE.PointLight(0x8a6aae, 1.5, 15); L3.position.set(0, -5, 2); scene.add(L3);
 
 // ═══ M7 INFINITY LOGO ═══
 // Thin glass wire — infinity shape (∞ vertical) with circle at bottom
@@ -71,15 +71,10 @@ const glassMat = new THREE.MeshPhysicalMaterial({
     color: 0x888899,
     metalness: 0.1,
     roughness: 0.05,
-    transmission: 0.85,
-    thickness: 0.5,
-    ior: 2.0,
-    iridescence: 0.8,
-    iridescenceIOR: 1.5,
-    clearcoat: 1.0,
-    clearcoatRoughness: 0.0,
+    emissive: 0x4a7bff,
+    emissiveIntensity: 0.3,
     transparent: true,
-    opacity: 0.7,
+    opacity: 0.85,
     envMapIntensity: 1.5,
 });
 
@@ -149,7 +144,7 @@ const bkMat = new THREE.ShaderMaterial({
             vec4 mv = modelViewMatrix * vec4(p,1.0);
             gl_Position = projectionMatrix * mv;
             gl_PointSize = aSize * uPR * (80.0 / -mv.z);
-            vA = 0.15 * (1.0 - smoothstep(1.0, 5.0, length(p)));
+            vA = 0.4 * (1.0 - smoothstep(1.0, 6.0, length(p)));
             vC = aColor;
         }`,
     fragmentShader: `
