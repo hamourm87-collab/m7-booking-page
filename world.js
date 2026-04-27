@@ -12,7 +12,13 @@
    80-100% : Contact — Fade to dark, minimal
    ═══════════════════════════════════════════════════════ */
 
-// Using global THREE from CDN (r128) — no ES modules for max compatibility
+// Using global THREE from CDN (r128)
+
+if (typeof THREE === 'undefined') {
+    document.getElementById('ov-hero').classList.add('vis');
+    document.getElementById('ov-hero').style.opacity = '1';
+    throw new Error('THREE not loaded');
+}
 
 const mob = window.innerWidth < 768;
 const W = window.innerWidth, H = window.innerHeight;
@@ -20,17 +26,23 @@ const W = window.innerWidth, H = window.innerHeight;
 // ═══ RENDERER ═══
 const canvas = document.getElementById('c');
 let R;
-try { R = new THREE.WebGLRenderer({ canvas, antialias: !mob, alpha: false }); }
-catch(e) { document.getElementById('ov-hero').classList.add('vis'); return; }
+try {
+    R = new THREE.WebGLRenderer({ canvas, antialias: !mob, alpha: false });
+} catch(e) {
+    console.error('WebGL failed:', e);
+    document.getElementById('ov-hero').classList.add('vis');
+    document.getElementById('ov-hero').style.opacity = '1';
+    throw e;
+}
 R.setSize(W, H);
 R.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 R.toneMapping = THREE.ACESFilmicToneMapping;
-R.toneMappingExposure = 0.7;
+R.toneMappingExposure = 1.5;
 R.setClearColor(0x000000);
 
 // ═══ SCENE ═══
 const scene = new THREE.Scene();
-scene.fog = new THREE.FogExp2(0x020408, 0.015);
+scene.fog = new THREE.FogExp2(0x020408, 0.008);
 
 // ═══ CAMERA ═══
 const cam = new THREE.PerspectiveCamera(50, W / H, 0.1, 200);
@@ -39,10 +51,10 @@ cam.position.set(0, 0, 5);
 // No post-processing (using r128 global, no module imports)
 
 // ═══ LIGHTS (underwater, moody) ═══
-scene.add(new THREE.AmbientLight(0x050810, 1.5));
-const L1 = new THREE.PointLight(0xd4af37, 2, 25); L1.position.set(2, 2, 5); scene.add(L1);
-const L2 = new THREE.PointLight(0x4a7bff, 1, 15); L2.position.set(-3, -1, 3); scene.add(L2);
-const L3 = new THREE.PointLight(0x8a6aae, 0.6, 12); L3.position.set(0, -5, 2); scene.add(L3);
+scene.add(new THREE.AmbientLight(0x222244, 3));
+const L1 = new THREE.PointLight(0xd4af37, 4, 30); L1.position.set(2, 2, 5); scene.add(L1);
+const L2 = new THREE.PointLight(0x4a7bff, 3, 25); L2.position.set(-3, -1, 3); scene.add(L2);
+const L3 = new THREE.PointLight(0x8a6aae, 2, 20); L3.position.set(0, -5, 2); scene.add(L3);
 
 // ═══ M7 INFINITY LOGO ═══
 // Thin glass wire — infinity shape (∞ vertical) with circle at bottom
@@ -65,10 +77,10 @@ const glassMat = new THREE.MeshStandardMaterial({
     color: 0x888899,
     metalness: 0.1,
     roughness: 0.05,
-    emissive: 0x4a7bff,
-    emissiveIntensity: 0.4,
+    emissive: 0x6699ff,
+    emissiveIntensity: 0.8,
     transparent: true,
-    opacity: 0.85,
+    opacity: 0.9,
 });
 
 // Thin tube (radius 0.015 = very thin wire)
@@ -136,7 +148,7 @@ const bkMat = new THREE.ShaderMaterial({
             vec4 mv = modelViewMatrix * vec4(p,1.0);
             gl_Position = projectionMatrix * mv;
             gl_PointSize = aSize * uPR * (80.0 / -mv.z);
-            vA = 0.4 * (1.0 - smoothstep(1.0, 6.0, length(p)));
+            vA = 0.6 * (1.0 - smoothstep(1.0, 6.0, length(p)));
             vC = aColor;
         }`,
     fragmentShader: `
