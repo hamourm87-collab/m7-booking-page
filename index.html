@@ -3,64 +3,92 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>M7 Digital</title>
+<title>Active Theory</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-html,body{background:#000812;overflow-x:hidden;font-family:'Courier New',monospace;color:#fff}
-#scroll-space{height:750vh}
-#canvas-wrapper{position:fixed;inset:0;z-index:0}
+html,body{background:#000811;overflow-x:hidden;font-family:'Courier New',Courier,monospace;color:#fff}
+#ss{height:800vh}
+#cw{position:fixed;inset:0;z-index:0}
 canvas{display:block;width:100%!important;height:100%!important}
-#vignette{position:fixed;inset:0;z-index:5;pointer-events:none;
-  background:radial-gradient(ellipse 85% 85% at 50% 50%,transparent 35%,rgba(0,4,14,0.7) 75%,rgba(0,2,10,0.97) 100%)}
-nav{position:fixed;top:26px;left:50%;transform:translateX(-50%);z-index:100;
-  display:flex;align-items:center;padding:11px 30px;
-  border:1px solid rgba(255,255,255,0.12);border-radius:30px;
-  background:rgba(0,6,20,0.55);backdrop-filter:blur(20px);white-space:nowrap;gap:4px}
-.nl{font-size:10px;letter-spacing:3px;color:rgba(200,220,255,0.7);text-decoration:none}
-.ns{color:rgba(255,255,255,0.2);margin:0 10px;font-size:11px}
-#sh{position:fixed;bottom:50px;left:50%;transform:translateX(-50%);
-  text-align:center;z-index:10;transition:opacity .7s}
-#sh div:first-child{font-size:9px;letter-spacing:5px;color:rgba(200,220,255,0.35)}
-#sh-line{width:1px;height:28px;margin:8px auto 0;
-  background:linear-gradient(to bottom,rgba(200,220,255,0.4),transparent);
-  animation:shp 1.8s ease-in-out infinite}
-@keyframes shp{0%,100%{transform:scaleY(0);transform-origin:top}60%{transform:scaleY(1);transform-origin:top}}
-.ov{position:fixed;z-index:10;opacity:0;pointer-events:none;transition:opacity .7s}
-#hero{left:8%;top:50%;transform:translateY(-50%);max-width:380px}
-#hero h1{font-size:clamp(28px,5vw,62px);letter-spacing:6px;line-height:1.05;
-  background:linear-gradient(135deg,#fff 55%,rgba(100,180,255,0.8));
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-#hero p{font-size:9px;letter-spacing:4px;color:rgba(100,160,255,0.55);margin-top:14px}
-#sidebar{left:6%;top:50%;transform:translateY(-50%);
-  background:rgba(0,6,22,0.82);backdrop-filter:blur(28px);
-  border:1px solid rgba(100,160,255,0.1);border-radius:12px;padding:24px 22px;min-width:220px}
-#sidebar h3{font-size:11px;letter-spacing:2px;color:rgba(255,255,255,0.8);margin-bottom:12px}
-.sd{height:1px;background:rgba(100,160,255,0.1);margin:12px 0}
-.sl{display:block;font-size:10px;letter-spacing:1px;color:#1aeade;margin:8px 0;text-decoration:none;pointer-events:all}
-#labtxt{bottom:14%;left:50%;transform:translateX(-50%);text-align:center}
-#labtxt h2{font-size:clamp(20px,3vw,42px);letter-spacing:7px;
-  background:linear-gradient(135deg,#8a45ff,#1aeade);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-#labtxt p{font-size:9px;letter-spacing:3px;color:rgba(138,69,255,0.55);margin-top:10px}
+/* VIGNETTE */
+#vig{position:fixed;inset:0;z-index:4;pointer-events:none;
+  background:radial-gradient(ellipse 90% 85% at 50% 50%,transparent 28%,rgba(0,4,14,0.55) 65%,rgba(0,2,10,0.92) 100%)}
+/* NAV — floats with scroll inertia */
+#nav{position:fixed;top:26px;left:50%;z-index:100;
+  display:flex;align-items:center;padding:10px 28px;gap:4px;
+  border:1px solid rgba(255,255,255,0.12);border-radius:28px;
+  background:rgba(0,6,20,0.5);backdrop-filter:blur(18px);
+  transform:translateX(-50%);transition:transform 0.05s;white-space:nowrap}
+.nl{font-size:10px;letter-spacing:3px;color:rgba(210,220,255,0.72);text-decoration:none}
+.ns{color:rgba(255,255,255,0.18);margin:0 10px}
+/* SCROLL HINT */
+#sh{position:fixed;bottom:48px;left:50%;transform:translateX(-50%);
+  text-align:center;z-index:10;transition:opacity 0.6s;pointer-events:none}
+#sh span{display:block;font-size:9px;letter-spacing:5px;color:rgba(200,215,255,0.32)}
+#sh-ln{width:1px;height:26px;margin:7px auto 0;
+  background:linear-gradient(to bottom,rgba(200,215,255,0.38),transparent);
+  animation:shlp 1.9s ease-in-out infinite}
+@keyframes shlp{0%,100%{transform:scaleY(0);transform-origin:top}58%{transform:scaleY(1);transform-origin:top}}
+/* OVERLAYS */
+.ov{position:fixed;z-index:10;pointer-events:none;opacity:0;transition:opacity 0.65s}
+/* WHAT ARE YOU LOOKING FOR sidebar */
+#waylf{left:5%;top:50%;transform:translateY(-50%);
+  background:rgba(0,5,18,0.82);backdrop-filter:blur(22px);
+  border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:22px 20px;min-width:215px}
+#waylf h4{font-size:10px;letter-spacing:2px;color:rgba(255,255,255,0.75);margin-bottom:10px;line-height:1.5}
+.sd{height:1px;background:rgba(255,255,255,0.08);margin:10px 0}
+.sl{display:block;font-size:10px;letter-spacing:1px;color:#1aeade;margin:7px 0;text-decoration:none;pointer-events:all;transition:color 0.18s}
+.sl:hover{color:#fff}
+#ask{margin-top:12px;width:100%;padding:9px 14px;background:transparent;
+  border:1px solid rgba(255,255,255,0.15);border-radius:18px;
+  color:#fff;font-size:9px;letter-spacing:1px;outline:none;font-family:inherit}
+#ask::placeholder{color:rgba(255,255,255,0.3)}
+/* HERO TEXT (behind 3D, appears during camera move) */
+#hero{left:7%;top:50%;transform:translateY(-50%);max-width:360px}
+#hero h1{font-size:clamp(26px,4.5vw,58px);letter-spacing:5px;line-height:1.06;
+  background:linear-gradient(135deg,rgba(255,255,255,0.95) 50%,rgba(160,200,255,0.7));
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+#hero p{font-size:9px;letter-spacing:4px;color:rgba(180,200,255,0.45);margin-top:12px}
+/* LAB TEXT */
+#labt{bottom:13%;left:4%;text-align:left}
+#labt h2{font-size:clamp(18px,3vw,38px);letter-spacing:6px}
+#labt p{font-size:9px;letter-spacing:3px;color:rgba(255,255,255,0.4);margin-top:8px}
 </style>
 </head>
 <body>
-<div id="vignette"></div>
-<div id="canvas-wrapper"><canvas id="c"></canvas></div>
-<div id="scroll-space"></div>
-<nav><a href="#" class="nl">WORK</a><span class="ns">&mdash;</span><a href="#" class="nl">CONTACT</a></nav>
-<div id="sh"><div>SCROLL</div><div id="sh-line"></div></div>
-<div class="ov" id="hero"><h1>M7<br>DIGITAL</h1><p>PREMIUM DIGITAL EXPERIENCES</p></div>
-<div class="ov" id="sidebar">
-  <h3>WHAT ARE YOU<br>LOOKING FOR?</h3>
-  <div class="sd"></div>
-  <a href="#" class="sl">-&gt; DIGITAL TRANSFORMATION</a>
-  <a href="#" class="sl">-&gt; SOCIAL MEDIA</a>
-  <a href="#" class="sl">-&gt; TRADING SYSTEMS</a>
-  <a href="#" class="sl">-&gt; XR / AI</a>
-  <a href="#" class="sl">-&gt; E-COMMERCE</a>
+<div id="vig"></div>
+<div id="cw"><canvas id="c"></canvas></div>
+<div id="ss"></div>
+
+<div id="nav">
+  <a href="#" class="nl">WORK</a>
+  <span class="ns">&mdash;</span>
+  <a href="#" class="nl">CONTACT</a>
 </div>
-<div class="ov" id="labtxt"><h2>// THE LAB</h2><p>WHERE PROTOTYPES BECOME PRODUCTION</p></div>
+
+<div id="sh"><span>SCROLL</span><div id="sh-ln"></div></div>
+
+<div class="ov" id="waylf">
+  <h4>WHAT ARE YOU<br>LOOKING FOR?</h4>
+  <div class="sd"></div>
+  <a href="#" class="sl">-&gt; WEBSITES</a>
+  <a href="#" class="sl">-&gt; INSTALLATIONS</a>
+  <a href="#" class="sl">-&gt; XR / VR / AI</a>
+  <a href="#" class="sl">-&gt; MULTIPLAYER</a>
+  <a href="#" class="sl">-&gt; GAMES</a>
+  <div class="sd"></div>
+  <input id="ask" placeholder="ASK ME ANYTHING...">
+</div>
+
+<div class="ov" id="hero">
+  <h1>CREATIVE<br>DIGITAL<br>EXPERIENCES</h1>
+  <p>FOUNDED IN 2012</p>
+</div>
+
+<div class="ov" id="labt">
+  <h2>// THE LAB -&gt;</h2>
+  <p>OUR HOME FOR INNOVATION.<br>WHERE PROTOTYPES TURN INTO<br>PRODUCTION PROJECTS.</p>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
@@ -69,559 +97,604 @@ nav{position:fixed;top:26px;left:50%;transform:translateX(-50%);z-index:100;
 (function() {
 'use strict';
 
-function init() {
-  if (typeof THREE === 'undefined') { setTimeout(init, 80); return; }
-  if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
-    gsap.registerPlugin(ScrollTrigger);
-  }
+// Wait for THREE
+function boot() {
+  if (typeof THREE === 'undefined') { setTimeout(boot, 80); return; }
+  try { main(); } catch(e) { console.error('M7 init error:', e); }
+}
 
+function main() {
   var mob = window.innerWidth < 768;
   var W = window.innerWidth, H = window.innerHeight;
+  var PR = Math.min(window.devicePixelRatio || 1, mob ? 1.5 : 2);
 
-  // RENDERER
+  // ?? RENDERER
   var canvas = document.getElementById('c');
   var renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: !mob, alpha: false });
   renderer.setSize(W, H);
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, mob ? 1.5 : 2));
-  renderer.setClearColor(0x000812);
+  renderer.setPixelRatio(PR);
+  renderer.setClearColor(0x000811);
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.15;
+  renderer.toneMappingExposure = 1.2;
 
-  // SCENE
+  // ?? SCENE + FOG
   var scene = new THREE.Scene();
-  scene.fog = new THREE.FogExp2(0x000812, 0.011);
+  scene.fog = new THREE.FogExp2(0x000811, 0.013);
 
-  // CAMERA
-  var camera = new THREE.PerspectiveCamera(55, W / H, 0.1, 200);
-  camera.position.set(0, 1, 10);
+  // ?? CAMERA
+  var camera = new THREE.PerspectiveCamera(54, W / H, 0.1, 180);
+  camera.position.set(0, 1.5, 11);
+  var camPos = { x: 0, y: 1.5, z: 11 };
+  var camLook = { x: 0, y: 0, z: 0 };
+  var lookV = new THREE.Vector3();
 
-  // LIGHTS
-  scene.add(new THREE.AmbientLight(0x050a18, 4));
-  var keyL = new THREE.PointLight(0xd4af37, 4, 40);
-  keyL.position.set(3, 6, 8); scene.add(keyL);
-  var fillL = new THREE.PointLight(0x4477ff, 2, 30);
-  fillL.position.set(-4, 0, 5); scene.add(fillL);
-  var labL = new THREE.PointLight(0x8a45ff, 5, 28);
-  labL.position.set(0, -65, 3); scene.add(labL);
-  var movL = new THREE.PointLight(0x6688dd, 2, 14);
+  // ?? LIGHTS
+  scene.add(new THREE.AmbientLight(0x04081a, 5));
+  var kL = new THREE.PointLight(0xffc87a, 3.5, 38);
+  kL.position.set(4, 6, 9); scene.add(kL);
+  var fL = new THREE.PointLight(0x4466cc, 2, 28);
+  fL.position.set(-5, -1, 5); scene.add(fL);
+  var rL = new THREE.PointLight(0x7744bb, 1.5, 20);
+  rL.position.set(0, -4, -3); scene.add(rL);
+  var labPL = new THREE.PointLight(0x22ee44, 4, 26);
+  labPL.position.set(0, -68, 2); scene.add(labPL);
+  var movL = new THREE.PointLight(0x5577bb, 1.5, 12);
   scene.add(movL);
 
-  // SHARED SHADER MATERIAL FACTORY
-  function makeParticleMat(sizeFactor, pr) {
+  // ?? PARTICLE SHADER (shared)
+  function pMat(szF) {
     return new THREE.ShaderMaterial({
-      uniforms: { uPR: { value: pr } },
+      uniforms: { uPR: { value: PR } },
       vertexShader: [
-        'attribute vec3 aColor;',
-        'attribute float aSize;',
-        'uniform float uPR;',
-        'varying vec3 vColor;',
+        'attribute vec3 aColor; attribute float aSize; uniform float uPR;',
+        'varying vec3 vC;',
         'void main() {',
-        '  vColor = aColor;',
+        '  vC = aColor;',
         '  vec4 mv = modelViewMatrix * vec4(position, 1.0);',
         '  gl_Position = projectionMatrix * mv;',
-        '  gl_PointSize = aSize * uPR * (' + sizeFactor.toFixed(1) + ' / -mv.z);',
+        '  gl_PointSize = aSize * uPR * (' + szF.toFixed(1) + ' / -mv.z);',
         '}'
       ].join('\n'),
       fragmentShader: [
-        'varying vec3 vColor;',
+        'varying vec3 vC;',
         'void main() {',
         '  float d = length(gl_PointCoord - vec2(0.5));',
         '  if (d > 0.5) discard;',
         '  float s = 1.0 - smoothstep(0.0, 0.5, d);',
-        '  float c = 1.0 - smoothstep(0.0, 0.22, d);',
-        '  gl_FragColor = vec4(vColor + vColor * c * 0.5, s * 0.92);',
+        '  float g = 1.0 - smoothstep(0.0, 0.2, d);',
+        '  gl_FragColor = vec4(vC + vC * g * 0.45, s * 0.93);',
         '}'
       ].join('\n'),
-      transparent: true,
-      depthWrite: false,
-      blending: THREE.AdditiveBlending
+      transparent: true, depthWrite: false, blending: THREE.AdditiveBlending
     });
   }
 
-  function makeParticleSystem(count, positions, colors, sizes) {
-    var geo = new THREE.BufferGeometry();
-    geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-    geo.setAttribute('aColor', new THREE.BufferAttribute(colors, 3));
-    geo.setAttribute('aSize', new THREE.BufferAttribute(sizes, 1));
-    return geo;
+  function pGeo(pos, col, siz) {
+    var g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+    g.setAttribute('aColor', new THREE.BufferAttribute(col, 3));
+    g.setAttribute('aSize', new THREE.BufferAttribute(siz, 1));
+    return g;
   }
 
-  // ============================================================
-  // LOGO
-  // ============================================================
-  var logoGroup = new THREE.Group();
-  scene.add(logoGroup);
+  // ================================================================
+  // 1. LOGO ? ring + letter "a" + teardrop wire arms
+  // ================================================================
+  var logo = new THREE.Group();
+  scene.add(logo);
 
-  // Outer ring
-  var chromeMat = new THREE.MeshStandardMaterial({
-    color: 0x8ab8d8, metalness: 1.0, roughness: 0.0,
-    emissive: 0x112233, emissiveIntensity: 0.3
+  // Chrome ring (iridescent via multiple lights)
+  var ringMat = new THREE.MeshStandardMaterial({
+    color: 0x99bbcc, metalness: 1.0, roughness: 0.0,
+    emissive: 0x112244, emissiveIntensity: 0.3
   });
-  logoGroup.add(new THREE.Mesh(new THREE.TorusGeometry(1.6, 0.042, 20, 100), chromeMat));
+  logo.add(new THREE.Mesh(new THREE.TorusGeometry(1.55, 0.044, 20, 100), ringMat));
 
-  // Inner ring glow
-  logoGroup.add(new THREE.Mesh(
-    new THREE.TorusGeometry(1.35, 0.012, 8, 80),
-    new THREE.MeshBasicMaterial({ color: 0xd4af37, transparent: true, opacity: 0.4, blending: THREE.AdditiveBlending })
+  // Inner thin ring
+  logo.add(new THREE.Mesh(
+    new THREE.TorusGeometry(1.3, 0.01, 8, 80),
+    new THREE.MeshBasicMaterial({ color: 0xaa8833, transparent: true, opacity: 0.35, blending: THREE.AdditiveBlending })
   ));
 
-  // M7 canvas inside ring
-  var logoCV = document.createElement('canvas');
-  logoCV.width = 256; logoCV.height = 256;
-  var logoCX = logoCV.getContext('2d');
-  logoCX.clearRect(0, 0, 256, 256);
-  logoCX.fillStyle = 'rgba(255,255,255,0.08)';
-  logoCX.beginPath(); logoCX.arc(128, 128, 110, 0, Math.PI * 2); logoCX.fill();
-  logoCX.fillStyle = '#ffffff';
-  logoCX.font = 'bold 80px Courier New';
-  logoCX.textAlign = 'center';
-  logoCX.textBaseline = 'middle';
-  logoCX.fillText('M7', 128, 128);
-  var logoTex = new THREE.CanvasTexture(logoCV);
-  var logoPlane = new THREE.Mesh(
-    new THREE.PlaneGeometry(2.8, 2.8),
-    new THREE.MeshBasicMaterial({ map: logoTex, transparent: true, side: THREE.DoubleSide, depthWrite: false })
+  // "a" letter on canvas inside ring
+  var aCV = document.createElement('canvas'); aCV.width = 256; aCV.height = 256;
+  var aCX = aCV.getContext('2d');
+  aCX.fillStyle = 'rgba(255,255,255,0.06)';
+  aCX.beginPath(); aCX.arc(128, 128, 110, 0, Math.PI * 2); aCX.fill();
+  aCX.fillStyle = 'rgba(255,255,255,0.85)';
+  aCX.font = 'italic bold 140px serif';
+  aCX.textAlign = 'center'; aCX.textBaseline = 'middle';
+  aCX.fillText('a', 128, 138);
+  var aTex = new THREE.CanvasTexture(aCV);
+  logo.add(new THREE.Mesh(
+    new THREE.PlaneGeometry(2.7, 2.7),
+    new THREE.MeshBasicMaterial({ map: aTex, transparent: true, side: THREE.DoubleSide, depthWrite: false })
+  ));
+
+  // Wire arms ? teardrop shape above ring (TubeGeometry from CatmullRomCurve3)
+  var armMat2 = new THREE.MeshStandardMaterial({
+    color: 0xb86040, metalness: 0.95, roughness: 0.05,
+    emissive: 0x441100, emissiveIntensity: 0.5
+  });
+  function arm(pts) {
+    var crv = new THREE.CatmullRomCurve3(pts);
+    return new THREE.Mesh(new THREE.TubeGeometry(crv, 22, 0.011, 5, false), armMat2);
+  }
+  // Left: starts ring top-left, curves up and inward, meets at top point
+  logo.add(arm([
+    new THREE.Vector3(-0.85, 0.1, 0),
+    new THREE.Vector3(-1.9, 1.3, 0),
+    new THREE.Vector3(-0.4, 2.8, 0),
+    new THREE.Vector3(0.0, 3.9, 0)
+  ]));
+  // Right: mirror
+  logo.add(arm([
+    new THREE.Vector3(0.85, 0.1, 0),
+    new THREE.Vector3(1.9, 1.3, 0),
+    new THREE.Vector3(0.4, 2.8, 0),
+    new THREE.Vector3(0.0, 3.9, 0)
+  ]));
+
+  // Prismatic arc bottom-right
+  var arcC2 = new THREE.EllipseCurve(0, 0, 0.2, 0.2, -0.15, Math.PI * 1.5, false, 0);
+  var arcPts2 = arcC2.getPoints(28).map(function(p) { return new THREE.Vector3(p.x, p.y, 0); });
+  var arcL = new THREE.Line(
+    new THREE.BufferGeometry().setFromPoints(arcPts2),
+    new THREE.LineBasicMaterial({ color: 0xffd060 })
   );
-  logoGroup.add(logoPlane);
+  arcL.position.set(0.88, -1.68, 0);
+  logo.add(arcL);
 
-  // TWO WIRE ARMS (teardrop shape above the ring)
-  var armMat = new THREE.MeshStandardMaterial({
-    color: 0xc87d5f, metalness: 0.9, roughness: 0.1,
-    emissive: 0x441100, emissiveIntensity: 0.4
-  });
-  function makeArm(pts) {
-    var curve = new THREE.CatmullRomCurve3(pts);
-    var tubeGeo = new THREE.TubeGeometry(curve, 24, 0.012, 6, false);
-    return new THREE.Mesh(tubeGeo, armMat);
+  // Hero bokeh around logo
+  var HBN = mob ? 100 : 220;
+  var hbP = new Float32Array(HBN * 3), hbC = new Float32Array(HBN * 3), hbS = new Float32Array(HBN);
+  var hbV = new Float32Array(HBN * 3);
+  var hbCols = [[0.85,0.68,0.18],[1.0,0.44,0.15],[1.0,0.82,0.45],[0.95,0.95,0.85]];
+  for (var i = 0; i < HBN; i++) {
+    hbP[i*3]=(Math.random()-0.5)*24; hbP[i*3+1]=(Math.random()-0.5)*18; hbP[i*3+2]=(Math.random()-0.5)*10;
+    hbV[i*3]=(Math.random()-0.5)*0.003; hbV[i*3+1]=-(Math.random()*0.005+0.001); hbV[i*3+2]=(Math.random()-0.5)*0.002;
+    var hc = hbCols[Math.floor(Math.random()*hbCols.length)];
+    hbC[i*3]=hc[0]; hbC[i*3+1]=hc[1]; hbC[i*3+2]=hc[2];
+    hbS[i]=0.7+Math.random()*1.8;
   }
-  // Left arm &mdash; note: use negative sign as ASCII hyphen
-  logoGroup.add(makeArm([
-    new THREE.Vector3(-0.9, 0, 0),
-    new THREE.Vector3(-1.8, 1.2, 0),
-    new THREE.Vector3(-0.4, 2.6, 0),
-    new THREE.Vector3(0, 3.8, 0)
-  ]));
-  // Right arm
-  logoGroup.add(makeArm([
-    new THREE.Vector3(0.9, 0, 0),
-    new THREE.Vector3(1.8, 1.2, 0),
-    new THREE.Vector3(0.4, 2.6, 0),
-    new THREE.Vector3(0, 3.8, 0)
-  ]));
+  var heroBokehGeo = pGeo(hbP, hbC, hbS);
+  scene.add(new THREE.Points(heroBokehGeo, pMat(240)));
 
-  // Gold prismatic arc at bottom of ring
-  var arcC = new THREE.EllipseCurve(0, 0, 0.22, 0.22, -0.2, Math.PI * 1.4, false, 0);
-  var arcPts = arcC.getPoints(30).map(function(p) { return new THREE.Vector3(p.x, p.y, 0); });
-  var arcGeo = new THREE.BufferGeometry().setFromPoints(arcPts);
-  var arcLine = new THREE.Line(arcGeo, new THREE.LineBasicMaterial({ color: 0xffde7b }));
-  arcLine.position.set(0.9, -1.75, 0);
-  logoGroup.add(arcLine);
-
-  // Logo orbital bokeh particles
-  var LON = 80;
-  var loP = new Float32Array(LON * 3);
-  var loC = new Float32Array(LON * 3);
-  var loS = new Float32Array(LON);
-  for (var i = 0; i < LON; i++) {
-    var a = (i / LON) * Math.PI * 2;
-    var r = 1.8 + Math.random() * 1.6;
-    loP[i*3] = Math.cos(a) * r; loP[i*3+1] = Math.sin(a) * r + Math.random() * 1.5 - 0.75; loP[i*3+2] = (Math.random() - 0.5) * 0.6;
-    var rc = Math.random();
-    if (rc < 0.6) { loC[i*3] = 0.95; loC[i*3+1] = 0.75; loC[i*3+2] = 0.2; }
-    else if (rc < 0.8) { loC[i*3] = 1.0; loC[i*3+1] = 0.45; loC[i*3+2] = 0.15; }
-    else { loC[i*3] = 1.0; loC[i*3+1] = 1.0; loC[i*3+2] = 1.0; }
-    loS[i] = 0.6 + Math.random() * 1.2;
-  }
-  var loGeo = makeParticleSystem(LON, loP, loC, loS);
-  var loPts = new THREE.Points(loGeo, makeParticleMat(220, renderer.getPixelRatio()));
-  logoGroup.add(loPts);
-
-  // ============================================================
-  // HERO GOLD BOKEH PARTICLES
-  // ============================================================
-  var HN = mob ? 120 : 280;
-  var hP = new Float32Array(HN * 3);
-  var hC = new Float32Array(HN * 3);
-  var hS = new Float32Array(HN);
-  var hV = new Float32Array(HN * 3);
-  for (var i = 0; i < HN; i++) {
-    hP[i*3] = (Math.random() - 0.5) * 22;
-    hP[i*3+1] = (Math.random() - 0.5) * 16;
-    hP[i*3+2] = (Math.random() - 0.5) * 10;
-    hV[i*3] = (Math.random() - 0.5) * 0.003;
-    hV[i*3+1] = -(Math.random() * 0.005 + 0.001);
-    hV[i*3+2] = (Math.random() - 0.5) * 0.002;
-    var rc = Math.random();
-    if (rc < 0.55) { hC[i*3] = 0.83; hC[i*3+1] = 0.68; hC[i*3+2] = 0.22; }
-    else if (rc < 0.75) { hC[i*3] = 0.98; hC[i*3+1] = 0.44; hC[i*3+2] = 0.18; }
-    else if (rc < 0.88) { hC[i*3] = 1.0; hC[i*3+1] = 0.85; hC[i*3+2] = 0.5; }
-    else { hC[i*3] = 1.0; hC[i*3+1] = 1.0; hC[i*3+2] = 0.9; }
-    hS[i] = 0.8 + Math.random() * 1.8;
-  }
-  var hGeo = makeParticleSystem(HN, hP, hC, hS);
-  scene.add(new THREE.Points(hGeo, makeParticleMat(230, renderer.getPixelRatio())));
-
-  // ============================================================
-  // SPINE &mdash; vertebrae segments
-  // ============================================================
-  var spineGroup = new THREE.Group();
-  scene.add(spineGroup);
-
-  // Core line
-  spineGroup.add(new THREE.Mesh(
-    new THREE.CylinderGeometry(0.006, 0.006, 130, 5),
-    new THREE.MeshBasicMaterial({ color: 0x334455, transparent: true, opacity: 0.3 })
+  // ================================================================
+  // 2. SPINE ? organic vertebrae, central axis Y=0 to Y=-64
+  // ================================================================
+  var spineG = new THREE.Group();
+  scene.add(spineG);
+  // Core thin line
+  spineG.add(new THREE.Mesh(
+    new THREE.CylinderGeometry(0.005, 0.005, 130, 4),
+    new THREE.MeshBasicMaterial({ color: 0x223344, transparent: true, opacity: 0.22 })
   ));
 
-  var spineColors = [0x3a3a4a, 0x3a3a4a, 0x5a4a7a, 0xb068d4, 0xc078d4, 0x7744ee, 0x5522cc, 0x1a4a5a];
-  for (var si = 0; si < 32; si++) {
-    var sy = si * (-2.0);
-    var sc = spineColors[Math.floor(si / 4)];
-    var vg = new THREE.Group();
-    vg.position.y = sy;
-
-    // Main body
-    var bodyMat = new THREE.MeshStandardMaterial({
-      color: sc, metalness: 0.7, roughness: 0.3,
-      emissive: sc, emissiveIntensity: 0.2
-    });
-    var body = new THREE.Mesh(new THREE.SphereGeometry(0.28, 10, 8), bodyMat);
-    body.scale.y = 0.38;
-    vg.add(body);
-
-    // Protrusions
-    var prMat = new THREE.MeshStandardMaterial({
-      color: sc, metalness: 0.8, roughness: 0.2,
-      emissive: sc, emissiveIntensity: 0.3
-    });
-    var angles = [0, 120, 240];
-    for (var pi2 = 0; pi2 < 3; pi2++) {
-      var pa = angles[pi2] * (Math.PI / 180);
-      var pr = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.055, 0.22, 5), prMat);
-      pr.position.set(Math.cos(pa) * 0.18, 0, Math.sin(pa) * 0.18);
-      pr.rotation.z = pa + Math.PI / 2;
-      vg.add(pr);
-    }
-
-    spineGroup.add(vg);
+  // Color ramp for vertebrae
+  var spColors = [
+    new THREE.Color(0x3a3848), // 0-7: dark metallic
+    new THREE.Color(0x6a4888), // 8-15: violet
+    new THREE.Color(0xc068d0), // 16-22: pink
+    new THREE.Color(0x7744ee), // 23-28: purple
+    new THREE.Color(0x1a4860)  // 29-32: teal
+  ];
+  function spineColor(idx) {
+    if (idx < 8)  return spColors[0];
+    if (idx < 16) return spColors[1];
+    if (idx < 23) return spColors[2];
+    if (idx < 29) return spColors[3];
+    return spColors[4];
   }
 
-  // ============================================================
-  // CONFETTI PARTICLES (cards zone)
-  // ============================================================
-  var CN = mob ? 200 : 400;
-  var cP = new Float32Array(CN * 3);
-  var cC = new Float32Array(CN * 3);
-  var cS = new Float32Array(CN);
-  var cV = new Float32Array(CN * 3);
-  var confColors = [
-    [1.0, 0.41, 0.71],  // pink
-    [0.1, 0.92, 0.87],  // cyan
-    [0.27, 0.96, 0.25], // green
-    [0.27, 0.53, 1.0],  // blue
-    [0.54, 0.27, 1.0],  // purple
-    [1.0, 0.85, 0.0]    // yellow
+  for (var si = 0; si < 33; si++) {
+    var sy = si * (-2.0);
+    var sc = spineColor(si);
+    var vrt = new THREE.Group();
+    vrt.position.y = sy;
+    // Main body ? squashed sphere
+    var vMat = new THREE.MeshStandardMaterial({
+      color: sc, metalness: 0.75, roughness: 0.28,
+      emissive: sc, emissiveIntensity: 0.18
+    });
+    var vBody = new THREE.Mesh(new THREE.SphereGeometry(0.26, 10, 8), vMat);
+    vBody.scale.y = 0.36;
+    vrt.add(vBody);
+    // 3 protrusions
+    var prMat2 = new THREE.MeshStandardMaterial({ color: sc, metalness: 0.85, roughness: 0.2, emissive: sc, emissiveIntensity: 0.25 });
+    for (var pj = 0; pj < 3; pj++) {
+      var pa = (pj / 3) * Math.PI * 2 + si * 0.3;
+      var pMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.022, 0.055, 0.22, 5), prMat2);
+      pMesh.position.set(Math.cos(pa) * 0.19, 0, Math.sin(pa) * 0.19);
+      pMesh.rotation.z = Math.atan2(Math.sin(pa), Math.cos(pa));
+      pMesh.rotation.x = Math.PI / 2;
+      vrt.add(pMesh);
+    }
+    spineG.add(vrt);
+  }
+
+  // ================================================================
+  // 3. CONFETTI PARTICLES ? exploding from spine (cards zone)
+  // ================================================================
+  var CN = mob ? 200 : 420;
+  var cP2 = new Float32Array(CN * 3), cC2 = new Float32Array(CN * 3), cS2 = new Float32Array(CN);
+  var cV2 = new Float32Array(CN * 3);
+  var cPal = [
+    [1.0,0.41,0.71],[1.0,0.41,0.71], // pink (double weight)
+    [0.1,0.92,0.87],[0.1,0.92,0.87], // cyan
+    [0.27,0.96,0.25],                 // green
+    [0.27,0.53,1.0],                  // blue
+    [0.54,0.27,1.0],[0.54,0.27,1.0], // purple
+    [1.0,0.85,0.0]                    // yellow
   ];
   for (var i = 0; i < CN; i++) {
-    cP[i*3] = (Math.random() - 0.5) * 18;
-    cP[i*3+1] = -8 - Math.random() * 46;
-    cP[i*3+2] = (Math.random() - 0.5) * 10;
-    cV[i*3] = (Math.random() - 0.5) * 0.005;
-    cV[i*3+1] = (Math.random() - 0.5) * 0.003;
-    cV[i*3+2] = (Math.random() - 0.5) * 0.004;
-    var cc = confColors[Math.floor(Math.random() * confColors.length)];
-    cC[i*3] = cc[0]; cC[i*3+1] = cc[1]; cC[i*3+2] = cc[2];
-    cS[i] = 0.5 + Math.random() * 1.0;
+    // Distributed in a cylinder around the spine (radius 1-8, Y -6 to -62)
+    var cr = 1.5 + Math.random() * 7;
+    var ca = Math.random() * Math.PI * 2;
+    cP2[i*3] = Math.cos(ca) * cr;
+    cP2[i*3+1] = -6 - Math.random() * 56;
+    cP2[i*3+2] = Math.sin(ca) * cr;
+    cV2[i*3]=(Math.random()-0.5)*0.006; cV2[i*3+1]=(Math.random()-0.5)*0.003; cV2[i*3+2]=(Math.random()-0.5)*0.006;
+    var cc2 = cPal[Math.floor(Math.random() * cPal.length)];
+    cC2[i*3]=cc2[0]; cC2[i*3+1]=cc2[1]; cC2[i*3+2]=cc2[2];
+    cS2[i]=0.45+Math.random()*0.9;
   }
-  var cGeo = makeParticleSystem(CN, cP, cC, cS);
-  scene.add(new THREE.Points(cGeo, makeParticleMat(110, renderer.getPixelRatio())));
+  var confGeo = pGeo(cP2, cC2, cS2);
+  scene.add(new THREE.Points(confGeo, pMat(115)));
 
-  // ============================================================
-  // CARDS (5 glass panels)
-  // ============================================================
-  var cardDefs = [
-    { label: 'DIGITAL\nTRANSFORMATION', col: 0x02050f, border: 0x1aeade, x: -3.5, y: -12, z: 1.0, ry: 0.3 },
-    { label: 'SOCIAL\nMEDIA',           col: 0x030d08, border: 0x46f441, x: 3.5,  y: -21, z: -1.0, ry: -0.3 },
-    { label: 'TRADING\nSYSTEMS',        col: 0x0a0802, border: 0xd4af37, x: -3.5, y: -30, z: 1.0, ry: 0.3 },
-    { label: 'XR / AI\nEXPERIENCES',   col: 0x080212, border: 0x8a45ff, x: 3.5,  y: -39, z: -1.0, ry: -0.3 },
-    { label: 'E-COMMERCE',              col: 0x020a0e, border: 0x4488ff, x: 0,    y: -47, z: 3.0, ry: 0.0 }
+  // ================================================================
+  // 4. CARDS ? glass panels with simulated video textures
+  //    Placed at fixed orbital positions around the spine
+  // ================================================================
+  var cardDef = [
+    { title: 'WELCOME TO\nHOGWARTS',      sub: 'Harry Potter',  bgA: [0.04,0.06,0.18], bgB: [0.0,0.1,0.24], border: 0x1aeade, orbitA: 0.0,   y: -11 },
+    { title: 'MILLION PIECE\nMISSION',     sub: 'Google',        bgA: [0.12,0.04,0.04], bgB: [0.22,0.06,0.02], border: 0xfdb460, orbitA: 1.26,  y: -20 },
+    { title: 'DISCOVER YOUR\nPATRONUS',    sub: 'Harry Potter',  bgA: [0.05,0.12,0.06], bgB: [0.0,0.18,0.08], border: 0x46f441, orbitA: 2.51,  y: -29 },
+    { title: 'SECRET\nSKY',                sub: 'Secret Sky',    bgA: [0.06,0.04,0.14], bgB: [0.1,0.06,0.22], border: 0x8a45ff, orbitA: 3.77,  y: -38 },
+    { title: 'CHILE 22',                   sub: 'Adidas',        bgA: [0.0,0.1,0.1],   bgB: [0.04,0.18,0.14], border: 0x1aeade, orbitA: 5.03,  y: -47 }
   ];
 
-  var cards3D = cardDefs.map(function(cd) {
-    var g = new THREE.Group();
+  var orbitR = 3.6; // distance from spine
+  var cards = [];
+  var cardCanvases = []; // for animation
+
+  cardDef.forEach(function(cd, ci) {
+    var grp = new THREE.Group();
+    var worldX = Math.cos(cd.orbitA) * orbitR;
+    var worldZ = Math.sin(cd.orbitA) * orbitR;
+    grp.position.set(worldX, cd.y, worldZ);
+    grp.rotation.y = -cd.orbitA + Math.PI * 0.5;
+
     // Body
-    var bodyMat = new THREE.MeshStandardMaterial({
-      color: cd.col, metalness: 0.5, roughness: 0.2,
-      transparent: true, opacity: 0.9, side: THREE.DoubleSide
-    });
-    g.add(new THREE.Mesh(new THREE.PlaneGeometry(3.2, 2.0), bodyMat));
-    // Border
-    g.add(new THREE.LineSegments(
-      new THREE.EdgesGeometry(new THREE.PlaneGeometry(3.2, 2.0)),
-      new THREE.LineBasicMaterial({ color: cd.border, transparent: true, opacity: 0.6 })
+    grp.add(new THREE.Mesh(
+      new THREE.PlaneGeometry(3.4, 2.1),
+      new THREE.MeshStandardMaterial({ color: 0x010408, metalness: 0.4, roughness: 0.3, transparent: true, opacity: 0.92, side: THREE.DoubleSide })
     ));
-    // Canvas texture
-    var cv2 = document.createElement('canvas'); cv2.width = 480; cv2.height = 300;
-    var cx2 = cv2.getContext('2d');
-    cx2.clearRect(0, 0, 480, 300);
-    // Gradient bg
-    var grd = cx2.createLinearGradient(0, 0, 480, 300);
-    grd.addColorStop(0, 'rgba(255,255,255,0.06)');
-    grd.addColorStop(1, 'rgba(0,0,0,0)');
-    cx2.fillStyle = grd; cx2.fillRect(0, 0, 480, 300);
-    // Border
-    var hex = '#' + cd.border.toString(16).padStart(6, '0');
-    cx2.strokeStyle = hex + '55'; cx2.lineWidth = 1.5;
-    cx2.strokeRect(2, 2, 476, 296);
-    // Title
-    cx2.fillStyle = '#ffffff'; cx2.font = 'bold 46px Courier New'; cx2.textAlign = 'left';
-    cd.label.split('\n').forEach(function(ln, li) { cx2.fillText(ln, 28, 120 + li * 54); });
-    var tex2 = new THREE.CanvasTexture(cv2);
-    g.add(new THREE.Mesh(new THREE.PlaneGeometry(3.2, 2.0),
-      new THREE.MeshBasicMaterial({ map: tex2, transparent: true, side: THREE.DoubleSide, depthWrite: false })));
-    g.position.set(cd.x, cd.y, cd.z);
-    g.rotation.y = cd.ry;
-    g.userData = { baseY: cd.y };
-    g.visible = false;
-    scene.add(g);
-    return g;
+    // Border glow
+    grp.add(new THREE.LineSegments(
+      new THREE.EdgesGeometry(new THREE.PlaneGeometry(3.4, 2.1)),
+      new THREE.LineBasicMaterial({ color: cd.border, transparent: true, opacity: 0.5 })
+    ));
+
+    // Animated canvas texture (simulate video)
+    var cv3 = document.createElement('canvas'); cv3.width = 512; cv3.height = 316;
+    var cx3 = cv3.getContext('2d');
+    cardCanvases.push({ cv: cv3, cx: cx3, cd: cd, frame: 0 });
+
+    var tex3 = new THREE.CanvasTexture(cv3);
+    tex3.needsUpdate = true;
+
+    // Draw initial frame
+    drawCard(cx3, cd, 0, tex3, cv3);
+
+    grp.add(new THREE.Mesh(
+      new THREE.PlaneGeometry(3.4, 2.1),
+      new THREE.MeshBasicMaterial({ map: tex3, transparent: true, side: THREE.DoubleSide, depthWrite: false })
+    ));
+
+    grp.visible = false;
+    grp.userData = { baseY: cd.y, orbitA: cd.orbitA, tex: tex3, cvIdx: ci };
+    scene.add(grp);
+    cards.push(grp);
   });
 
-  // ============================================================
-  // THE LAB
-  // ============================================================
-  var labGroup = new THREE.Group();
-  labGroup.position.y = -65;
-  labGroup.visible = false;
-  scene.add(labGroup);
+  function drawCard(cx, cd, frame, tex, cv) {
+    var w = cv.width, h = cv.height;
+    cx.clearRect(0, 0, w, h);
+    // Animated gradient bg (simulate video)
+    var shift = (frame * 0.008) % 1;
+    var grd = cx.createLinearGradient(0, 0, w, h);
+    var r0 = cd.bgA, r1 = cd.bgB;
+    grd.addColorStop(0, 'rgba(' + Math.round(r0[0]*255+shift*15) + ',' + Math.round(r0[1]*255) + ',' + Math.round(r0[2]*255) + ',1)');
+    grd.addColorStop(1, 'rgba(' + Math.round(r1[0]*255) + ',' + Math.round(r1[1]*255) + ',' + Math.round(r1[2]*255+shift*12) + ',1)');
+    cx.fillStyle = grd; cx.fillRect(0, 0, w, h);
+    // Subtle pattern
+    cx.fillStyle = 'rgba(255,255,255,' + (0.012 + Math.sin(frame * 0.04) * 0.008) + ')';
+    for (var pi3 = 0; pi3 < 6; pi3++) {
+      var px2 = Math.sin(frame * 0.02 + pi3 * 1.1) * w * 0.4 + w * 0.5;
+      var py2 = Math.cos(frame * 0.015 + pi3 * 0.9) * h * 0.35 + h * 0.5;
+      var pr2 = 30 + Math.sin(frame * 0.03 + pi3) * 15;
+      cx.beginPath(); cx.arc(px2, py2, pr2, 0, Math.PI * 2); cx.fill();
+    }
+    // Border
+    var hx = '#' + cd.border.toString(16).padStart(6, '0');
+    cx.strokeStyle = hx + '44'; cx.lineWidth = 2; cx.strokeRect(2, 2, w - 4, h - 4);
+    // Sub label
+    cx.fillStyle = 'rgba(255,255,255,0.3)'; cx.font = 'bold 18px Courier New'; cx.textAlign = 'left';
+    cx.fillText(cd.sub.toUpperCase(), 22, 42);
+    cx.fillStyle = 'rgba(255,255,255,0.1)'; cx.fillRect(20, 50, 50, 1);
+    // Main title
+    cx.fillStyle = 'rgba(255,255,255,0.92)'; cx.font = 'bold 46px Courier New';
+    cd.title.split('\n').forEach(function(ln, li) { cx.fillText(ln, 22, 120 + li * 54); });
+    if (tex) tex.needsUpdate = true;
+  }
 
-  // Platform
-  labGroup.add(new THREE.Mesh(
-    new THREE.CylinderGeometry(3.5, 3.5, 0.18, 32),
-    new THREE.MeshStandardMaterial({ color: 0x0a0a14, metalness: 0.85, roughness: 0.15 })
+  // ================================================================
+  // 5. THE LAB ? industrial cage + particle wreath
+  // ================================================================
+  var labG = new THREE.Group();
+  labG.position.y = -70;
+  labG.visible = false;
+  scene.add(labG);
+
+  // Dark reflective platform
+  labG.add(new THREE.Mesh(
+    new THREE.CylinderGeometry(3.6, 3.6, 0.16, 32),
+    new THREE.MeshStandardMaterial({ color: 0x080810, metalness: 0.9, roughness: 0.12 })
   ));
-  labGroup.children[0].position.y = -6;
+  labG.children[0].position.y = -6.2;
 
-  // Cage bars (8 vertical)
-  var barMat = new THREE.MeshStandardMaterial({ color: 0x15151f, metalness: 0.9, roughness: 0.2 });
+  // CAGE: 8 vertical bars + horizontal rings
+  var cageBarMat = new THREE.MeshStandardMaterial({ color: 0x141422, metalness: 0.95, roughness: 0.15 });
   for (var bi = 0; bi < 8; bi++) {
     var ba = (bi / 8) * Math.PI * 2;
-    var bar = new THREE.Mesh(new THREE.CylinderGeometry(0.028, 0.028, 13, 5), barMat);
-    bar.position.set(Math.cos(ba) * 4, -0.5, Math.sin(ba) * 4);
-    labGroup.add(bar);
+    var bar = new THREE.Mesh(new THREE.CylinderGeometry(0.026, 0.026, 14, 5), cageBarMat);
+    bar.position.set(Math.cos(ba) * 4.1, -0.2, Math.sin(ba) * 4.1);
+    labG.add(bar);
   }
-
-  // Top ring
-  labGroup.add(new THREE.Mesh(
-    new THREE.TorusGeometry(4, 0.04, 8, 60),
-    new THREE.MeshStandardMaterial({ color: 0x222233, metalness: 0.9, roughness: 0.1 })
+  // Top circular frame
+  labG.add(new THREE.Mesh(
+    new THREE.TorusGeometry(4.1, 0.038, 8, 64),
+    new THREE.MeshStandardMaterial({ color: 0x1a1a2e, metalness: 0.9, roughness: 0.12 })
   ));
-  labGroup.children[labGroup.children.length - 1].position.y = 6;
+  labG.children[labG.children.length - 1].position.y = 6.8;
 
-  // Horizontal rings at different heights
-  [-2, 0, 2.5].forEach(function(yy) {
-    labGroup.add(new THREE.Mesh(
-      new THREE.TorusGeometry(3.9, 0.006, 4, 50),
-      new THREE.MeshBasicMaterial({ color: 0x223344, transparent: true, opacity: 0.3 })
-    ));
-    labGroup.children[labGroup.children.length - 1].position.y = yy;
+  // Horizontal rings inside cage
+  [-2.5, 0, 3.0].forEach(function(hy) {
+    var hring = new THREE.Mesh(
+      new THREE.TorusGeometry(3.85, 0.008, 6, 52),
+      new THREE.MeshBasicMaterial({ color: 0x223355, transparent: true, opacity: 0.28 })
+    );
+    hring.position.y = hy;
+    labG.add(hring);
   });
 
-  // Hanging wires (12 lines from top ring to platform)
-  for (var wi = 0; wi < 12; wi++) {
-    var wa = (wi / 12) * Math.PI * 2;
-    var wr = 3.8 + (Math.random() - 0.5) * 0.4;
-    var wGeo = new THREE.BufferGeometry().setFromPoints([
-      new THREE.Vector3(Math.cos(wa) * wr, 6, Math.sin(wa) * wr),
-      new THREE.Vector3(Math.cos(wa) * wr * 0.85, -6, Math.sin(wa) * wr * 0.85)
-    ]);
-    labGroup.add(new THREE.Line(wGeo,
-      new THREE.LineBasicMaterial({ color: 0x223344, transparent: true, opacity: 0.4 })));
+  // Hanging wires (14 lines)
+  for (var wi = 0; wi < 14; wi++) {
+    var wa = (wi / 14) * Math.PI * 2;
+    var wr2 = 3.7 + (Math.random() - 0.5) * 0.5;
+    var wpts = [
+      new THREE.Vector3(Math.cos(wa) * wr2, 6.8, Math.sin(wa) * wr2),
+      new THREE.Vector3(Math.cos(wa) * wr2 * 0.9 + (Math.random()-0.5)*0.3, -6.2, Math.sin(wa) * wr2 * 0.9 + (Math.random()-0.5)*0.3)
+    ];
+    labG.add(new THREE.Line(
+      new THREE.BufferGeometry().setFromPoints(wpts),
+      new THREE.LineBasicMaterial({ color: 0x1a2233, transparent: true, opacity: 0.38 })
+    ));
   }
 
-  // PARTICLE WREATH &mdash; torus distribution
-  var WN = 280;
-  var wP = new Float32Array(WN * 3);
-  var wC = new Float32Array(WN * 3);
-  var wS = new Float32Array(WN);
-  var MR = 2.5, mr = 0.55;
+  // PARTICLE WREATH ? torus-distributed confetti
+  var WN = mob ? 180 : 320;
+  var wPos = new Float32Array(WN * 3), wCol = new Float32Array(WN * 3), wSiz = new Float32Array(WN);
+  var WR = 2.55, Wt = 0.58; // major/minor radius
   for (var i = 0; i < WN; i++) {
-    var ua = Math.random() * Math.PI * 2;
-    var va = Math.random() * Math.PI * 2;
-    var rx = (MR + mr * Math.cos(va)) * Math.cos(ua);
-    var ry2 = mr * Math.sin(va);
-    var rz = (MR + mr * Math.cos(va)) * Math.sin(ua);
-    wP[i*3] = rx + (Math.random() - 0.5) * 0.15;
-    wP[i*3+1] = ry2 + (Math.random() - 0.5) * 0.15;
-    wP[i*3+2] = rz + (Math.random() - 0.5) * 0.15;
+    var wu = Math.random() * Math.PI * 2, wv = Math.random() * Math.PI * 2;
+    wPos[i*3] = (WR + Wt * Math.cos(wv)) * Math.cos(wu) + (Math.random()-0.5)*0.14;
+    wPos[i*3+1] = Wt * Math.sin(wv) + (Math.random()-0.5)*0.14;
+    wPos[i*3+2] = (WR + Wt * Math.cos(wv)) * Math.sin(wu) + (Math.random()-0.5)*0.14;
     var wrc = Math.random();
-    if (wrc < 0.35) { wC[i*3] = 0.27; wC[i*3+1] = 0.96; wC[i*3+2] = 0.25; } // green
-    else if (wrc < 0.65) { wC[i*3] = 0.54; wC[i*3+1] = 0.27; wC[i*3+2] = 1.0; } // purple
-    else if (wrc < 0.82) { wC[i*3] = 0.9; wC[i*3+1] = 0.95; wC[i*3+2] = 1.0; } // white
-    else { wC[i*3] = 0.1; wC[i*3+1] = 0.92; wC[i*3+2] = 0.87; } // teal
-    wS[i] = 1.0 + Math.random() * 1.5;
+    if (wrc < 0.3)      { wCol[i*3]=0.25;wCol[i*3+1]=0.95;wCol[i*3+2]=0.22; }
+    else if (wrc < 0.58){ wCol[i*3]=0.52;wCol[i*3+1]=0.25;wCol[i*3+2]=1.0; }
+    else if (wrc < 0.78){ wCol[i*3]=0.92;wCol[i*3+1]=0.96;wCol[i*3+2]=1.0; }
+    else                { wCol[i*3]=0.08;wCol[i*3+1]=0.90;wCol[i*3+2]=0.85; }
+    wSiz[i]=1.0+Math.random()*1.6;
   }
-  var wGeo2 = makeParticleSystem(WN, wP, wC, wS);
+  var wreathGeo = pGeo(wPos, wCol, wSiz);
+  var wreathMesh = new THREE.Points(wreathGeo, pMat(195));
   var wreathGroup = new THREE.Group();
-  wreathGroup.add(new THREE.Points(wGeo2, makeParticleMat(190, renderer.getPixelRatio())));
-  labGroup.add(wreathGroup);
+  wreathGroup.add(wreathMesh);
+  labG.add(wreathGroup);
 
-  // Central orb in lab
-  labGroup.add(new THREE.Mesh(
-    new THREE.SphereGeometry(0.4, 20, 20),
-    new THREE.MeshStandardMaterial({
-      color: 0x7a2fee, emissive: 0x5a0fcc, emissiveIntensity: 1.0,
-      transparent: true, opacity: 0.7
-    })
+  // Central energy orb
+  labG.add(new THREE.Mesh(
+    new THREE.SphereGeometry(0.38, 18, 18),
+    new THREE.MeshStandardMaterial({ color: 0x55dd22, emissive: 0x33aa00, emissiveIntensity: 1.2, transparent: true, opacity: 0.7 })
   ));
 
-  // ============================================================
-  // MOUSE + SCROLL
-  // ============================================================
+  // ================================================================
+  // SCROLL + MOUSE + NAV
+  // ================================================================
+  var scrollP = 0;
+  var lastSY = 0, scrollVel = 0;
+  var navEl = document.getElementById('nav');
+  var navOffY = 0;
+
+  window.addEventListener('scroll', function() {
+    var max = document.getElementById('ss').scrollHeight - window.innerHeight;
+    scrollP = max > 0 ? Math.min(1, window.scrollY / max) : 0;
+    scrollVel = (window.scrollY - lastSY) * 0.04;
+    lastSY = window.scrollY;
+  }, { passive: true });
+
   var mouse = { tx: 0, ty: 0, x: 0, y: 0 };
   window.addEventListener('mousemove', function(e) {
     mouse.tx = (e.clientX / W) * 2 - 1;
     mouse.ty = -(e.clientY / H) * 2 + 1;
   });
 
-  var scrollP = 0;
-  window.addEventListener('scroll', function() {
-    var max = document.getElementById('scroll-space').scrollHeight - window.innerHeight;
-    scrollP = max > 0 ? Math.min(1, window.scrollY / max) : 0;
-  }, { passive: true });
-
-  // Smooth camera state
-  var camPos = { x: 0, y: 1, z: 10 };
-  var camLook = { x: 0, y: 0, z: 0 };
-  var lookVec = new THREE.Vector3();
-
-  // DOM refs
+  // DOM overlays
   var shEl = document.getElementById('sh');
+  var waylfEl = document.getElementById('waylf');
   var heroEl = document.getElementById('hero');
-  var sideEl = document.getElementById('sidebar');
-  var labEl = document.getElementById('labtxt');
+  var labTEl = document.getElementById('labt');
 
-  // ============================================================
+  // ================================================================
   // RENDER LOOP
-  // ============================================================
+  // ================================================================
   var clock = new THREE.Clock();
   var t = 0;
+  var frame = 0;
 
-  function lerp(a, b, v) { return a + (b - a) * v; }
+  function lerp(a, b, t2) { return a + (b - a) * t2; }
+  var K = 0.072; // camera smooth factor
 
   function animate() {
     requestAnimationFrame(animate);
     t = clock.getElapsedTime();
+    frame++;
 
-    mouse.x += (mouse.tx - mouse.x) * 0.06;
-    mouse.y += (mouse.ty - mouse.y) * 0.06;
+    // Smooth mouse
+    mouse.x += (mouse.tx - mouse.x) * 0.055;
+    mouse.y += (mouse.ty - mouse.y) * 0.055;
 
     var sp = scrollP;
 
-    // Target camera position
-    var tx, ty, tz, tlx, tly, tlz;
-    if (sp < 0.15) {
-      var pv = sp / 0.15;
-      tx = 0; ty = 1 - pv * 0.5; tz = 10 - pv * 5;
+    // ?? CAMERA TARGET based on scroll progress
+    var tx2, ty2, tz2, tlx, tly, tlz;
+
+    if (sp < 0.12) {
+      // Hero: camera eases forward toward logo
+      var pv = sp / 0.12;
+      tx2 = 0; ty2 = 1.5 - pv * 0.5; tz2 = 11 - pv * 4.5;
       tlx = 0; tly = 0; tlz = 0;
-    } else if (sp < 0.30) {
-      var pv = (sp - 0.15) / 0.15;
-      tx = pv * 1.5; ty = 0.5 - pv * 2.5; tz = 5 + pv * 2;
-      tlx = 0; tly = -1; tlz = 0;
-    } else if (sp < 0.65) {
-      var pv = (sp - 0.30) / 0.35;
-      var ang = pv * Math.PI * 2.2;
-      tx = Math.cos(ang) * 3.5;
-      ty = -3 - pv * 44;
-      tz = 7 + Math.sin(ang) * 1.8;
-      tlx = 0; tly = ty - 1; tlz = 0;
-    } else if (sp < 0.82) {
-      var pv = (sp - 0.65) / 0.17;
-      tx = 0; ty = -47 - pv * 18; tz = 8 - pv * 3;
+
+    } else if (sp < 0.25) {
+      // Ring approaches camera / text reveal
+      var pv = (sp - 0.12) / 0.13;
+      tx2 = pv * 1.2; ty2 = 1.0 - pv * 2.0; tz2 = 6.5 + pv * 1.5;
+      tlx = 0; tly = -0.5; tlz = 0;
+
+    } else if (sp < 0.64) {
+      // SPIRAL DESCENT around spine (cards zone)
+      var pv = (sp - 0.25) / 0.39;
+      var angle = pv * Math.PI * 2.4; // ~1.2 full orbits
+      var rad = 4.2 + Math.sin(pv * Math.PI) * 0.6;
+      tx2 = Math.cos(angle) * rad;
+      ty2 = -2 - pv * 46;
+      tz2 = 6.5 + Math.sin(angle) * 1.4;
+      tlx = 0; tly = ty2 - 0.8; tlz = 0;
+
+    } else if (sp < 0.80) {
+      // Descend to lab
+      var pv = (sp - 0.64) / 0.16;
+      tx2 = lerp(Math.cos(Math.PI * 2.4) * 4.2, 0, pv);
+      ty2 = -48 - pv * 22;
+      tz2 = 8 - pv * 2.5;
+      tlx = 0; tly = -75; tlz = 0;
+
+    } else if (sp < 0.93) {
+      // Inside lab
+      var pv = (sp - 0.80) / 0.13;
+      tx2 = Math.sin(pv * Math.PI * 0.6) * 1.5;
+      ty2 = -70 - pv * 3;
+      tz2 = 5.5 + Math.sin(pv * Math.PI) * 1;
       tlx = 0; tly = -70; tlz = 0;
+
     } else {
-      var pv = (sp - 0.82) / 0.18;
-      tx = 0; ty = -65 + pv * 66; tz = 5 + pv * 5;
-      tlx = 0; tly = ty + lerp(-5, 2, pv); tlz = 0;
+      // Return to top
+      var pv = (sp - 0.93) / 0.07;
+      tx2 = 0; ty2 = lerp(-73, 1.5, pv); tz2 = lerp(5.5, 11, pv);
+      tlx = 0; tly = lerp(-70, 0, pv); tlz = 0;
     }
+
+    // Apply mouse parallax to target
+    tx2 += mouse.x * 0.28;
+    ty2 += mouse.y * 0.18;
 
     // Smooth camera
-    var ks = 0.07;
-    camPos.x += (tx + mouse.x * 0.25 - camPos.x) * ks;
-    camPos.y += (ty + mouse.y * 0.18 - camPos.y) * ks;
-    camPos.z += (tz - camPos.z) * ks;
-    camLook.x += (tlx - camLook.x) * ks;
-    camLook.y += (tly - camLook.y) * ks;
-    camLook.z += (tlz - camLook.z) * ks;
+    camPos.x += (tx2 - camPos.x) * K;
+    camPos.y += (ty2 - camPos.y) * K;
+    camPos.z += (tz2 - camPos.z) * K;
+    camLook.x += (tlx - camLook.x) * K;
+    camLook.y += (tly - camLook.y) * K;
+    camLook.z += (tlz - camLook.z) * K;
+
     camera.position.set(camPos.x, camPos.y, camPos.z);
-    lookVec.set(camLook.x, camLook.y, camLook.z);
-    camera.lookAt(lookVec);
+    lookV.set(camLook.x, camLook.y, camLook.z);
+    camera.lookAt(lookV);
 
-    movL.position.set(mouse.x * 5, camPos.y + mouse.y * 3 + 2, camPos.z - 2);
+    // Moving light
+    movL.position.set(mouse.x * 5, camPos.y + mouse.y * 3 + 1, camPos.z - 2);
 
-    // Logo animation
-    logoGroup.position.y = Math.sin(t * 0.35) * 0.16;
-    logoGroup.rotation.y = t * 0.05 + mouse.x * 0.08;
-    logoGroup.rotation.x = mouse.y * 0.05;
-    // Fade logo on scroll
+    // ?? NAV floating behavior (elastic with scroll velocity)
+    navOffY += (scrollVel * -18 - navOffY) * 0.1;
+    scrollVel *= 0.88;
+    navEl.style.transform = 'translateX(-50%) translateY(' + navOffY.toFixed(1) + 'px)';
+
+    // ?? LOGO animation
+    logo.position.y = Math.sin(t * 0.38) * 0.15;
+    logo.rotation.y = t * 0.045 + mouse.x * 0.07;
+    logo.rotation.x = mouse.y * 0.045;
+    // Fade logo: visible 0-15%, return 93-100%
     var logoVis = sp < 0.08 ? 1 : sp < 0.18 ? 1 - (sp - 0.08) / 0.10 : 0;
-    logoGroup.visible = logoVis > 0.02;
-    if (logoGroup.visible) logoGroup.scale.setScalar(1 - (1 - logoVis) * 0.2);
-    // Return visibility
-    if (sp > 0.88) {
-      var rv = (sp - 0.88) / 0.12;
-      logoGroup.visible = true;
-      logoGroup.scale.setScalar(rv);
-    }
+    if (sp > 0.90) logoVis = (sp - 0.90) / 0.10;
+    logo.visible = logoVis > 0.01;
+    if (logo.visible) logo.scale.setScalar(Math.max(0.01, logoVis));
 
-    // Spine slow rotation
-    spineGroup.rotation.y = t * 0.015;
-    spineGroup.rotation.z = Math.sin(t * 0.1) * 0.008;
+    // ?? SPINE slow sway
+    spineG.rotation.y = t * 0.013;
+    spineG.rotation.z = Math.sin(t * 0.09) * 0.006;
 
-    // Cards
-    var cardVisStart = 0.28;
-    cards3D.forEach(function(c, ci) {
-      var lo = cardVisStart + ci * 0.065;
-      var hi = lo + 0.18;
-      c.visible = sp > lo && sp < 0.68;
+    // ?? CARDS
+    var cStart = 0.26, cRange = 0.04;
+    cards.forEach(function(c, ci) {
+      var lo = cStart + ci * cRange;
+      c.visible = sp > lo && sp < 0.66;
       if (c.visible) {
-        c.position.y = c.userData.baseY + Math.sin(t * 0.3 + ci) * 0.09;
+        // Gentle float
+        c.position.y = c.userData.baseY + Math.sin(t * 0.28 + ci) * 0.08;
+        // Update animated texture every 3 frames
+        if (frame % 3 === 0) {
+          var cvd = cardCanvases[ci];
+          drawCard(cvd.cx, cvd.cd, frame + ci * 17, c.userData.tex, cvd.cv);
+        }
       }
     });
 
-    // Lab
-    labGroup.visible = sp > 0.60 && sp < 0.94;
-    if (labGroup.visible) {
-      wreathGroup.rotation.y = t * 0.08;
-      labGroup.rotation.y = Math.sin(t * 0.05) * 0.02;
+    // ?? LAB
+    labG.visible = sp > 0.60 && sp < 0.95;
+    if (labG.visible) {
+      wreathGroup.rotation.y = t * 0.075;
+      // Color-cycle the wreath over time
+      var wt = t * 0.4;
+      var labC = new THREE.Color();
+      labC.setHSL((wt % 1), 0.9, 0.6);
+      labPL.color.set(labC);
     }
 
-    // Hero particles drift
-    for (var i = 0; i < HN; i++) {
-      hP[i*3] += hV[i*3];
-      hP[i*3+1] += hV[i*3+1];
-      hP[i*3+2] += hV[i*3+2];
-      if (hP[i*3+1] < -9) { hP[i*3+1] = 9; hP[i*3] = (Math.random() - 0.5) * 22; }
+    // ?? HERO PARTICLES drift
+    for (var i = 0; i < HBN; i++) {
+      hbP[i*3] += hbV[i*3]; hbP[i*3+1] += hbV[i*3+1]; hbP[i*3+2] += hbV[i*3+2];
+      if (hbP[i*3+1] < -10) { hbP[i*3+1] = 10; hbP[i*3] = (Math.random()-0.5)*24; }
     }
-    hGeo.attributes.position.needsUpdate = true;
+    heroBokehGeo.attributes.position.needsUpdate = true;
 
-    // Confetti gentle drift
+    // ?? CONFETTI gentle drift
     for (var i = 0; i < CN; i++) {
-      cP[i*3] += cV[i*3];
-      cP[i*3+1] += cV[i*3+1];
-      cP[i*3+2] += cV[i*3+2];
+      cP2[i*3] += cV2[i*3]; cP2[i*3+1] += cV2[i*3+1]; cP2[i*3+2] += cV2[i*3+2];
     }
-    cGeo.attributes.position.needsUpdate = true;
+    confGeo.attributes.position.needsUpdate = true;
 
-    // Overlays
+    // ?? OVERLAYS
     shEl.style.opacity = sp < 0.04 ? '1' : '0';
-    heroEl.style.opacity = (sp > 0.14 && sp < 0.28) ? '1' : '0';
-    sideEl.style.opacity = (sp > 0.29 && sp < 0.63) ? '1' : '0';
-    labEl.style.opacity = (sp > 0.61 && sp < 0.87) ? '1' : '0';
+    heroEl.style.opacity = (sp > 0.13 && sp < 0.26) ? '1' : '0';
+    waylfEl.style.opacity = (sp > 0.27 && sp < 0.64) ? '1' : '0';
+    labTEl.style.opacity = (sp > 0.61 && sp < 0.90) ? '1' : '0';
 
     renderer.render(scene, camera);
   }
 
+  // ?? RESIZE
   window.addEventListener('resize', function() {
     W = window.innerWidth; H = window.innerHeight;
     camera.aspect = W / H;
@@ -630,10 +703,10 @@ function init() {
   });
 
   animate();
-  console.log('M7 v3 ready | THREE r' + THREE.REVISION);
+  console.log('Active Theory Clone ready | THREE r' + THREE.REVISION);
 }
 
-init();
+boot();
 })();
 </script>
 </body>
