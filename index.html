@@ -3,111 +3,673 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Active Theory Clone - M7</title>
+<title>M7 — 3D Experience</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-html,body{width:100%;height:100%;background:#000;overflow-x:hidden;font-family:'Courier New',monospace;color:#fff}
-#c{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0}
-#scroll-space{height:800vh;position:relative;z-index:1;pointer-events:none}
+html{scroll-behavior:auto}
+body{background:#000;overflow-x:hidden;font-family:'Courier New',monospace;color:#fff}
+
+/* SCROLL SPACE — camera travels through this */
+#scroll-space{height:700vh;position:relative}
+
+/* CANVAS — fixed fullscreen */
+#canvas-wrapper{position:fixed;inset:0;z-index:0}
+canvas{display:block;width:100%!important;height:100%!important}
+
+/* VIGNETTE */
+#vignette{position:fixed;inset:0;z-index:5;pointer-events:none;
+  background:radial-gradient(ellipse at 50% 50%,transparent 45%,rgba(0,0,0,0.85) 100%)}
+
+/* NOISE */
+#noise{position:fixed;inset:0;z-index:6;pointer-events:none;opacity:.04;
+  background-image:url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAMAAAAp4XiDAAAAUVBMVEWFhYWDg4N3d3dtbW17e3t1dXWBgYGHh4t5eXlzc3OLi4ubm5uVlZWPj4+NjY19fX2JiYl/f39ra2uRkZGZmZlpaWmXl5dvb29xcXGTk5NnZ2c8TV1mAAAAG3RSTlNAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEAvEOwtAAAAWklEQVR42uzBgQAAAACAoP2pF6kCAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAO8GxYgAAWiRzU0AAAAASUVORK5CYII=");
+  background-size:150px}
 
 /* NAV */
-nav{position:fixed;top:30px;left:50%;transform:translateX(-50%);z-index:100;
-    display:flex;align-items:center;gap:0;
-    border:1px solid rgba(255,255,255,0.2);border-radius:30px;
-    background:rgba(0,0,0,0.3);backdrop-filter:blur(20px);padding:10px 30px}
-.nb{font-size:12px;letter-spacing:2px;color:#fff;text-decoration:none;padding:0 8px}
-.nb:hover{opacity:0.7}
-.sep{color:rgba(255,255,255,0.3);margin:0 4px}
+nav{position:fixed;top:28px;left:50%;transform:translateX(-50%);z-index:100;
+  display:flex;align-items:center;gap:6px;padding:11px 32px;
+  border:1px solid rgba(255,255,255,0.12);border-radius:32px;
+  background:rgba(0,0,0,0.45);backdrop-filter:blur(20px);white-space:nowrap}
+.nl{font-size:11px;letter-spacing:3px;color:rgba(255,255,255,0.75);text-decoration:none;transition:color .2s}
+.nl:hover{color:#d4af37}
+.ns{color:rgba(255,255,255,0.2);margin:0 6px;font-size:10px}
 
-/* OVERLAYS */
-.ov{position:fixed;z-index:10;pointer-events:none;opacity:0;transition:opacity 0.8s}
-.ov.show{opacity:1}
-#ov-scroll{bottom:80px;left:50%;transform:translateX(-50%);text-align:center;color:rgba(255,255,255,0.5);font-size:12px;letter-spacing:4px}
-#ov-scroll-arrow{width:1px;height:30px;margin:8px auto 0;background:linear-gradient(to bottom,rgba(255,255,255,0.5),transparent);animation:sa 1.5s ease-in-out infinite}
-@keyframes sa{0%,100%{transform:scaleY(0);transform-origin:top}50%{transform:scaleY(1);transform-origin:top}}
+/* SCROLL HINT */
+#sh{position:fixed;bottom:52px;left:50%;transform:translateX(-50%);
+  text-align:center;z-index:10;transition:opacity .6s}
+#sh-txt{font-size:9px;letter-spacing:5px;color:rgba(255,255,255,0.35)}
+#sh-line{width:1px;height:28px;margin:8px auto 0;
+  background:linear-gradient(to bottom,rgba(255,255,255,0.4),transparent);
+  animation:shpulse 1.6s ease-in-out infinite}
+@keyframes shpulse{0%,100%{transform:scaleY(0);transform-origin:top}60%{transform:scaleY(1);transform-origin:top}}
 
-#ov-nav-sidebar{top:50%;left:80px;transform:translateY(-50%);
-    background:rgba(26,26,46,0.7);backdrop-filter:blur(20px);
-    border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:28px 22px;min-width:280px}
-.sb-title{font-size:13px;color:#fff;letter-spacing:1px;margin-bottom:16px;line-height:1.4}
-.sb-divider{height:1px;background:rgba(255,255,255,0.2);margin:16px 0}
-.sb-link{display:block;font-size:13px;color:#1aeade;margin:10px 0;text-decoration:none;transition:all 0.2s;letter-spacing:0.5px}
-.sb-link:hover{color:#79aeff;transform:translateX(5px)}
-.sb-search{margin-top:16px;width:100%;padding:10px 16px;background:transparent;
-    border:1px solid rgba(255,255,255,0.2);border-radius:20px;color:#fff;font-size:11px;outline:none}
-.sb-search::placeholder{color:rgba(255,255,255,0.4)}
+/* HERO TEXT */
+#hero{position:fixed;left:9%;top:50%;transform:translateY(-50%);z-index:10;
+  opacity:0;pointer-events:none;max-width:420px}
+#hero h1{font-size:clamp(28px,4.5vw,64px);letter-spacing:8px;line-height:1.05;
+  background:linear-gradient(135deg,#fff 60%,rgba(212,175,55,0.8));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent}
+#hero p{font-size:10px;letter-spacing:4px;color:rgba(255,255,255,0.4);margin-top:18px}
+#hero .cta{display:inline-block;margin-top:28px;padding:10px 28px;
+  border:1px solid rgba(212,175,55,0.5);border-radius:20px;font-size:9px;
+  letter-spacing:3px;color:#d4af37;text-decoration:none;pointer-events:all;
+  transition:all .25s;-webkit-text-fill-color:#d4af37}
+#hero .cta:hover{background:rgba(212,175,55,0.1);border-color:#d4af37}
 
-#ov-lab{top:50%;left:50%;transform:translate(-50%,-50%);text-align:center}
-.lab-title{font-size:clamp(28px,4vw,42px);letter-spacing:5px;color:#fff;margin-bottom:20px}
-.lab-desc{font-size:13px;color:rgba(255,255,255,0.7);line-height:1.8;max-width:400px}
+/* SIDEBAR */
+#sidebar{position:fixed;left:6%;top:50%;transform:translateY(-50%);z-index:10;
+  opacity:0;pointer-events:none;
+  background:rgba(10,10,25,0.75);backdrop-filter:blur(24px);
+  border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:28px 24px;min-width:240px}
+#sidebar h3{font-size:12px;letter-spacing:2px;color:#fff;margin-bottom:14px}
+.sb-div{height:1px;background:rgba(255,255,255,0.12);margin:14px 0}
+.sb-lk{display:block;font-size:11px;letter-spacing:1px;color:#1aeade;
+  margin:9px 0;text-decoration:none;transition:all .2s;pointer-events:all}
+.sb-lk:hover{color:#d4af37;transform:translateX(4px)}
 
-#loading{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:1000;
-    font-size:14px;letter-spacing:3px;color:#d4af37}
+/* LAB TEXT */
+#lab-txt{position:fixed;bottom:14%;left:50%;transform:translateX(-50%);
+  z-index:10;opacity:0;text-align:center;pointer-events:none}
+#lab-txt h2{font-size:clamp(22px,3.5vw,48px);letter-spacing:8px}
+#lab-txt p{font-size:10px;letter-spacing:3px;color:rgba(255,255,255,0.5);margin-top:12px}
+
+/* SECTION LABEL */
+#sec-label{position:fixed;top:28px;right:40px;z-index:10;opacity:0;
+  font-size:9px;letter-spacing:3px;color:rgba(255,255,255,0.3);pointer-events:none}
 </style>
 </head>
 <body>
 
-<div id="loading">LOADING...</div>
-
-<canvas id="c"></canvas>
+<div id="vignette"></div>
+<div id="noise"></div>
+<div id="canvas-wrapper"><canvas id="c"></canvas></div>
 <div id="scroll-space"></div>
 
 <nav>
-    <a href="#" class="nb">WORK</a>
-    <span class="sep">—</span>
-    <a href="#" class="nb">CONTACT</a>
+  <a href="#" class="nl">WORK</a>
+  <span class="ns">—</span>
+  <a href="#" class="nl">LAB</a>
+  <span class="ns">—</span>
+  <a href="#" class="nl">CONTACT</a>
 </nav>
 
-<div class="ov" id="ov-scroll">
-    SCROLL DOWN
-    <div id="ov-scroll-arrow"></div>
+<div id="sh"><div id="sh-txt">SCROLL</div><div id="sh-line"></div></div>
+
+<div id="hero">
+  <h1>M7<br>DIGITAL</h1>
+  <p>PREMIUM DIGITAL EXPERIENCES</p>
+  <a href="#" class="cta">EXPLORE WORK →</a>
 </div>
 
-<div class="ov" id="ov-nav-sidebar">
-    <div class="sb-title">WHAT ARE YOU<br>LOOKING FOR?</div>
-    <div class="sb-divider"></div>
-    <a href="#" class="sb-link">→ WEBSITES</a>
-    <a href="#" class="sb-link">→ INSTALLATIONS</a>
-    <a href="#" class="sb-link">→ XR / VR / AI</a>
-    <a href="#" class="sb-link">→ MULTIPLAYER</a>
-    <a href="#" class="sb-link">→ GAMES</a>
-    <div class="sb-divider"></div>
-    <input type="text" class="sb-search" placeholder="🔍 ASK ME ANYTHING...">
+<div id="sidebar">
+  <h3>WHAT ARE YOU<br>LOOKING FOR?</h3>
+  <div class="sb-div"></div>
+  <a href="#" class="sb-lk">→ WEBSITES</a>
+  <a href="#" class="sb-lk">→ INSTALLATIONS</a>
+  <a href="#" class="sb-lk">→ XR / VR / AI</a>
+  <a href="#" class="sb-lk">→ SOCIAL MEDIA</a>
+  <a href="#" class="sb-lk">→ TRADING TOOLS</a>
 </div>
 
-<div class="ov" id="ov-lab">
-    <div class="lab-title">// THE LAB →</div>
-    <div class="lab-desc">OUR HOME FOR INNOVATION<br>WHERE PROTOTYPES TURN INTO<br>PRODUCTION PROJECTS</div>
+<div id="lab-txt">
+  <h2>// THE LAB →</h2>
+  <p>WHERE PROTOTYPES BECOME PRODUCTION</p>
 </div>
 
-<!-- THREE.js من CDN موثوق -->
+<div id="sec-label">SECTION_01 / HERO</div>
+
+<!-- THREE.JS -->
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+<!-- GSAP + ScrollTrigger -->
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
 
 <script>
-// انتظر حتى يتم تحميل THREE.js
-(function checkThree() {
-    if (typeof THREE === 'undefined') {
-        console.log('Waiting for THREE.js...');
-        setTimeout(checkThree, 100);
-        return;
+(function(){
+'use strict';
+
+// ── WAIT FOR THREE ──────────────────────────────────────────────
+if(typeof THREE==='undefined'){
+  console.error('THREE not loaded'); return;
+}
+gsap.registerPlugin(ScrollTrigger);
+
+// ── CONFIG ──────────────────────────────────────────────────────
+const mob = window.innerWidth < 768;
+let W = window.innerWidth, H = window.innerHeight;
+
+// ── RENDERER ────────────────────────────────────────────────────
+const canvas = document.getElementById('c');
+const renderer = new THREE.WebGLRenderer({canvas, antialias:!mob, alpha:false});
+renderer.setSize(W, H);
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.setClearColor(0x000000);
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.1;
+renderer.shadowMap.enabled = true;
+
+// ── SCENE ───────────────────────────────────────────────────────
+const scene = new THREE.Scene();
+scene.fog = new THREE.FogExp2(0x000000, 0.008);
+
+// ── CAMERA ──────────────────────────────────────────────────────
+const camera = new THREE.PerspectiveCamera(55, W/H, 0.1, 300);
+camera.position.set(0, 2, 12);
+const camTarget = new THREE.Vector3(0, 0, 0);
+
+// ── LIGHTS ──────────────────────────────────────────────────────
+scene.add(new THREE.AmbientLight(0x0a0a1a, 3));
+const keyL = new THREE.PointLight(0xd4af37, 5, 40);
+keyL.position.set(4, 6, 8);
+scene.add(keyL);
+const fillL = new THREE.PointLight(0x4a7bff, 2.5, 30);
+fillL.position.set(-5, 0, 5);
+scene.add(fillL);
+const rimL = new THREE.PointLight(0x1aeade, 1.5, 20);
+rimL.position.set(0, -5, -3);
+scene.add(rimL);
+const labL = new THREE.PointLight(0x8a45ff, 4, 25);
+labL.position.set(0, -38, 3);
+scene.add(labL);
+const movL = new THREE.PointLight(0xd4af37, 2, 15);
+scene.add(movL);
+
+// ── MATERIALS (shared) ──────────────────────────────────────────
+const goldMat = new THREE.MeshStandardMaterial({
+  color:0xd4af37, metalness:0.95, roughness:0.05,
+  emissive:0x553300, emissiveIntensity:0.3
+});
+const glassMat = new THREE.MeshStandardMaterial({
+  color:0x88aaff, metalness:0.1, roughness:0,
+  transparent:true, opacity:0.15, side:THREE.DoubleSide,
+  envMapIntensity:1
+});
+const copperMat = new THREE.MeshStandardMaterial({
+  color:0xc87d5f, metalness:0.9, roughness:0.1,
+  emissive:0x441100, emissiveIntensity:0.4
+});
+
+// ═══════════════════════════════════════════════════════════════
+// 1. HERO LOGO — Hourglass inside a ring
+// ═══════════════════════════════════════════════════════════════
+const logoGroup = new THREE.Group();
+scene.add(logoGroup);
+
+// Outer ring
+const ringGeo = new THREE.TorusGeometry(2.0, 0.04, 16, 80);
+logoGroup.add(new THREE.Mesh(ringGeo, goldMat));
+
+// Inner ring (second)
+const ring2Geo = new THREE.TorusGeometry(1.7, 0.015, 8, 60);
+const ring2Mat = new THREE.MeshStandardMaterial({color:0xd4af37,metalness:1,roughness:0,
+  transparent:true,opacity:0.4,emissive:0xd4af37,emissiveIntensity:0.2});
+logoGroup.add(new THREE.Mesh(ring2Geo, ring2Mat));
+
+// Hourglass — top oval
+const topCurve = new THREE.EllipseCurve(0,0,1.1,0.7,0,Math.PI*2,false,0);
+const topPts = topCurve.getPoints(64).map(p=>new THREE.Vector3(p.x,p.y,0));
+const topGeo = new THREE.BufferGeometry().setFromPoints(topPts);
+logoGroup.add(new THREE.Line(topGeo, new THREE.LineBasicMaterial({color:0xc87d5f})));
+const topMesh = logoGroup.children[logoGroup.children.length-1];
+topMesh.position.y = 1.6;
+
+// Bottom oval
+const botGeo = new THREE.BufferGeometry().setFromPoints(topPts);
+const botLine = new THREE.Line(botGeo, new THREE.LineBasicMaterial({color:0xc87d5f}));
+botLine.position.y = -1.6;
+logoGroup.add(botLine);
+
+// Neck lines
+const nL = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(-0.7,1.0,0),new THREE.Vector3(-0.5,-1.0,0)]);
+const nR = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0.7,1.0,0),new THREE.Vector3(0.5,-1.0,0)]);
+[nL,nR].forEach(g=>logoGroup.add(new THREE.Line(g,new THREE.LineBasicMaterial({color:0xc87d5f}))));
+
+// 3 inner rings
+[-0.5,0,0.5].forEach(y=>{
+  const w=0.45+(1-Math.abs(y)*0.5)*0.2;
+  const rc=new THREE.EllipseCurve(0,0,w,0.1,0,Math.PI*2,false,0);
+  const rg=new THREE.BufferGeometry().setFromPoints(rc.getPoints(32).map(p=>new THREE.Vector3(p.x,p.y,0)));
+  const rm=new THREE.Line(rg,new THREE.LineBasicMaterial({color:0xd4af37,transparent:true,opacity:0.7}));
+  rm.position.y=y;
+  logoGroup.add(rm);
+});
+
+// Gold arc (bottom right)
+const arcC=new THREE.EllipseCurve(0,0,0.25,0.25,-0.2,Math.PI*1.5,false,0);
+const arcG=new THREE.BufferGeometry().setFromPoints(arcC.getPoints(32).map(p=>new THREE.Vector3(p.x,p.y,0)));
+const arcLine=new THREE.Line(arcG,new THREE.LineBasicMaterial({color:0xffde7b}));
+arcLine.position.set(1.05,-2.0,0);
+logoGroup.add(arcLine);
+
+// Dot
+const dotMesh=new THREE.Mesh(new THREE.SphereGeometry(0.045,8,8),new THREE.MeshBasicMaterial({color:0xffde7b}));
+dotMesh.position.set(1.05,-1.95,0);
+logoGroup.add(dotMesh);
+
+// Logo particles (orbital ring around the ring)
+const lParticleCount = 80;
+const lPPos = new Float32Array(lParticleCount*3);
+for(let i=0;i<lParticleCount;i++){
+  const a=(i/lParticleCount)*Math.PI*2;
+  const r=2.0+(Math.random()-0.5)*0.8;
+  const jit=(Math.random()-0.5)*0.3;
+  lPPos[i*3]=Math.cos(a)*r;
+  lPPos[i*3+1]=Math.sin(a)*r+jit;
+  lPPos[i*3+2]=(Math.random()-0.5)*0.4;
+}
+const lPGeo=new THREE.BufferGeometry();
+lPGeo.setAttribute('position',new THREE.BufferAttribute(lPPos,3));
+const lPMat=new THREE.PointsMaterial({color:0xd4af37,size:0.06,transparent:true,
+  opacity:0.8,blending:THREE.AdditiveBlending,depthWrite:false});
+logoGroup.add(new THREE.Points(lPGeo,lPMat));
+
+// ═══════════════════════════════════════════════════════════════
+// 2. CENTRAL SPINE — DNA-like glass structure
+// ═══════════════════════════════════════════════════════════════
+const spineGroup = new THREE.Group();
+scene.add(spineGroup);
+
+// Core vertical line
+const coreGeo=new THREE.CylinderGeometry(0.006,0.006,120,6);
+const coreMat=new THREE.MeshBasicMaterial({color:0xd4af37,transparent:true,opacity:0.35});
+spineGroup.add(new THREE.Mesh(coreGeo,coreMat));
+
+// DNA cross-links (30 pairs)
+for(let i=0;i<30;i++){
+  const y=-60+i*4;
+  const a=(i/30)*Math.PI*6; // spiral
+  const r=0.4;
+  const p1=new THREE.Vector3(Math.cos(a)*r, y, Math.sin(a)*r);
+  const p2=new THREE.Vector3(Math.cos(a+Math.PI)*r, y, Math.sin(a+Math.PI)*r);
+  // strand dots
+  [p1,p2].forEach(p=>{
+    const d=new THREE.Mesh(new THREE.SphereGeometry(0.04,6,6),
+      i%3===0?goldMat:i%3===1?new THREE.MeshStandardMaterial({color:0x1aeade,emissive:0x1aeade,emissiveIntensity:0.6}):
+      new THREE.MeshStandardMaterial({color:0x8a45ff,emissive:0x8a45ff,emissiveIntensity:0.6}));
+    d.position.copy(p);
+    spineGroup.add(d);
+  });
+  // cross line
+  const crossGeo=new THREE.BufferGeometry().setFromPoints([p1,p2]);
+  spineGroup.add(new THREE.Line(crossGeo,new THREE.LineBasicMaterial({
+    color: i%3===0?0xd4af37:i%3===1?0x1aeade:0x8a45ff,
+    transparent:true,opacity:0.25
+  })));
+}
+
+// ═══════════════════════════════════════════════════════════════
+// 3. FLOATING 3D CARDS around spine
+// ═══════════════════════════════════════════════════════════════
+const cardData=[
+  {label:'DIGITAL\nTRANSFORMATION', sub:'CORPORATE', color:0x1a1a35, border:0x4a7bff, y:-10, orb:1.0},
+  {label:'SOCIAL\nMEDIA', sub:'CONTENT', color:0x1a2a1a, border:0x46f441, y:-15, orb:-0.7},
+  {label:'FOREX\nTRADING', sub:'AUTOMATION', color:0x2a1a1a, border:0xfdb460, y:-20, orb:0.9},
+  {label:'XR / AI\nEXPERIENCES', sub:'INNOVATION', color:0x1a1a2a, border:0x8a45ff, y:-25, orb:-1.1},
+  {label:'E-COMMERCE\nFUNNELS', sub:'REVENUE', color:0x1a2a2a, border:0x1aeade, y:-30, orb:0.8},
+];
+
+const cards3D=cardData.map(cd=>{
+  const g=new THREE.Group();
+  // Card body
+  const plane=new THREE.Mesh(
+    new THREE.PlaneGeometry(3.2,2.0),
+    new THREE.MeshStandardMaterial({color:cd.color,transparent:true,opacity:0.9,
+      metalness:0.3,roughness:0.6,side:THREE.DoubleSide})
+  );
+  g.add(plane);
+  // Border glow
+  const edge=new THREE.LineSegments(
+    new THREE.EdgesGeometry(new THREE.PlaneGeometry(3.2,2.0)),
+    new THREE.LineBasicMaterial({color:cd.border,transparent:true,opacity:0.6})
+  );
+  g.add(edge);
+  // Canvas label
+  const cv=document.createElement('canvas'); cv.width=512; cv.height=320;
+  const cx=cv.getContext('2d');
+  cx.clearRect(0,0,512,320);
+  // gradient bg
+  const grd=cx.createLinearGradient(0,0,512,320);
+  grd.addColorStop(0,'rgba(255,255,255,0.05)');
+  grd.addColorStop(1,'rgba(255,255,255,0)');
+  cx.fillStyle=grd; cx.fillRect(0,0,512,320);
+  // sub label
+  cx.fillStyle='rgba(255,255,255,0.3)';
+  cx.font='bold 20px Courier New';
+  cx.letterSpacing='4px';
+  cx.fillText(cd.sub,32,50);
+  // main label
+  cx.fillStyle='#ffffff';
+  cx.font='bold 52px Courier New';
+  cd.label.split('\n').forEach((ln,i)=>cx.fillText(ln,32,120+i*60));
+  // border line
+  const hex='#'+cd.border.toString(16).padStart(6,'0');
+  cx.strokeStyle=hex; cx.lineWidth=2; cx.strokeRect(2,2,508,316);
+  const tex=new THREE.CanvasTexture(cv);
+  g.add(new THREE.Mesh(new THREE.PlaneGeometry(3.2,2.0),
+    new THREE.MeshBasicMaterial({map:tex,transparent:true,side:THREE.DoubleSide,depthWrite:false})));
+  // card particles
+  const cpPos=new Float32Array(20*3);
+  for(let i=0;i<20;i++){
+    const a=Math.random()*Math.PI*2, r=1.8+Math.random()*1.2;
+    cpPos[i*3]=Math.cos(a)*r; cpPos[i*3+1]=(Math.random()-0.5)*2; cpPos[i*3+2]=Math.sin(a)*r;
+  }
+  const cpGeo=new THREE.BufferGeometry();
+  cpGeo.setAttribute('position',new THREE.BufferAttribute(cpPos,3));
+  g.add(new THREE.Points(cpGeo,new THREE.PointsMaterial({
+    color:cd.border,size:0.04,transparent:true,opacity:0.5,
+    blending:THREE.AdditiveBlending,depthWrite:false})));
+  g.position.y=cd.y;
+  g.userData={orb:cd.orb, baseY:cd.y, idx:cardData.indexOf(cd)};
+  g.visible=false;
+  scene.add(g);
+  return g;
+});
+
+// ═══════════════════════════════════════════════════════════════
+// 4. PARTICLE FIELD — multilayer gold/green/purple/blue
+// ═══════════════════════════════════════════════════════════════
+const PTOTAL = mob?150:320;
+const pPos=new Float32Array(PTOTAL*3);
+const pCol=new Float32Array(PTOTAL*3);
+const pSiz=new Float32Array(PTOTAL);
+const pVel=new Float32Array(PTOTAL*3);
+
+// Color palette
+const palette=[
+  [1.0,0.87,0.48],  // gold #ffde7b
+  [1.0,0.85,0.22],  // gold bright #d4af37
+  [0.1,0.92,0.87],  // cyan #1aeade
+  [0.47,0.67,1.0],  // blue #79aeff
+  [0.54,0.27,1.0],  // purple #8a45ff
+  [0.27,0.96,0.25], // green #46f441
+  [1.0,1.0,1.0],    // white
+  [0.99,0.71,0.38], // orange #fdb460
+];
+const pDist=[80,60,40,40,35,30,20,15];
+const pTot=pDist.reduce((a,b)=>a+b,0);
+
+let pi=0;
+pDist.forEach((cnt,ci)=>{
+  const n=Math.round(PTOTAL*cnt/pTot);
+  for(let i=0;i<n&&pi<PTOTAL;i++,pi++){
+    pPos[pi*3]=(Math.random()-0.5)*18;
+    pPos[pi*3+1]=(Math.random()-0.5)*80; // spread through full scene height
+    pPos[pi*3+2]=(Math.random()-0.5)*10;
+    pVel[pi*3]=(Math.random()-0.5)*0.004;
+    pVel[pi*3+1]=-(Math.random()*0.008+0.002);
+    pVel[pi*3+2]=(Math.random()-0.5)*0.003;
+    const c=palette[ci];
+    pCol[pi*3]=c[0]; pCol[pi*3+1]=c[1]; pCol[pi*3+2]=c[2];
+    const sr=Math.random();
+    pSiz[pi]=sr<0.5?(Math.random()*1.2+1.0):sr<0.8?(Math.random()*1.5+2.0):(Math.random()*2.0+3.0);
+  }
+});
+
+const pGeo=new THREE.BufferGeometry();
+pGeo.setAttribute('position',new THREE.BufferAttribute(pPos,3));
+pGeo.setAttribute('aColor',new THREE.BufferAttribute(pCol,3));
+pGeo.setAttribute('aSize',new THREE.BufferAttribute(pSiz,1));
+
+const pMat=new THREE.ShaderMaterial({
+  uniforms:{uPR:{value:renderer.getPixelRatio()}},
+  vertexShader:`
+    attribute vec3 aColor;
+    attribute float aSize;
+    uniform float uPR;
+    varying vec3 vColor;
+    varying float vAlpha;
+    void main(){
+      vColor=aColor;
+      vec4 mv=modelViewMatrix*vec4(position,1.0);
+      gl_Position=projectionMatrix*mv;
+      gl_PointSize=aSize*uPR*(180.0/-mv.z);
+      float dist=length(position.xy);
+      vAlpha=1.0-smoothstep(1.0,9.0,dist)*0.5;
+    }`,
+  fragmentShader:`
+    varying vec3 vColor;
+    varying float vAlpha;
+    void main(){
+      float d=length(gl_PointCoord-vec2(0.5));
+      if(d>0.5) discard;
+      float soft=1.0-smoothstep(0.1,0.5,d);
+      float glow=1.0-smoothstep(0.15,0.45,d);
+      vec3 col=vColor+vColor*glow*0.6;
+      gl_FragColor=vec4(col,vAlpha*soft*0.95);
+    }`,
+  transparent:true,depthWrite:false,blending:THREE.AdditiveBlending
+});
+const particles=new THREE.Points(pGeo,pMat);
+scene.add(particles);
+
+// ═══════════════════════════════════════════════════════════════
+// 5. LAB SECTION at y = -40
+// ═══════════════════════════════════════════════════════════════
+const labGroup=new THREE.Group();
+labGroup.position.y=-40;
+scene.add(labGroup);
+
+// Reflective floor
+const floorGeo=new THREE.PlaneGeometry(20,20);
+const floorMat=new THREE.MeshStandardMaterial({
+  color:0x050508,metalness:0.8,roughness:0.2,
+  transparent:true,opacity:0.9,side:THREE.DoubleSide
+});
+const floor=new THREE.Mesh(floorGeo,floorMat);
+floor.rotation.x=-Math.PI/2;
+floor.position.y=-2;
+labGroup.add(floor);
+
+// Platform ring
+const platGeo=new THREE.TorusGeometry(3, 0.08, 16, 80);
+const platMat=new THREE.MeshStandardMaterial({
+  color:0x8a45ff,metalness:0.9,roughness:0.1,
+  emissive:0x4a1a99,emissiveIntensity:0.5
+});
+labGroup.add(new THREE.Mesh(platGeo,platMat));
+
+// Outer hex rings
+[3.8,4.5,5.2].forEach((r,i)=>{
+  const g=new THREE.TorusGeometry(r,0.01,8,60);
+  const c=[0x46f441,0x1aeade,0x8a45ff][i];
+  labGroup.add(new THREE.Mesh(g,new THREE.MeshBasicMaterial({
+    color:c,transparent:true,opacity:0.15})));
+});
+
+// Crosshair
+const chGeo=new THREE.TorusGeometry(0.8,0.015,8,50);
+labGroup.add(new THREE.Mesh(chGeo,new THREE.MeshBasicMaterial({
+  color:0xffffff,transparent:true,opacity:0.4})));
+const vl=new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0,-0.8,0),new THREE.Vector3(0,0.8,0)]);
+const hl=new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(-0.8,0,0),new THREE.Vector3(0.8,0,0)]);
+[vl,hl].forEach(g=>labGroup.add(new THREE.Line(g,new THREE.LineBasicMaterial({
+  color:0xffffff,transparent:true,opacity:0.4}))));
+
+// Lab particle ring
+const labPCount=60;
+const labPPos=new Float32Array(labPCount*3);
+for(let i=0;i<labPCount;i++){
+  const a=(i/labPCount)*Math.PI*2;
+  const r=3.0+(Math.random()-0.5)*0.8;
+  labPPos[i*3]=Math.cos(a)*r;
+  labPPos[i*3+1]=(Math.random()-0.5)*0.5;
+  labPPos[i*3+2]=Math.sin(a)*r;
+}
+const labPGeo=new THREE.BufferGeometry();
+labPGeo.setAttribute('position',new THREE.BufferAttribute(labPPos,3));
+labGroup.add(new THREE.Points(labPGeo,new THREE.PointsMaterial({
+  color:0x8a45ff,size:0.08,transparent:true,opacity:0.7,
+  blending:THREE.AdditiveBlending,depthWrite:false})));
+
+// Industrial wires (4 vertical tubes)
+[[-2.5,2.5],[-2.5,-2.5],[2.5,2.5],[2.5,-2.5]].forEach(([x,z])=>{
+  const wg=new THREE.CylinderGeometry(0.012,0.012,4,4);
+  const wm=new THREE.MeshBasicMaterial({color:0x333366,transparent:true,opacity:0.6});
+  const wm2=new THREE.Mesh(wg,wm);
+  wm2.position.set(x,-1,z);
+  labGroup.add(wm2);
+});
+
+// Central chamber orb
+const orbGeo=new THREE.SphereGeometry(0.5,24,24);
+const orbMat=new THREE.MeshStandardMaterial({
+  color:0x8a45ff,metalness:0.2,roughness:0,
+  transparent:true,opacity:0.6,
+  emissive:0x6a25dd,emissiveIntensity:0.8,
+  side:THREE.DoubleSide
+});
+labGroup.add(new THREE.Mesh(orbGeo,orbMat));
+
+labGroup.visible=false;
+
+// ═══════════════════════════════════════════════════════════════
+// MOUSE parallax
+// ═══════════════════════════════════════════════════════════════
+const mouse={x:0,y:0,tx:0,ty:0};
+window.addEventListener('mousemove',e=>{
+  mouse.tx=(e.clientX/W)*2-1;
+  mouse.ty=-(e.clientY/H)*2+1;
+});
+
+// ═══════════════════════════════════════════════════════════════
+// GSAP SCROLL TIMELINE
+// ═══════════════════════════════════════════════════════════════
+// Animated state object
+const cam={x:0,y:2,z:12,lx:0,ly:0,lz:0};
+
+// Overlay refs
+const heroEl=document.getElementById('hero');
+const sidebarEl=document.getElementById('sidebar');
+const labEl=document.getElementById('lab-txt');
+const shEl=document.getElementById('sh');
+const secLbl=document.getElementById('sec-label');
+
+const tl=gsap.timeline({
+  scrollTrigger:{
+    trigger:'#scroll-space',
+    start:'top top',
+    end:'bottom bottom',
+    scrub:1.2,
+    onUpdate:self=>{
+      const p=self.progress;
+      // Section labels
+      if(p<0.15) secLbl.textContent='SECTION_01 / HERO';
+      else if(p<0.30) secLbl.textContent='SECTION_02 / IDENTITY';
+      else if(p<0.60) secLbl.textContent='SECTION_03 / WORK';
+      else if(p<0.80) secLbl.textContent='SECTION_04 / LAB';
+      else secLbl.textContent='SECTION_05 / RETURN';
+      // Cards visibility
+      cards3D.forEach((c,i)=>{
+        const th=0.30+i*0.05;
+        c.visible=p>th&&p<0.72;
+      });
+      // Lab
+      labGroup.visible=p>0.58&&p<0.90;
     }
-    
-    console.log('✅ THREE.js loaded! Version:', THREE.REVISION);
-    document.getElementById('loading').style.display = 'none';
-    
-    // الآن حمّل world.js
-    const script = document.createElement('script');
-    script.src = 'world.js?' + Date.now();
-    script.onload = function() {
-        console.log('✅ world.js loaded!');
-    };
-    script.onerror = function() {
-        console.error('❌ Failed to load world.js');
-        document.getElementById('loading').textContent = 'ERROR LOADING WORLD';
-    };
-    document.body.appendChild(script);
+  }
+});
+
+// Camera path
+tl.to(cam,{x:0,y:1,z:7,lx:0,ly:0,lz:0,duration:1.5},'0%')   // 0→15%: zoom in
+  .to(cam,{x:1.5,y:-2,z:8,lx:0,ly:-1,lz:0,duration:2},'1.5') // 15→30%: drift
+  .to(cam,{x:2,y:-12,z:9,lx:0,ly:-13,lz:0,duration:3},'3.5') // 30→60%: through cards
+  .to(cam,{x:0,y:-30,z:8,lx:0,ly:-34,lz:0,duration:2},'6.5') // 60→80%: to lab
+  .to(cam,{x:0,y:-38,z:5,lx:0,ly:-40,lz:0,duration:1.5},'8.5')// 80→95%: lab close
+  .to(cam,{x:0,y:2,z:14,lx:0,ly:0,lz:0,duration:0.5},'9.5'); // 95→100%: return
+
+// HTML overlays
+tl.to(shEl,{opacity:0,duration:0.3},'0%')
+  .to(secLbl,{opacity:1,duration:0.5},'0%')
+  .to(heroEl,{opacity:1,duration:0.8},'1.5')
+  .to(heroEl,{opacity:0,duration:0.5},'3.0')
+  .to(sidebarEl,{opacity:1,duration:0.8},'3.5')
+  .to(sidebarEl,{opacity:0,duration:0.5},'6.0')
+  .to(labEl,{opacity:1,duration:0.8},'7.0')
+  .to(labEl,{opacity:0,duration:0.5},'9.0')
+  .to(secLbl,{opacity:0,duration:0.5},'9.5');
+
+// ═══════════════════════════════════════════════════════════════
+// RENDER LOOP
+// ═══════════════════════════════════════════════════════════════
+const clock=new THREE.Clock();
+let t=0;
+
+function animate(){
+  requestAnimationFrame(animate);
+  t=clock.getElapsedTime();
+
+  // Mouse smooth
+  mouse.x+=(mouse.tx-mouse.x)*0.08;
+  mouse.y+=(mouse.ty-mouse.y)*0.08;
+
+  // Camera from GSAP state + mouse parallax
+  camera.position.set(
+    cam.x+mouse.x*0.3,
+    cam.y+mouse.y*0.2,
+    cam.z
+  );
+  camTarget.set(cam.lx+mouse.x*0.1, cam.ly, cam.lz);
+  camera.lookAt(camTarget);
+
+  // Moving light follows mouse
+  movL.position.set(mouse.x*5, cam.y+mouse.y*3+2, cam.z-3);
+
+  // Logo float + rotate
+  logoGroup.position.y=Math.sin(t*0.4)*0.15;
+  logoGroup.rotation.y=t*0.06+mouse.x*0.1;
+  logoGroup.rotation.x=mouse.y*0.06;
+
+  // Cards orbit around spine
+  cards3D.forEach((c,i)=>{
+    if(!c.visible) return;
+    const speed=0.25+i*0.04;
+    const radius=3.5+Math.sin(t*0.15+i)*0.5;
+    const angle=t*speed*c.userData.orb+i*(Math.PI*2/5);
+    c.position.x=Math.cos(angle)*radius;
+    c.position.z=Math.sin(angle)*radius;
+    c.position.y=c.userData.baseY+Math.sin(t*0.3+i)*0.12;
+    c.rotation.y=-angle+Math.PI*0.5;
+    c.rotation.x=mouse.y*0.04;
+  });
+
+  // Spine slow rotation
+  spineGroup.rotation.y=t*0.03;
+
+  // Lab rotation
+  if(labGroup.visible){
+    labGroup.rotation.y=t*0.12;
+    labGroup.children[0].rotation.y=-t*0.08; // floor doesn't rotate
+  }
+
+  // Particles drift
+  for(let i=0;i<PTOTAL;i++){
+    pPos[i*3]+=pVel[i*3];
+    pPos[i*3+1]+=pVel[i*3+1];
+    pPos[i*3+2]+=pVel[i*3+2];
+    // reset when below
+    if(pPos[i*3+1]<-42){
+      pPos[i*3+1]=40;
+      pPos[i*3]=(Math.random()-0.5)*18;
+    }
+  }
+  pGeo.attributes.position.needsUpdate=true;
+
+  renderer.render(scene,camera);
+}
+
+// ── RESIZE ──────────────────────────────────────────────────────
+window.addEventListener('resize',()=>{
+  W=window.innerWidth; H=window.innerHeight;
+  camera.aspect=W/H;
+  camera.updateProjectionMatrix();
+  renderer.setSize(W,H);
+});
+
+// ── BOOT ────────────────────────────────────────────────────────
+animate();
+console.log('M7 3D Engine ready | THREE r'+THREE.REVISION+' | GSAP '+gsap.version);
+
 })();
 </script>
-
 </body>
 </html>
