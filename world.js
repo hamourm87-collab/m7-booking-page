@@ -177,7 +177,7 @@ scene.add(new THREE.Line(jLine1Geo, jLineMat));
 scene.add(new THREE.Line(jLine2Geo, jLineMat));
 
 // ─── PARTICLES (250, exact blueprint colors) ───
-const PCOUNT = mob ? 80 : 250;
+const PCOUNT = mob ? 120 : 280; // زيادة العدد ليكون أوضح
 const pGeo = new THREE.BufferGeometry();
 const pPos = new Float32Array(PCOUNT * 3);
 const pCol = new Float32Array(PCOUNT * 3);
@@ -210,9 +210,9 @@ pDist.forEach((cnt, ci) => {
         pVel[pi*3+2] = (Math.random()-0.5)*0.005;
         const c = pColors[ci];
         pCol[pi*3] = c[0]; pCol[pi*3+1] = c[1]; pCol[pi*3+2] = c[2];
-        // Size: 70%=small, 20%=med, 10%=large
+        // Size: 50%=small, 30%=med, 20%=large (أحجام أكبر)
         const sr = Math.random();
-        pSiz[pi] = sr < 0.7 ? (Math.random()*0.5+0.5) : sr < 0.9 ? (Math.random()*0.5+1.0) : (Math.random()*0.8+1.5);
+        pSiz[pi] = sr < 0.5 ? (Math.random()*0.8+0.8) : sr < 0.8 ? (Math.random()*1.0+1.5) : (Math.random()*1.5+2.5);
     }
 });
 
@@ -233,7 +233,7 @@ const pMat = new THREE.ShaderMaterial({
             vec4 mv = modelViewMatrix * vec4(position, 1.0);
             gl_Position = projectionMatrix * mv;
             gl_PointSize = aSize * uPR * (60.0 / -mv.z);
-            vAlpha = 0.55 * (1.0 - smoothstep(2.0, 7.0, length(position)));
+            vAlpha = 0.85 * (1.0 - smoothstep(2.0, 7.0, length(position))); // شفافية أعلى
         }`,
     fragmentShader: `
         varying vec3 vColor;
@@ -241,8 +241,13 @@ const pMat = new THREE.ShaderMaterial({
         void main() {
             float d = length(gl_PointCoord - vec2(0.5));
             if(d > 0.5) discard;
-            float soft = 1.0 - smoothstep(0.1, 0.5, d);
-            gl_FragColor = vec4(vColor, vAlpha * soft);
+            
+            // soft glow effect
+            float soft = 1.0 - smoothstep(0.0, 0.5, d);
+            float glow = 1.0 - smoothstep(0.2, 0.5, d); // هالة توهج
+            
+            vec3 finalColor = vColor + vColor * glow * 0.5; // إضافة توهج
+            gl_FragColor = vec4(finalColor, vAlpha * soft);
         }`,
     transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, vertexColors: true
 });

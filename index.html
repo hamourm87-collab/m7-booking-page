@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Active Theory Clone</title>
+<title>Active Theory Clone - M7</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-html,body{width:100%;height:100%;background:#000;overflow-x:hidden;font-family:'Courier New',monospace}
+html,body{width:100%;height:100%;background:#000;overflow-x:hidden;font-family:'Courier New',monospace;color:#fff}
 #c{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0}
 #scroll-space{height:800vh;position:relative;z-index:1;pointer-events:none}
 
@@ -40,9 +40,15 @@ nav{position:fixed;top:30px;left:50%;transform:translateX(-50%);z-index:100;
 #ov-lab{top:50%;left:50%;transform:translate(-50%,-50%);text-align:center}
 .lab-title{font-size:clamp(28px,4vw,42px);letter-spacing:5px;color:#fff;margin-bottom:20px}
 .lab-desc{font-size:13px;color:rgba(255,255,255,0.7);line-height:1.8;max-width:400px}
+
+#loading{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:1000;
+    font-size:14px;letter-spacing:3px;color:#d4af37}
 </style>
 </head>
 <body>
+
+<div id="loading">LOADING...</div>
+
 <canvas id="c"></canvas>
 <div id="scroll-space"></div>
 
@@ -65,6 +71,7 @@ nav{position:fixed;top:30px;left:50%;transform:translateX(-50%);z-index:100;
     <a href="#" class="sb-link">→ XR / VR / AI</a>
     <a href="#" class="sb-link">→ MULTIPLAYER</a>
     <a href="#" class="sb-link">→ GAMES</a>
+    <div class="sb-divider"></div>
     <input type="text" class="sb-search" placeholder="🔍 ASK ME ANYTHING...">
 </div>
 
@@ -73,15 +80,34 @@ nav{position:fixed;top:30px;left:50%;transform:translateX(-50%);z-index:100;
     <div class="lab-desc">OUR HOME FOR INNOVATION<br>WHERE PROTOTYPES TURN INTO<br>PRODUCTION PROJECTS</div>
 </div>
 
-<!-- Three.js (loads first, blocking) -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<!-- World script (loads after THREE is ready) -->
+<!-- THREE.js من CDN موثوق -->
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+
 <script>
-window.addEventListener('load', function() {
-    var s = document.createElement('script');
-    s.src = 'world.js?' + Date.now();
-    document.body.appendChild(s);
-});
+// انتظر حتى يتم تحميل THREE.js
+(function checkThree() {
+    if (typeof THREE === 'undefined') {
+        console.log('Waiting for THREE.js...');
+        setTimeout(checkThree, 100);
+        return;
+    }
+    
+    console.log('✅ THREE.js loaded! Version:', THREE.REVISION);
+    document.getElementById('loading').style.display = 'none';
+    
+    // الآن حمّل world.js
+    const script = document.createElement('script');
+    script.src = 'world.js?' + Date.now();
+    script.onload = function() {
+        console.log('✅ world.js loaded!');
+    };
+    script.onerror = function() {
+        console.error('❌ Failed to load world.js');
+        document.getElementById('loading').textContent = 'ERROR LOADING WORLD';
+    };
+    document.body.appendChild(script);
+})();
 </script>
+
 </body>
 </html>
