@@ -1,432 +1,460 @@
-/* ═══════════════════════════════════════════════════════
-   M7 WORLD — Full 3D Experience
+/* ═══════════════════════════════════════════════════
+   ACTIVE THEORY CLONE — Phase 1 MVP
+   Based on Hermes Blueprint (99% accuracy)
    
-   The entire page is a WebGL scene.
-   Scroll = camera movement through 3D world.
-   
-   Structure (camera journey):
-   0-15%   : Hero — Logo infinity fills screen, bokeh particles
-   15-30%  : Transition — Logo fades, text appears
-   30-60%  : Spine — Glass vertebral column with floating cards
-   60-80%  : The Lab — Industrial cage with particle ring
-   80-100% : Contact — Fade to dark, minimal
-   ═══════════════════════════════════════════════════════ */
+   Structure:
+   0-20%  : Hero (Hourglass logo + particles + jellyfish)
+   20-40% : Transition
+   40-70% : Projects (sidebar + cards)
+   70-85% : The Lab
+   85-100%: Return
+   ═══════════════════════════════════════════════════ */
 
-// Using global THREE from CDN (r128)
+(function() {
+'use strict';
 
 if (typeof THREE === 'undefined') {
-    document.getElementById('ov-hero').classList.add('vis');
-    document.getElementById('ov-hero').style.opacity = '1';
-    throw new Error('THREE not loaded');
+    console.error('THREE not loaded');
+    document.getElementById('ov-scroll').classList.add('show');
+    return;
 }
 
 const mob = window.innerWidth < 768;
 const W = window.innerWidth, H = window.innerHeight;
 
-// ═══ RENDERER ═══
+// ─── RENDERER ───
 const canvas = document.getElementById('c');
-let R;
+let renderer;
 try {
-    R = new THREE.WebGLRenderer({ canvas, antialias: !mob, alpha: false });
+    renderer = new THREE.WebGLRenderer({ canvas, antialias: !mob, alpha: false });
 } catch(e) {
     console.error('WebGL failed:', e);
-    document.getElementById('ov-hero').classList.add('vis');
-    document.getElementById('ov-hero').style.opacity = '1';
-    throw e;
+    document.getElementById('ov-scroll').classList.add('show');
+    return;
 }
-R.setSize(W, H);
-R.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-R.toneMapping = THREE.ACESFilmicToneMapping;
-R.toneMappingExposure = 1.5;
-R.setClearColor(0x000000);
+renderer.setSize(W, H);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.0;
+renderer.setClearColor(0x000000);
 
-// ═══ SCENE ═══
+// ─── SCENE ───
 const scene = new THREE.Scene();
-scene.fog = new THREE.FogExp2(0x020408, 0.008);
+scene.fog = new THREE.FogExp2(0x000000, 0.012);
 
-// ═══ CAMERA ═══
-const cam = new THREE.PerspectiveCamera(50, W / H, 0.1, 200);
-cam.position.set(0, 0, 5);
+// ─── CAMERA ───
+const camera = new THREE.PerspectiveCamera(60, W / H, 0.1, 500);
+camera.position.set(0, 0, 8);
 
-// No post-processing (using r128 global, no module imports)
+// ─── LIGHTS ───
+const amb = new THREE.AmbientLight(0x111122, 2);
+scene.add(amb);
+const key = new THREE.PointLight(0xd4af37, 3, 30);
+key.position.set(3, 5, 8);
+scene.add(key);
+const fill = new THREE.PointLight(0x4a7bff, 1.5, 20);
+fill.position.set(-4, -2, 5);
+scene.add(fill);
+const back = new THREE.PointLight(0x8a6aae, 1, 15);
+back.position.set(0, -6, 3);
+scene.add(back);
+const movL = new THREE.PointLight(0xd4af37, 1.5, 15);
+scene.add(movL);
 
-// ═══ LIGHTS (underwater, moody) ═══
-scene.add(new THREE.AmbientLight(0x222244, 3));
-const L1 = new THREE.PointLight(0xd4af37, 4, 30); L1.position.set(2, 2, 5); scene.add(L1);
-const L2 = new THREE.PointLight(0x4a7bff, 3, 25); L2.position.set(-3, -1, 3); scene.add(L2);
-const L3 = new THREE.PointLight(0x8a6aae, 2, 20); L3.position.set(0, -5, 2); scene.add(L3);
+// ─── GOLD SPINE (vertical line through everything) ───
+// Blueprint: 1-2px gold line, entire page height
+const spineGroup = new THREE.Group();
+scene.add(spineGroup);
 
-// ═══ M7 INFINITY LOGO ═══
-// Thin glass wire — infinity shape (∞ vertical) with circle at bottom
-const logoG = new THREE.Group();
-logoG.position.set(0, 0, 0);
-scene.add(logoG);
+// Main spine line
+const spineGeo = new THREE.CylinderGeometry(0.008, 0.008, 80, 6);
+const spineMat = new THREE.MeshBasicMaterial({ color: 0xd4af37, transparent: true, opacity: 0.4 });
+const spineMesh = new THREE.Mesh(spineGeo, spineMat);
+spineGroup.add(spineMesh);
 
-// Infinity curve (figure-8 vertical) — THIN wire, glass material
-const infCurve = new THREE.Curve();
-infCurve.getPoint = function(t) {
-    const a = t * Math.PI * 2;
-    return new THREE.Vector3(
-        Math.sin(a) * 0.7,
-        Math.sin(a * 2) * 1.4,
-        Math.cos(a) * 0.25
-    );
-};
-
-const glassMat = new THREE.MeshStandardMaterial({
-    color: 0x888899,
-    metalness: 0.1,
-    roughness: 0.05,
-    emissive: 0x6699ff,
-    emissiveIntensity: 0.8,
-    transparent: true,
-    opacity: 0.9,
-});
-
-// Thin tube (radius 0.015 = very thin wire)
-const tubeGeo = new THREE.TubeGeometry(infCurve, 200, 0.018, 12, true);
-logoG.add(new THREE.Mesh(tubeGeo, glassMat));
-
-// Circle at bottom with "M7" — small ring
-const ringGeo = new THREE.TorusGeometry(0.22, 0.012, 16, 60);
-const ringMat = glassMat.clone();
-const ring = new THREE.Mesh(ringGeo, ringMat);
-ring.position.y = -1.4;
-logoG.add(ring);
-
-// Inner pentagon/icon shape inside ring
-const iconGeo = new THREE.TorusGeometry(0.12, 0.008, 6, 5); // pentagonal
-const icon = new THREE.Mesh(iconGeo, ringMat);
-icon.position.y = -1.4;
-logoG.add(icon);
-
-// Small iridescent accent on ring
-const accentGeo = new THREE.SphereGeometry(0.025, 8, 8);
-const accentMat = new THREE.MeshStandardMaterial({
-    color: 0xffffff, metalness: 0.5, roughness: 0,
-
-    emissive: 0xd4af37, emissiveIntensity: 0.5,
-});
-const accent = new THREE.Mesh(accentGeo, accentMat);
-accent.position.set(0.22, -1.4, 0);
-logoG.add(accent);
-
-// ═══ BOKEH PARTICLES (golden/warm, large, soft) ═══
-const BK_COUNT = mob ? 150 : 500;
-const bkGeo = new THREE.BufferGeometry();
-const bkP = new Float32Array(BK_COUNT * 3);
-const bkS = new Float32Array(BK_COUNT);
-const bkC = new Float32Array(BK_COUNT * 3);
-
-for (let i = 0; i < BK_COUNT; i++) {
-    // Spread around the logo area
-    bkP[i*3] = (Math.random() - 0.5) * 8;
-    bkP[i*3+1] = (Math.random() - 0.5) * 8;
-    bkP[i*3+2] = (Math.random() - 0.5) * 6 - 1;
-    bkS[i] = Math.random() * 4 + 1; // LARGE bokeh
-    // Warm colors: gold, orange, green-yellow
-    const r = Math.random();
-    if (r < 0.4) { bkC[i*3]=0.93; bkC[i*3+1]=0.78; bkC[i*3+2]=0.25; } // gold
-    else if (r < 0.65) { bkC[i*3]=0.82; bkC[i*3+1]=0.72; bkC[i*3+2]=0.18; } // dark gold
-    else if (r < 0.8) { bkC[i*3]=0.55; bkC[i*3+1]=0.68; bkC[i*3+2]=0.22; } // green-gold
-    else { bkC[i*3]=0.85; bkC[i*3+1]=0.55; bkC[i*3+2]=0.2; } // orange
+// 3 triple lines at top (blueprint: "3 خطوط رفيعة")
+for (let i = -1; i <= 1; i++) {
+    const g = new THREE.CylinderGeometry(0.003, 0.003, 5, 4);
+    const m = new THREE.Mesh(g, new THREE.MeshBasicMaterial({ color: 0xd4af37, transparent: true, opacity: 0.25 }));
+    m.position.set(i * 0.04, 38, 0);
+    spineGroup.add(m);
 }
-bkGeo.setAttribute('position', new THREE.BufferAttribute(bkP, 3));
-bkGeo.setAttribute('aSize', new THREE.BufferAttribute(bkS, 1));
-bkGeo.setAttribute('aColor', new THREE.BufferAttribute(bkC, 3));
 
-const bkMat = new THREE.ShaderMaterial({
-    uniforms: { uTime:{value:0}, uPR:{value:R.getPixelRatio()} },
+// ─── HOURGLASS LOGO (Blueprint exact) ───
+// Two ovals connected by neck with 3 inner rings
+const logoGroup = new THREE.Group();
+scene.add(logoGroup);
+
+const copperMat = new THREE.MeshStandardMaterial({
+    color: 0xc87d5f,
+    metalness: 0.9,
+    roughness: 0.1,
+    emissive: 0x442211,
+    emissiveIntensity: 0.4,
+});
+
+// TOP OVAL — radiusX:1.2, radiusY:0.9 (blueprint scaled)
+const topOvalCurve = new THREE.EllipseCurve(0, 0, 1.1, 0.75, 0, Math.PI*2, false, 0);
+const topOvalPts = topOvalCurve.getPoints(80);
+const topOvalGeo = new THREE.BufferGeometry().setFromPoints(topOvalPts.map(p => new THREE.Vector3(p.x, p.y, 0)));
+const topOvalLine = new THREE.Line(topOvalGeo, new THREE.LineBasicMaterial({ color: 0xc87d5f }));
+topOvalLine.position.y = 1.8;
+logoGroup.add(topOvalLine);
+
+// BOTTOM OVAL — same size
+const botOvalGeo = new THREE.BufferGeometry().setFromPoints(topOvalPts.map(p => new THREE.Vector3(p.x, p.y, 0)));
+const botOvalLine = new THREE.Line(botOvalGeo, new THREE.LineBasicMaterial({ color: 0xc87d5f }));
+botOvalLine.position.y = -1.8;
+logoGroup.add(botOvalLine);
+
+// NECK — two lines connecting ovals
+const neckL = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(-0.72, 1.1, 0), new THREE.Vector3(-0.55, -1.1, 0)]);
+const neckR = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0.72, 1.1, 0), new THREE.Vector3(0.55, -1.1, 0)]);
+logoGroup.add(new THREE.Line(neckL, new THREE.LineBasicMaterial({ color: 0xc87d5f })));
+logoGroup.add(new THREE.Line(neckR, new THREE.LineBasicMaterial({ color: 0xc87d5f })));
+
+// 3 INNER RINGS (horizontal ovals inside the neck area)
+[-0.55, 0, 0.55].forEach(y => {
+    const w = 0.5 + (1 - Math.abs(y)*0.6) * 0.25;
+    const ringCurve = new THREE.EllipseCurve(0, 0, w, 0.12, 0, Math.PI*2, false, 0);
+    const ringPts = ringCurve.getPoints(40);
+    const rGeo = new THREE.BufferGeometry().setFromPoints(ringPts.map(p => new THREE.Vector3(p.x, p.y, 0)));
+    const ring = new THREE.Line(rGeo, new THREE.LineBasicMaterial({ color: 0xd4af37, transparent: true, opacity: 0.6 }));
+    ring.position.y = y;
+    logoGroup.add(ring);
+});
+
+// GOLD ARC (bottom right — blueprint: arc at bottom right)
+const arcCurve = new THREE.EllipseCurve(0, 0, 0.28, 0.28, -Math.PI*0.1, Math.PI*1.4, false, 0);
+const arcPts = arcCurve.getPoints(40);
+const arcGeo = new THREE.BufferGeometry().setFromPoints(arcPts.map(p => new THREE.Vector3(p.x, p.y, 0)));
+const arc = new THREE.Line(arcGeo, new THREE.LineBasicMaterial({ color: 0xffde7b }));
+arc.position.set(1.1, -2.1, 0);
+logoGroup.add(arc);
+
+// Bright dot on arc
+const dotGeo = new THREE.SphereGeometry(0.04, 8, 8);
+const dot = new THREE.Mesh(dotGeo, new THREE.MeshBasicMaterial({ color: 0xffde7b }));
+dot.position.set(1.1, -2.05, 0);
+logoGroup.add(dot);
+
+// ─── JELLYFISH (above logo, blueprint: 280px above) ───
+const jellyGroup = new THREE.Group();
+jellyGroup.position.set(-0.4, 3.8, 0);
+scene.add(jellyGroup);
+
+// Dome
+const domeGeo = new THREE.SphereGeometry(0.4, 20, 10, 0, Math.PI*2, 0, Math.PI/2);
+const domeMat = new THREE.MeshStandardMaterial({
+    color: 0x4a7bff, metalness: 0, roughness: 0.3,
+    transparent: true, opacity: 0.5, side: THREE.DoubleSide,
+    emissive: 0x4a7bff, emissiveIntensity: 0.2
+});
+jellyGroup.add(new THREE.Mesh(domeGeo, domeMat));
+
+// Tentacles (6)
+for (let i = 0; i < 6; i++) {
+    const a = (i / 6) * Math.PI * 2;
+    const pts = [];
+    for (let j = 0; j < 8; j++) {
+        const t = j / 7;
+        pts.push(new THREE.Vector3(
+            Math.cos(a) * 0.18 + Math.sin(t*4+i) * 0.06,
+            -t * 0.8,
+            Math.sin(a) * 0.18
+        ));
+    }
+    const tGeo = new THREE.BufferGeometry().setFromPoints(pts);
+    const tMat = new THREE.LineBasicMaterial({ color: 0x8a6aae, transparent: true, opacity: 0.3 });
+    jellyGroup.add(new THREE.Line(tGeo, tMat));
+}
+
+// Jellyfish connection lines to logo top
+const jLine1Geo = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(-0.4, 3.8, 0), new THREE.Vector3(-0.5, 2.5, 0)]);
+const jLine2Geo = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(-0.4, 3.8, 0), new THREE.Vector3(0.5, 2.5, 0)]);
+const jLineMat = new THREE.LineBasicMaterial({ color: 0xc87d5f, transparent: true, opacity: 0.25 });
+scene.add(new THREE.Line(jLine1Geo, jLineMat));
+scene.add(new THREE.Line(jLine2Geo, jLineMat));
+
+// ─── PARTICLES (250, exact blueprint colors) ───
+const PCOUNT = mob ? 80 : 250;
+const pGeo = new THREE.BufferGeometry();
+const pPos = new Float32Array(PCOUNT * 3);
+const pCol = new Float32Array(PCOUNT * 3);
+const pSiz = new Float32Array(PCOUNT);
+const pVel = new Float32Array(PCOUNT * 3);
+
+// Exact blueprint color distribution
+const pColors = [
+    [1.0, 1.0, 1.0],       // #ffffff  60
+    [0.91, 0.91, 0.88],    // #e8e8e0  50
+    [0.1, 0.92, 0.87],     // #1aeade  35
+    [0.47, 0.67, 1.0],     // #79aeff  35
+    [1.0, 0.87, 0.48],     // #ffde7b  25
+    [0.27, 0.96, 0.25],    // #46f441  20
+    [0.16, 0.79, 0.07],    // #28c913  12
+    [0.99, 0.71, 0.38],    // #fdb460  13
+];
+const pDist = [60, 50, 35, 35, 25, 20, 12, 13];
+const pTotal = pDist.reduce((a,b)=>a+b, 0);
+
+let pi = 0;
+pDist.forEach((cnt, ci) => {
+    const n = Math.round(PCOUNT * cnt / pTotal);
+    for (let i = 0; i < n && pi < PCOUNT; i++, pi++) {
+        pPos[pi*3] = (Math.random()-0.5)*14;
+        pPos[pi*3+1] = (Math.random()-0.5)*12;
+        pPos[pi*3+2] = (Math.random()-0.5)*8;
+        pVel[pi*3] = (Math.random()-0.5)*0.008;
+        pVel[pi*3+1] = -(Math.random()*0.015 + 0.003);
+        pVel[pi*3+2] = (Math.random()-0.5)*0.005;
+        const c = pColors[ci];
+        pCol[pi*3] = c[0]; pCol[pi*3+1] = c[1]; pCol[pi*3+2] = c[2];
+        // Size: 70%=small, 20%=med, 10%=large
+        const sr = Math.random();
+        pSiz[pi] = sr < 0.7 ? (Math.random()*0.5+0.5) : sr < 0.9 ? (Math.random()*0.5+1.0) : (Math.random()*0.8+1.5);
+    }
+});
+
+pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
+pGeo.setAttribute('color', new THREE.BufferAttribute(pCol, 3));
+pGeo.setAttribute('aSize', new THREE.BufferAttribute(pSiz, 1));
+
+const pMat = new THREE.ShaderMaterial({
+    uniforms: { uTime: {value:0}, uPR: {value:renderer.getPixelRatio()} },
     vertexShader: `
-        attribute float aSize; attribute vec3 aColor;
+        attribute float aSize;
         uniform float uTime, uPR;
-        varying float vA; varying vec3 vC;
-        void main(){
-            vec3 p = position;
-            p.x += sin(uTime*0.15 + position.y*0.8)*0.15;
-            p.y += cos(uTime*0.12 + position.x*0.6)*0.1;
-            vec4 mv = modelViewMatrix * vec4(p,1.0);
+        varying vec3 vColor;
+        varying float vAlpha;
+        attribute vec3 color;
+        void main() {
+            vColor = color;
+            vec4 mv = modelViewMatrix * vec4(position, 1.0);
             gl_Position = projectionMatrix * mv;
-            gl_PointSize = aSize * uPR * (80.0 / -mv.z);
-            vA = 0.6 * (1.0 - smoothstep(1.0, 6.0, length(p)));
-            vC = aColor;
+            gl_PointSize = aSize * uPR * (60.0 / -mv.z);
+            vAlpha = 0.55 * (1.0 - smoothstep(2.0, 7.0, length(position)));
         }`,
     fragmentShader: `
-        varying float vA; varying vec3 vC;
-        void main(){
+        varying vec3 vColor;
+        varying float vAlpha;
+        void main() {
             float d = length(gl_PointCoord - vec2(0.5));
             if(d > 0.5) discard;
-            // Soft bokeh: bright center, soft edge
-            float glow = exp(-d * d * 8.0);
-            gl_FragColor = vec4(vC, vA * glow);
+            float soft = 1.0 - smoothstep(0.1, 0.5, d);
+            gl_FragColor = vec4(vColor, vAlpha * soft);
         }`,
-    transparent:true, depthWrite:false, blending:THREE.AdditiveBlending,
+    transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, vertexColors: true
 });
-scene.add(new THREE.Points(bkGeo, bkMat));
+const particles = new THREE.Points(pGeo, pMat);
+scene.add(particles);
 
-// ═══ MARINE SNOW (tiny white dots drifting) ═══
-const MS_COUNT = mob ? 200 : 800;
-const msGeo = new THREE.BufferGeometry();
-const msP = new Float32Array(MS_COUNT * 3);
-for (let i = 0; i < MS_COUNT; i++) {
-    msP[i*3] = (Math.random()-0.5) * 20;
-    msP[i*3+1] = (Math.random()-0.5) * 60 - 10; // spread along entire scroll journey
-    msP[i*3+2] = (Math.random()-0.5) * 10;
-}
-msGeo.setAttribute('position', new THREE.BufferAttribute(msP, 3));
-const msMat = new THREE.PointsMaterial({
-    size: 0.02, color: 0xe8e8e0, transparent:true, opacity:0.25,
-    blending:THREE.AdditiveBlending, depthWrite:false, sizeAttenuation:true
-});
-scene.add(new THREE.Points(msGeo, msMat));
-
-// ═══ SPINE (glass vertebrae, positioned at Y=-10 to Y=-25) ═══
-const spineG = new THREE.Group();
-spineG.position.set(0, -12, 0);
-scene.add(spineG);
-
-const VERTS = 20;
-const spineMat = new THREE.MeshStandardMaterial({
-    color: 0x667788, metalness: 0.1, roughness: 0.05,
-    emissive: 0x4a7bff, emissiveIntensity: 0.2,
-    transparent: true, opacity: 0.5,
-});
-
-for (let i = 0; i < VERTS; i++) {
-    const t = i / (VERTS - 1);
-    const y = t * 12;
-    const w = 0.1 + Math.sin(t * Math.PI) * 0.12;
-    
-    // Vertebra
-    const vGeo = new THREE.BoxGeometry(w * 2, 0.08, w * 1.5);
-    const v = new THREE.Mesh(vGeo, spineMat);
-    v.position.y = y;
-    v.rotation.y = t * 0.5; // twist
-    spineG.add(v);
-    
-    // Disc
-    if (i < VERTS - 1) {
-        const dGeo = new THREE.CylinderGeometry(w * 0.4, w * 0.4, 0.03, 8);
-        const d = new THREE.Mesh(dGeo, spineMat);
-        d.position.y = y + 0.3;
-        spineG.add(d);
-    }
-}
-
-// Spinal cord
-const cordGeo = new THREE.CylinderGeometry(0.01, 0.01, 12.5, 8);
-spineG.add(new THREE.Mesh(cordGeo, spineMat));
-
-// ═══ SERVICE CARDS (3D planes floating near spine) ═══
+// ─── SERVICE CARDS ───
 const cardData = [
-    { title: 'BUSINESS\nDEVELOPMENT', color: 0xd4af37, y: -13, x: -1.5, rY: 0.3 },
-    { title: 'TRADING\nSYSTEMS', color: 0x4a9eff, y: -16, x: 1.5, rY: -0.25 },
-    { title: 'CONTENT\nCREATION', color: 0xec4899, y: -19, x: -1.3, rY: 0.2 },
-    { title: 'RESEARCH\nANALYSIS', color: 0xa855f7, y: -22, x: 1.4, rY: -0.3 },
-    { title: 'AFFILIATE\nMARKETING', color: 0x10b981, y: -25, x: -1.2, rY: 0.25 },
+    { name: 'GOOGLE\nRACER', col: 0x6d5443, border: 0xfdb460, x: -2.5, y: -8, ry: -0.25 },
+    { name: 'HARRY POTTER\nHOGWARTS', col: 0x2a1a4a, border: 0x8a6aae, x: 2.5, y: -10, ry: 0.2 },
+    { name: 'ADIDAS\nCHILE 22', col: 0x1a3a2e, border: 0x10b981, x: -2.2, y: -13, ry: 0.15 },
+    { name: 'XBOX\n20 YEARS', col: 0x0e3a0e, border: 0x46f441, x: 2.3, y: -15.5, ry: -0.2 },
+    { name: 'SECRET\nSKY', col: 0x1a2a3a, border: 0x1aeade, x: -2.4, y: -18, ry: 0.18 },
 ];
 
-const cards = cardData.map(cd => {
+const cards3D = cardData.map(cd => {
     const g = new THREE.Group();
-    
-    // Card plane (frosted glass)
-    const cardGeo = new THREE.PlaneGeometry(2, 2.8, 1, 1);
-    const cardMat = new THREE.MeshStandardMaterial({
-        color: 0x0a0e14, metalness: 0, roughness: 0.3,
+    // Card face
+    const planeGeo = new THREE.PlaneGeometry(2.8, 2.0);
+    const planeMat = new THREE.MeshStandardMaterial({
+        color: cd.col, transparent: true, opacity: 0.88,
+        metalness: 0.1, roughness: 0.8, side: THREE.DoubleSide
     });
-    const plane = new THREE.Mesh(cardGeo, cardMat);
-    g.add(plane);
-    
-    // Card border glow
-    const borderGeo = new THREE.EdgesGeometry(cardGeo);
-    const borderMat = new THREE.LineBasicMaterial({ color: cd.color, transparent: true, opacity: 0.3 });
-    g.add(new THREE.LineSegments(borderGeo, borderMat));
-    
-    // Title text
-    const tc = document.createElement('canvas'); tc.width = 256; tc.height = 360;
+    g.add(new THREE.Mesh(planeGeo, planeMat));
+    // Border glow
+    const edgeGeo = new THREE.EdgesGeometry(new THREE.PlaneGeometry(2.8, 2.0));
+    g.add(new THREE.LineSegments(edgeGeo, new THREE.LineBasicMaterial({ color: cd.border, transparent: true, opacity: 0.5 })));
+    // Title
+    const tc = document.createElement('canvas'); tc.width=512; tc.height=368;
     const tx = tc.getContext('2d');
-    tx.fillStyle = 'rgba(10,14,20,0.01)'; tx.fillRect(0,0,256,360);
-    tx.fillStyle = '#ffffff'; tx.font = '600 22px JetBrains Mono, monospace';
-    tx.textAlign = 'center';
-    const lines = cd.title.split('\n');
-    lines.forEach((l, i) => tx.fillText(l, 128, 140 + i * 28));
-    tx.fillStyle = new THREE.Color(cd.color).getStyle();
-    tx.font = '300 11px JetBrains Mono'; tx.fillText('M7 AGENT', 128, 220);
-    
+    tx.fillStyle='rgba(0,0,0,0)'; tx.fillRect(0,0,512,368);
+    tx.fillStyle='#ffffff'; tx.font='bold 44px Courier New,monospace';
+    tx.textAlign='center';
+    cd.name.split('\n').forEach((ln,i) => tx.fillText(ln, 256, 160+i*52));
     const tTex = new THREE.CanvasTexture(tc);
-    const tMat = new THREE.MeshBasicMaterial({ map: tTex, transparent: true, side: THREE.DoubleSide, depthWrite: false });
-    const tPlane = new THREE.Mesh(new THREE.PlaneGeometry(2, 2.8), tMat);
-    tPlane.position.z = 0.01;
-    g.add(tPlane);
-    
-    // Card particles (few, orbital)
-    for (let i = 0; i < 15; i++) {
-        const pGeo = new THREE.SphereGeometry(0.015 + Math.random() * 0.02, 4, 4);
-        const pMat = new THREE.MeshBasicMaterial({ color: cd.color, transparent: true, opacity: 0.4 });
-        const p = new THREE.Mesh(pGeo, pMat);
-        const a = Math.random() * Math.PI * 2;
-        const r = 1.2 + Math.random() * 0.8;
-        p.position.set(Math.cos(a) * r, (Math.random() - 0.5) * 2, Math.sin(a) * r);
-        p.userData = { angle: a, radius: r, speed: 0.2 + Math.random() * 0.3, yOff: p.position.y };
-        g.add(p);
+    g.add(new THREE.Mesh(new THREE.PlaneGeometry(2.8,2.0), new THREE.MeshBasicMaterial({map:tTex,transparent:true,side:THREE.DoubleSide,depthWrite:false})));
+    // Card particles (30 per card)
+    const cpGeo = new THREE.BufferGeometry();
+    const cpP = new Float32Array(30*3);
+    for(let i=0;i<30;i++){
+        const a=Math.random()*Math.PI*2, r=1.5+Math.random()*1;
+        cpP[i*3]=Math.cos(a)*r; cpP[i*3+1]=(Math.random()-0.5)*2; cpP[i*3+2]=Math.sin(a)*r;
     }
-    
+    cpGeo.setAttribute('position', new THREE.BufferAttribute(cpP, 3));
+    g.add(new THREE.Points(cpGeo, new THREE.PointsMaterial({color:cd.border,size:0.05,transparent:true,opacity:0.5,blending:THREE.AdditiveBlending})));
     g.position.set(cd.x, cd.y, 0);
-    g.rotation.y = cd.rY;
+    g.rotation.y = cd.ry;
+    g.visible = false;
     scene.add(g);
     return g;
 });
 
-// ═══ SCROLL STATE ═══
-let scrollP = 0;
-const scrollEl = document.getElementById('scroll-space');
-
-window.addEventListener('scroll', () => {
-    const max = scrollEl.scrollHeight - window.innerHeight;
-    scrollP = Math.max(0, Math.min(1, window.scrollY / max));
+// ─── THE LAB ───
+const labGroup = new THREE.Group();
+labGroup.position.y = -28;
+labGroup.visible = false;
+scene.add(labGroup);
+// Wreath (iridescent torus)
+const wreathGeo = new THREE.TorusGeometry(1.8, 0.08, 16, 80);
+const wreathMat = new THREE.MeshStandardMaterial({ color: 0x8b5cf6, emissive: 0x4a2c8a, emissiveIntensity: 0.6, metalness: 0.5, roughness: 0.2 });
+labGroup.add(new THREE.Mesh(wreathGeo, wreathMat));
+// Hex grid suggestion (rings)
+[2.2, 2.6, 3.0].forEach((r, i) => {
+    const g = new THREE.TorusGeometry(r, 0.01, 8, 60);
+    const c = [0x46f441, 0x1aeade, 0xa855f7][i];
+    labGroup.add(new THREE.Mesh(g, new THREE.MeshBasicMaterial({color:c,transparent:true,opacity:0.2})));
 });
+// Crosshair
+const chGeo = new THREE.TorusGeometry(0.6, 0.01, 8, 50);
+labGroup.add(new THREE.Mesh(chGeo, new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:0.5})));
+const vLine = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0,-0.6,0),new THREE.Vector3(0,0.6,0)]);
+const hLine = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(-0.6,0,0),new THREE.Vector3(0.6,0,0)]);
+labGroup.add(new THREE.Line(vLine, new THREE.LineBasicMaterial({color:0xffffff,transparent:true,opacity:0.5})));
+labGroup.add(new THREE.Line(hLine, new THREE.LineBasicMaterial({color:0xffffff,transparent:true,opacity:0.5})));
 
-// ═══ MOUSE ═══
-const mouse = { x: 0, y: 0, tx: 0, ty: 0 };
+// ─── MOUSE ───
+const mouse = { x:0, y:0, tx:0, ty:0 };
 document.addEventListener('mousemove', e => {
-    mouse.tx = (e.clientX / W) * 2 - 1;
-    mouse.ty = -(e.clientY / H) * 2 + 1;
+    mouse.tx = (e.clientX/W)*2-1;
+    mouse.ty = -(e.clientY/H)*2+1;
+});
+document.addEventListener('touchmove', e => {
+    mouse.tx = (e.touches[0].clientX/W)*2-1;
+    mouse.ty = -(e.touches[0].clientY/H)*2+1;
+}, {passive:true});
+
+// ─── SCROLL ───
+let scrollP = 0;
+window.addEventListener('scroll', () => {
+    const max = document.getElementById('scroll-space').scrollHeight - window.innerHeight;
+    scrollP = max > 0 ? Math.min(1, window.scrollY / max) : 0;
 });
 
-// ═══ OVERLAY VISIBILITY ═══
+// ─── SHOW OVERLAYS ───
 function updateOverlays(sp) {
-    const hero = document.getElementById('ov-hero');
-    const about = document.getElementById('ov-about');
-    const srv = document.getElementById('ov-srv');
-    const contact = document.getElementById('ov-contact');
-    
-    hero.classList.toggle('vis', sp < 0.12);
-    about.classList.toggle('vis', sp > 0.15 && sp < 0.30);
-    srv.classList.toggle('vis', sp > 0.30 && sp < 0.70);
-    contact.classList.toggle('vis', sp > 0.80);
+    // SCROLL DOWN hint
+    document.getElementById('ov-scroll').classList.toggle('show', sp < 0.05);
+    // Sidebar (20-70%)
+    document.getElementById('ov-nav-sidebar').classList.toggle('show', sp > 0.2 && sp < 0.7);
+    // Lab (70-85%)
+    document.getElementById('ov-lab').classList.toggle('show', sp > 0.7 && sp < 0.88);
+    // Cards visible
+    cards3D.forEach((c, i) => {
+        const threshold = 0.25 + i * 0.08;
+        c.visible = sp > threshold && sp < 0.75;
+    });
+    // Lab group
+    labGroup.visible = sp > 0.65 && sp < 0.92;
 }
 
-// ═══ ANIMATION LOOP ═══
+// ─── MAIN LOOP ───
 const clock = new THREE.Clock();
+let t = 0;
 
 function animate() {
     requestAnimationFrame(animate);
-    const t = clock.getElapsedTime();
-    
-    // Smooth mouse
-    mouse.x += (mouse.tx - mouse.x) * 0.08;
-    mouse.y += (mouse.ty - mouse.y) * 0.08;
-    
-    // Shader time
-    bkMat.uniforms.uTime.value = t;
-    
-    // ═══ CAMERA JOURNEY (scroll-linked) ═══
-    // 0-0.15: Looking at logo from front
-    // 0.15-0.30: Pull back and down
-    // 0.30-0.70: Traveling down the spine
-    // 0.70-0.85: Enter the lab area
-    // 0.85-1.0: Settle into contact
-    
-    const sp = scrollP;
-    
-    let camX = mouse.x * 0.3;
-    let camY = 0;
-    let camZ = 5;
-    let lookY = 0;
-    
-    if (sp < 0.15) {
-        // Hero: close to logo
-        camZ = 5 - sp * 5; // 5 → 4.25
-        camY = 0;
-        lookY = 0;
-    } else if (sp < 0.30) {
-        // Transition: pull back, start going down
-        const t2 = (sp - 0.15) / 0.15;
-        camZ = 4.25 + t2 * 2; // pull back
-        camY = -t2 * 8; // start descending
-        lookY = camY - 2;
-    } else if (sp < 0.70) {
-        // Spine journey: travel down
-        const t2 = (sp - 0.30) / 0.40;
-        camZ = 6.25;
-        camY = -8 - t2 * 20; // -8 → -28
-        lookY = camY - 1;
-    } else if (sp < 0.85) {
-        // Lab area
-        const t2 = (sp - 0.70) / 0.15;
-        camZ = 6.25 - t2 * 1;
-        camY = -28 - t2 * 5;
-        lookY = camY - 1;
-    } else {
-        // Contact
-        const t2 = (sp - 0.85) / 0.15;
-        camZ = 5.25;
-        camY = -33 - t2 * 3;
-        lookY = camY;
+    t = clock.getElapsedTime();
+    const dt = clock.getDelta();
+
+    mouse.x += (mouse.tx - mouse.x) * 0.1;
+    mouse.y += (mouse.ty - mouse.y) * 0.1;
+    pMat.uniforms.uTime.value = t;
+
+    // ─── LOGO float + rotate ───
+    logoGroup.position.y = Math.sin(t * 0.5) * 0.12;
+    logoGroup.rotation.y = t * 0.08 + mouse.x * 0.12;
+    logoGroup.rotation.x = mouse.y * 0.08;
+    // Parallax
+    logoGroup.position.x = mouse.x * 0.15;
+
+    // Jellyfish float
+    jellyGroup.position.y = 3.8 + Math.sin(t * 0.6) * 0.15;
+    jellyGroup.rotation.y = Math.sin(t * 0.2) * 0.1;
+
+    // ─── SCROLL FADE ───
+    const logoAlpha = scrollP < 0.1 ? 1 : scrollP < 0.2 ? 1-(scrollP-0.1)/0.1 : 0;
+    logoGroup.visible = logoAlpha > 0.01;
+    jellyGroup.visible = logoAlpha > 0.01;
+    if (logoAlpha > 0) {
+        logoGroup.scale.setScalar(1 - (1-logoAlpha)*0.3);
+        logoGroup.position.y += (1-logoAlpha) * -2;
     }
-    
-    cam.position.set(camX, camY + mouse.y * 0.2, camZ);
-    cam.lookAt(0, lookY, 0);
-    
-    // ═══ LOGO ANIMATION ═══
-    // Rotate slowly + mouse parallax
-    logoG.rotation.y = t * 0.08 + mouse.x * 0.15;
-    logoG.rotation.x = Math.sin(t * 0.05) * 0.05 + mouse.y * 0.08;
-    
-    // Iridescent color shift on accent
-    const hue = (t * 0.1) % 1;
-    accent.material.emissive.setHSL(hue, 0.7, 0.3);
-    
-    // Fade logo based on scroll
-    const logoAlpha = sp < 0.1 ? 1 : sp < 0.2 ? 1 - (sp - 0.1) / 0.1 : 0;
-    logoG.visible = logoAlpha > 0.01;
-    if (logoG.visible) {
-        logoG.scale.setScalar(1 - (1 - logoAlpha) * 0.3);
-        glassMat.opacity = 0.7 * logoAlpha;
+    // Spine fades slightly
+    spineMat.opacity = 0.4 - scrollP * 0.1;
+
+    // ─── PARTICLES DRIFT ───
+    for (let i = 0; i < PCOUNT; i++) {
+        pPos[i*3] += pVel[i*3];
+        pPos[i*3+1] += pVel[i*3+1];
+        pPos[i*3+2] += pVel[i*3+2];
+        if (pPos[i*3+1] < -7) {
+            pPos[i*3+1] = 7;
+            pPos[i*3] = (Math.random()-0.5)*14;
+        }
     }
-    
-    // ═══ BOKEH PARTICLES — gentle drift ═══
-    const bp = bkGeo.attributes.position.array;
-    for (let i = 0; i < BK_COUNT; i++) {
-        bp[i*3+1] += 0.003; // slow upward
-        bp[i*3] += Math.sin(t * 0.1 + i) * 0.0005;
-        if (bp[i*3+1] > 5) bp[i*3+1] = -5;
-    }
-    bkGeo.attributes.position.needsUpdate = true;
-    
-    // ═══ CARD PARTICLES — orbit ═══
-    cards.forEach(g => {
-        g.children.forEach(child => {
-            if (child.userData && child.userData.angle !== undefined) {
-                child.userData.angle += child.userData.speed * 0.01;
-                child.position.x = Math.cos(child.userData.angle) * child.userData.radius;
-                child.position.z = Math.sin(child.userData.angle) * child.userData.radius;
-                child.position.y = child.userData.yOff + Math.sin(t * child.userData.speed + child.userData.angle) * 0.2;
-            }
-        });
+    pGeo.attributes.position.needsUpdate = true;
+
+    // ─── CARDS subtle float ───
+    cards3D.forEach((c, i) => {
+        if (c.visible) c.position.y = cardData[i].y + Math.sin(t * 0.4 + i) * 0.08;
     });
-    
-    // ═══ ORBITING LIGHT ═══
-    L1.position.x = Math.sin(t * 0.3) * 3;
-    L1.position.y = camY + 2 + Math.cos(t * 0.2) * 2;
-    L1.position.z = 4 + Math.cos(t * 0.4) * 2;
-    
-    // ═══ OVERLAYS ═══
+
+    // ─── LAB rotation ───
+    if (labGroup.visible) {
+        labGroup.rotation.y = t * 0.15;
+    }
+
+    // ─── MOVING LIGHT follows mouse ───
+    movL.position.set(mouse.x * 4, mouse.y * 3 + 2, 6);
+
+    // ─── CAMERA JOURNEY ───
+    const sp = scrollP;
+    let cy = 0, cz = 8;
+    if (sp < 0.2) {
+        cy = 0; cz = 8 - sp * 5;
+    } else if (sp < 0.4) {
+        const p = (sp-0.2)/0.2;
+        cy = -p * 8; cz = 7 + p * 2;
+    } else if (sp < 0.7) {
+        const p = (sp-0.4)/0.3;
+        cy = -8 - p * 18; cz = 9;
+    } else if (sp < 0.85) {
+        const p = (sp-0.7)/0.15;
+        cy = -26 - p * 4; cz = 9;
+    } else {
+        cy = -30; cz = 9;
+    }
+    camera.position.x = mouse.x * 0.25;
+    camera.position.y = cy + mouse.y * 0.15;
+    camera.position.z = cz;
+    camera.lookAt(0, cy - 0.5, 0);
+
+    // Background: slowly shifts from pure black to very slight purple on scroll
+    const bgB = scrollP * 0.04;
+    renderer.setClearColor(new THREE.Color(0, 0, bgB));
+    scene.fog.color.set(0, 0, bgB);
+
     updateOverlays(sp);
-    
-    // ═══ RENDER ═══
-    R.render(scene, cam);
+    renderer.render(scene, camera);
 }
 
-// ═══ RESIZE ═══
+// ─── RESIZE ───
 window.addEventListener('resize', () => {
-    const w = window.innerWidth, h = window.innerHeight;
-    cam.aspect = w / h;
-    cam.updateProjectionMatrix();
-    R.setSize(w, h);
+    const nw = window.innerWidth, nh = window.innerHeight;
+    camera.aspect = nw/nh;
+    camera.updateProjectionMatrix();
+    renderer.setSize(nw, nh);
 });
 
-// ═══ START ═══
-// Show hero immediately
-document.getElementById('ov-hero').classList.add('vis');
+// ─── START ───
+document.getElementById('ov-scroll').classList.add('show');
 animate();
+console.log('M7 World loaded. THREE:', THREE.REVISION);
+
+})();

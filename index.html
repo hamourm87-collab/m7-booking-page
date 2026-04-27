@@ -1,52 +1,87 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>M7 — Business Systems</title>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Active Theory Clone</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;background:#000;overflow-x:hidden;font-family:'Courier New',monospace}
+#c{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0}
+#scroll-space{height:800vh;position:relative;z-index:1;pointer-events:none}
+
+/* NAV */
+nav{position:fixed;top:30px;left:50%;transform:translateX(-50%);z-index:100;
+    display:flex;align-items:center;gap:0;
+    border:1px solid rgba(255,255,255,0.2);border-radius:30px;
+    background:rgba(0,0,0,0.3);backdrop-filter:blur(20px);padding:10px 30px}
+.nb{font-size:12px;letter-spacing:2px;color:#fff;text-decoration:none;padding:0 8px}
+.nb:hover{opacity:0.7}
+.sep{color:rgba(255,255,255,0.3);margin:0 4px}
+
+/* OVERLAYS */
+.ov{position:fixed;z-index:10;pointer-events:none;opacity:0;transition:opacity 0.8s}
+.ov.show{opacity:1}
+#ov-scroll{bottom:80px;left:50%;transform:translateX(-50%);text-align:center;color:rgba(255,255,255,0.5);font-size:12px;letter-spacing:4px}
+#ov-scroll-arrow{width:1px;height:30px;margin:8px auto 0;background:linear-gradient(to bottom,rgba(255,255,255,0.5),transparent);animation:sa 1.5s ease-in-out infinite}
+@keyframes sa{0%,100%{transform:scaleY(0);transform-origin:top}50%{transform:scaleY(1);transform-origin:top}}
+
+#ov-nav-sidebar{top:50%;left:80px;transform:translateY(-50%);
+    background:rgba(26,26,46,0.7);backdrop-filter:blur(20px);
+    border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:28px 22px;min-width:280px}
+.sb-title{font-size:13px;color:#fff;letter-spacing:1px;margin-bottom:16px;line-height:1.4}
+.sb-divider{height:1px;background:rgba(255,255,255,0.2);margin:16px 0}
+.sb-link{display:block;font-size:13px;color:#1aeade;margin:10px 0;text-decoration:none;transition:all 0.2s;letter-spacing:0.5px}
+.sb-link:hover{color:#79aeff;transform:translateX(5px)}
+.sb-search{margin-top:16px;width:100%;padding:10px 16px;background:transparent;
+    border:1px solid rgba(255,255,255,0.2);border-radius:20px;color:#fff;font-size:11px;outline:none}
+.sb-search::placeholder{color:rgba(255,255,255,0.4)}
+
+#ov-lab{top:50%;left:50%;transform:translate(-50%,-50%);text-align:center}
+.lab-title{font-size:clamp(28px,4vw,42px);letter-spacing:5px;color:#fff;margin-bottom:20px}
+.lab-desc{font-size:13px;color:rgba(255,255,255,0.7);line-height:1.8;max-width:400px}
+</style>
 </head>
 <body>
-    <!-- Everything is WebGL. HTML = thin overlay only -->
-    <canvas id="c"></canvas>
+<canvas id="c"></canvas>
+<div id="scroll-space"></div>
 
-    <!-- Nav pill -->
-    <nav id="nav"><a href="#" class="nb">WORK</a><span class="nd">——</span><a href="#" class="nb">CONTACT</a></nav>
+<nav>
+    <a href="#" class="nb">WORK</a>
+    <span class="sep">—</span>
+    <a href="#" class="nb">CONTACT</a>
+</nav>
 
-    <!-- Scroll container (invisible, just for scroll height) -->
-    <div id="scroll-space"></div>
+<div class="ov" id="ov-scroll">
+    SCROLL DOWN
+    <div id="ov-scroll-arrow"></div>
+</div>
 
-    <!-- Text overlays (positioned by JS based on scroll) -->
-    <div class="overlay" id="ov-hero">
-        <div class="ov-title">M<span>7</span></div>
-        <div class="ov-sub">// BUSINESS SYSTEMS</div>
-    </div>
+<div class="ov" id="ov-nav-sidebar">
+    <div class="sb-title">WHAT ARE YOU<br>LOOKING FOR?</div>
+    <div class="sb-divider"></div>
+    <a href="#" class="sb-link">→ WEBSITES</a>
+    <a href="#" class="sb-link">→ INSTALLATIONS</a>
+    <a href="#" class="sb-link">→ XR / VR / AI</a>
+    <a href="#" class="sb-link">→ MULTIPLAYER</a>
+    <a href="#" class="sb-link">→ GAMES</a>
+    <input type="text" class="sb-search" placeholder="🔍 ASK ME ANYTHING...">
+</div>
 
-    <div class="overlay" id="ov-about">
-        <div class="ov-label">// WHAT WE DO</div>
-        <div class="ov-text">We don't do marketing.<br>We build <em>growth machines.</em></div>
-    </div>
+<div class="ov" id="ov-lab">
+    <div class="lab-title">// THE LAB →</div>
+    <div class="lab-desc">OUR HOME FOR INNOVATION<br>WHERE PROTOTYPES TURN INTO<br>PRODUCTION PROJECTS</div>
+</div>
 
-    <div class="overlay" id="ov-srv">
-        <div class="ov-label">// SERVICES</div>
-        <div class="srv-list">
-            <a class="srv-item" data-i="0">-> BUSINESS DEVELOPMENT</a>
-            <a class="srv-item" data-i="1">-> TRADING SYSTEMS</a>
-            <a class="srv-item" data-i="2">-> CONTENT CREATION</a>
-            <a class="srv-item" data-i="3">-> RESEARCH & ANALYSIS</a>
-            <a class="srv-item" data-i="4">-> AFFILIATE MARKETING</a>
-        </div>
-    </div>
-
-    <div class="overlay" id="ov-contact">
-        <div class="ov-label">// CONTACT</div>
-        <div class="ov-text">Ready to scale?</div>
-        <a href="mailto:mo@m7digital.de" class="ct-link">mo@m7digital.de</a>
-        <a href="https://t.me/Ha_4M7" class="ct-link" target="_blank">Telegram: @Ha_4M7</a>
-    </div>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script>window.addEventListener('load', function(){ var s=document.createElement('script'); s.src='world.js?v='+Date.now(); document.body.appendChild(s); });</script>
+<!-- Three.js (loads first, blocking) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<!-- World script (loads after THREE is ready) -->
+<script>
+window.addEventListener('load', function() {
+    var s = document.createElement('script');
+    s.src = 'world.js?' + Date.now();
+    document.body.appendChild(s);
+});
+</script>
 </body>
 </html>
