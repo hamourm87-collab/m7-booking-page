@@ -232,8 +232,8 @@ const pMat = new THREE.ShaderMaterial({
             vColor = color;
             vec4 mv = modelViewMatrix * vec4(position, 1.0);
             gl_Position = projectionMatrix * mv;
-            gl_PointSize = aSize * uPR * (60.0 / -mv.z);
-            vAlpha = 0.85 * (1.0 - smoothstep(2.0, 7.0, length(position))); // شفافية أعلى
+            gl_PointSize = aSize * uPR * (200.0 / -mv.z);
+            vAlpha = 1.0 * (1.0 - smoothstep(1.5, 6.0, length(position)));
         }`,
     fragmentShader: `
         varying vec3 vColor;
@@ -459,6 +459,9 @@ window.addEventListener('resize', () => {
 
 // ─── START ───
 document.getElementById('ov-scroll').classList.add('show');
+// Hide all cards initially
+cards3D.forEach(c => { c.visible = false; });
+labGroup.visible = false;
 animate();
 console.log('M7 World loaded. THREE:', THREE.REVISION);
 
