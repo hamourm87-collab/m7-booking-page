@@ -1,0 +1,139 @@
+{
+  "meta": {
+    "version": "1.0",
+    "last_updated": "2026-05-07",
+    "updated_by": "Timo (VPS)",
+    "description": "Venom AI Brain - M7 Digital Knowledge Base"
+  },
+
+  "owner": {
+    "name": "Mo (Mohamad Hamouk)",
+    "arabic_name": "محمد حموك",
+    "age": 25,
+    "location": "Essen, Deutschland",
+    "origin": "Syrian, living in Germany ~11 years",
+    "telegram": "@Ha_4M7",
+    "telegram_id": "8296598401",
+    "email": "mo@m7digital.de",
+    "phone": "017676640782",
+    "citizenship": "No German citizenship yet",
+    "schufa": "Weak until 2029"
+  },
+
+  "company": {
+    "name": "M7 Digital",
+    "type": "Digital Marketing Agency",
+    "legal_status": "Personal (Mohamad Hamouk) - Kleinunternehmer pending Gewerbeanmeldung",
+    "email": "mo@m7digital.de",
+    "website": "m7digital.de",
+    "location": "Essen, Germany",
+    "services": [
+      "Google My Business optimization",
+      "Automated Google Reviews system",
+      "Professional website (1-page or 3-page)",
+      "Online booking system (automated)",
+      "TikTok content management",
+      "Instagram strategy",
+      "Monthly PDF reports"
+    ],
+    "packages": {
+      "starter": {"price": "400€/month", "contract": "3 months", "includes": "Google + Reviews + Instagram link + monthly report"},
+      "growth": {"price": "800€/month", "contract": "3 months", "includes": "Starter + 1-page website + booking system + Instagram strategy"},
+      "dominance": {"price": "1500€/month", "contract": "6 months", "includes": "Growth + 3-page website + TikTok + paid ads + results guarantee"}
+    }
+  },
+
+  "team": {
+    "farid": {
+      "role": "Sales person",
+      "description": "Age 39, strong personality, handles client meetings and closing deals",
+      "style": "Modern, confident - needs guidance on product knowledge"
+    },
+    "timo": {
+      "role": "AI System on VPS",
+      "description": "Main brain on Hostinger VPS, handles automation, reports, strategy",
+      "platform": "OpenClaw + Claude"
+    },
+    "hermes": {
+      "role": "AI System on Mo's Mac Mini",
+      "description": "Handles local tasks, Venom system, Mac-based operations"
+    }
+  },
+
+  "clients": {
+    "hekmat_style": {
+      "status": "Active - pending signature",
+      "business": "Friseursalon für Herren",
+      "owner": "Hamdat",
+      "address": "Steeler Str. 204, 45138 Essen",
+      "instagram": "@hekmat_style - 10,700 followers",
+      "google_rating": "9.8/10 - 126 reviews",
+      "tiktok": "~30 likes/video - weak",
+      "package": "Growth 800€/month",
+      "contract_start": "01.06.2026",
+      "signed": false,
+      "notes": "Farid will meet client to sign contract"
+    }
+  },
+
+  "projects": {
+    "venom_ai": {
+      "status": "COMPLETED",
+      "description": "Personal AI voice assistant for Mo",
+      "platform": "Mac Mini M4 - 16GB RAM",
+      "components": {
+        "wake_word": "Vosk - listens for VENOM",
+        "stt": "faster-whisper (Arabic/English/German)",
+        "llm": "Groq API - LLaMA 3.3 70B - ~300ms",
+        "tts": "ElevenLabs - Bartholomeus voice - ~500ms",
+        "overlay": "SceneKit 3D face on screen"
+      },
+      "total_response_time": "Under 1 second",
+      "elevenlabs_credits": 127000,
+      "completed_date": "2026-05-07"
+    },
+    "real_estate": {
+      "status": "Planning phase",
+      "strategy": "Buy undervalued properties via Zwangsversteigerung in Germany",
+      "team": {
+        "raed": "German citizen - will apply for bank loan officially",
+        "kenan": "Stable income - can get 20K€ interest-free from employer",
+        "farid": "Has credit cards ~18K€ available",
+        "mo": "Planner/manager - 4 credit cards ~24K€ available"
+      },
+      "capital_target": "70,000 - 100,000€",
+      "legal_structure": "GbR first, then GmbH",
+      "timeline": "12-18 months to gather capital"
+    },
+    "ftmo_trading": {
+      "status": "Active",
+      "account_size": "$100,000",
+      "bot": "Forex Flex EA on MT5",
+      "started": "17.03.2026",
+      "profit_so_far": "~$800"
+    },
+    "m7_booking_page": {
+      "status": "Live",
+      "url": "https://hamourm87-collab.github.io/m7-booking-page/",
+      "features": ["booking form", "Telegram notifications", "reminder system"]
+    }
+  },
+
+  "api_services": {
+    "groq": {"service": "LLM for Venom", "model": "LLaMA 3.3 70B", "cost": "Free"},
+    "elevenlabs": {"service": "TTS for Venom", "plan": "Creator", "credits": 127000},
+    "anthropic": {"service": "Claude for complex tasks via Timo"},
+    "nexos": {"service": "Main AI model on VPS"},
+    "huggingface": {"service": "Model downloads"}
+  },
+
+  "recent_achievements": [
+    {"date": "2026-05-07", "achievement": "Venom AI completed - under 1 second response"},
+    {"date": "2026-05-06", "achievement": "Farid sales guide PDF created (8 sections)"},
+    {"date": "2026-05-06", "achievement": "Hekmat Style contract prepared"},
+    {"date": "2026-05-06", "achievement": "43 skills installed on Timo system"},
+    {"date": "2026-05-05", "achievement": "Hekmat Style analysis and packages designed"}
+  ],
+
+  "venom_instructions": "You are Venom - Mo's personal AI in Essen Germany. Answer short and direct. Use same language as the question (Arabic/German/English). Never start with 'Of course' or 'Certainly'. Be smart like Venom character - sharp and direct."
+}
